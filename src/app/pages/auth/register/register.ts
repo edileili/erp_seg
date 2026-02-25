@@ -8,12 +8,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { PasswordModule } from 'primeng/password';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [
-    CardModule, ButtonModule, ToastModule, ReactiveFormsModule, 
+    CardModule, ButtonModule, ToastModule, ReactiveFormsModule, PasswordModule, DatePickerModule,
     InputGroupModule, InputNumberModule, InputTextModule, InputGroupAddonModule,
   ],
   providers: [MessageService], 
@@ -27,19 +29,35 @@ export class Register {
   public registroSeg: FormGroup;
   public formSubmitted = false;
 
-  constructor() {
-    this.registroSeg = this.fb.group({
-      usuario: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      contrasenia: ['',  [Validators.required, Validators.minLength(10), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)]],
-      concontrasenia: ['',  [Validators.required, Validators.minLength(10), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)]],
-      nomCompleto: ['', Validators.required],
-      direccion: ['', Validators.required],
-      edad: [null, [Validators.required, Validators.min(18)]],
-      telefono: [null, [Validators.required, Validators.pattern("^[0-9]{10,}$")]]
-    });
+constructor() {
+  this.registroSeg = this.fb.group({
+    usuario: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    contrasenia: ['', [Validators.required, Validators.minLength(10), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)]],
+    concontrasenia: ['', [Validators.required, Validators.minLength(10), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)]],
+    nomCompleto: ['', Validators.required],
+    direccion: ['', Validators.required],
+    // Cambiamos el control de edad por fecha con el validador personalizado
+    fechaNacimiento: [null, [Validators.required, this.validarMayoriaEdad.bind(this)]], 
+    telefono: [null, [Validators.required, Validators.pattern("^[0-9]{10,}$")]]
+  });
+}
+  validarMayoriaEdad(control: any) {
+  const fechaSeleccionada = control.value;
+  if (!fechaSeleccionada) return null;
+
+  const hoy = new Date();
+  const cumpleanos = new Date(fechaSeleccionada);
+  let edad = hoy.getFullYear() - cumpleanos.getFullYear();
+  const mes = hoy.getMonth() - cumpleanos.getMonth();
+
+  // Ajuste si aún no ha cumplido años en el año actual
+  if (mes < 0 || (mes === 0 && hoy.getDate() < cumpleanos.getDate())) {
+    edad--;
   }
 
+  return edad >= 18 ? null : { menorDeEdad: true };
+}
   onSubmit() {
     this.formSubmitted = true;
     

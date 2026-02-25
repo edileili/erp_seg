@@ -41,7 +41,7 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-lock"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="contrasenia" placeholder="Contraseña"
+                            <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña"
                                 [class.ng-invalid]="isInvalid('contrasenia')"
                                 [class.ng-dirty]="isInvalid('contrasenia')" />
                         </p-inputgroup>
@@ -60,7 +60,8 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-check"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="concontrasenia" placeholder="Confirmación de contraseña"
+                            <p-password [toggleMask]="true" formControlName="concontrasenia"
+                                placeholder="Confirmación de contraseña"
                                 [class.ng-invalid]="isInvalid('concontrasenia')"
                                 [class.ng-dirty]="isInvalid('concontrasenia')" />
                         </p-inputgroup>
@@ -96,23 +97,32 @@
                     <div class="form-group">
                         <p-inputgroup>
                             <p-inputgroup-addon>
-                                <i class="pi pi-desktop"></i>
+                                <i class="pi pi-calendar"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="edad" placeholder="Edad"
-                                [class.ng-invalid]="isInvalid('edad')" [class.ng-dirty]="isInvalid('edad')" />
+
+                            <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
+                                dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false"
+                                [class.ng-invalid]="isInvalid('fechaNacimiento')"
+                                [class.ng-dirty]="isInvalid('fechaNacimiento')" />
                         </p-inputgroup>
-                        @if(isInvalid('edad')){
-                        <small class="p-error" style="color: red">La edad debe ser mayor o igual a 18 años.</small><br>
+
+                        @if(registroSeg.get('fechaNacimiento')?.errors?.['menorDeEdad'] &&
+                        registroSeg.get('fechaNacimiento')?.touched){
+                        <small class="p-error" style="color: red; display: block; margin-top: 0.25rem;">
+                            Debes ser mayor de 18 años.
+                        </small>
                         }
-                        <small id="username-help"><i class="pi pi-times"></i>La página no permite menores de 18
-                            años.</small>
+
+                        <small id="username-help" style="display: block; margin-top: 0.5rem;">
+                            <i class="pi pi-info-circle"></i> La página no permite menores de 18 años.
+                        </small>
                     </div>
                     <div class="form-group">
                         <p-inputgroup>
                             <p-inputgroup-addon>
                                 <i class="pi pi-phone"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="telefono" placeholder="Número de teléfono"
+                            <p-inputnumber formControlName="telefono" placeholder="Número de teléfono" [useGrouping]="false"
                                 [class.ng-invalid]="isInvalid('telefono')" [class.ng-dirty]="isInvalid('telefono')" />
                         </p-inputgroup>
                         @if(isInvalid('telefono')){
