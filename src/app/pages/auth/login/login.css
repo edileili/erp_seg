@@ -1,0 +1,16 @@
+.form-login {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 20px;
+}
+
+.form-group {
+    grid-column: 2;
+}
+
+.form-button {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-content: center;
+}

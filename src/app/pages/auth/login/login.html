@@ -1,30 +1,42 @@
 <div>
     <div class="mb-4 p-8">
-            <p-card header="Iniciar Sesión">
-                <p class="m-0">
-                    Inicia sesión con solo tu correo y contraseña.
-                </p>
-            </p-card>
-        </div>
-    <form action="" method="post">
-        <div class="form-group">
-            <label for="my-input">Correo</label>
-            <p-inputgroup>
-                <input pInputText placeholder="Correo" />
-            </p-inputgroup>
-        </div>
-        <div class="form-group">
-            <label for="my-input">Contraseña</label>
-            <p-inputgroup>
-                <input pInputText placeholder="Contraseña" />
-            </p-inputgroup>
-        </div>
-        <p-button 
-            label="Registrarse"
-            
-            severity="success"
-            [raised]="true"
-            [rounded]="true">
-      </p-button>
-    </form>
+        <p-card header="Iniciar Sesión">
+            <p class="m-0">
+                Inicia sesión con solo tu correo y contraseña.
+            </p>
+        </p-card>
+    </div>
+    <p-toast></p-toast>
+    <p-card>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="form-login">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="email" style="display: block; margin-bottom: 0.5rem;">Correo</label>
+                    <p-inputgroup>
+                        <span class="p-inputgroup-addon"><i class="pi pi-envelope"></i></span>
+                        <input pInputText id="email" formControlName="email" placeholder="ejemplo@correo.com" />
+                    </p-inputgroup>
+                    @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                    <small style="color: red;">El correo es obligatorio y debe ser válido.</small>
+                    }
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="password" style="display: block; margin-bottom: 0.5rem;">Contraseña</label>
+                    <p-inputgroup>
+                        <span class="p-inputgroup-addon"><i class="pi pi-lock"></i></span>
+                        <input pInputText type="password" id="password"  formControlName="password"
+                            placeholder="Tu contraseña" />
+                    </p-inputgroup>
+                    @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+                    <small style="color: red;">La contraseña debe tener al menos 10 caracteres.</small>
+                    }
+                </div>
+
+                <p-button type="submit" label="Ingresar" severity="success" [raised]="true" [rounded]="true"
+                    >
+                </p-button>
+            </div>
+        </form>
+    </p-card>
 </div>
