@@ -1,16 +1,43 @@
+.login-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;     /* Centra verticalmente */
+    min-height: 100vh;       /* Ocupa el 100% de la altura de la ventana */
+    /*background-color: #f4f4f4;  Opcional: un color de fondo suave */
+    flex-direction: column;
+}
+
+.title-erp {
+    color: #4521D0;
+    font-size: 40px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+.container-erp {
+    background-color: #A08AF3;
+}
+
 .form-login {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 500px;
 }
 
 .form-group {
-    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
 }
 
 .form-button {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-content: center;
+    margin-top: 10px;
+    align-items: center;
 }

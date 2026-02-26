@@ -1,144 +1,149 @@
-<div>
+<div class="container-erp">
     <div class="mb-4 p-8">
-        <p-card header="Registro">
-            Registrate ahora mismo
-        </p-card>
-        <p-toast></p-toast>
 
-        <p-card>
-            <form [formGroup]="registroSeg" (ngSubmit)="onSubmit()">
-                <div class="form-register">
-                    <div class="form-group">
-                        <label for="usuario">Nombre de Usuario</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-user"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText [class.ng-invalid]="isInvalid('usuario')"
-                                [class.ng-dirty]="isInvalid('usuario')" placeholder="Usuario" name="usuario"
-                                formControlName="usuario" />
-                        </p-inputgroup>
-                        @if(isInvalid('usuario')){
-                        <small class="p-error" style="color: red">El usuario es requerido.</small>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-envelope"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText formControlName="email" placeholder="Email"
-                                [class.ng-invalid]="isInvalid('email')" [class.ng-dirty]="isInvalid('email')" />
-                        </p-inputgroup>
-                        @if(isInvalid('email')){
-                        <small class="p-error" style="color: red">Ingresa un correo válido.</small>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <label for="contrasenia">Contraseña</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-lock"></i>
-                            </p-inputgroup-addon>
-                            <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña"
-                                [class.ng-invalid]="isInvalid('contrasenia')"
-                                [class.ng-dirty]="isInvalid('contrasenia')" />
-                        </p-inputgroup>
-                        @if(isInvalid('contrasenia')){
-                        <small class="p-error" style="color: red">Ingresa una contraseña válida.</small><br>
-                        }
-                        <small id="username-help">Ingresa una contraseña con:</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>Mínimo 10 caracteres</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>1 letra mayúscula</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>1 letra minúscula</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>1 carácter especial ( $ @ $ ! % * ?
-                            &)</small>
-                    </div>
-                    <div class="form-group">
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-check"></i>
-                            </p-inputgroup-addon>
-                            <p-password [toggleMask]="true" formControlName="concontrasenia"
-                                placeholder="Confirmación de contraseña"
-                                [class.ng-invalid]="isInvalid('concontrasenia')"
-                                [class.ng-dirty]="isInvalid('concontrasenia')" />
-                        </p-inputgroup>
-                        @if(isInvalid('concontrasenia')){
-                        <small class="p-error" style="color: red">Las contraseñas no coinciden.</small>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-star"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo"
-                                [class.ng-invalid]="isInvalid('nomCompleto')"
-                                [class.ng-dirty]="isInvalid('nomCompleto')" />
-                        </p-inputgroup>
-                        @if(isInvalid('nomCompleto')){
-                        <small class="p-error" style="color: red">El nombre completo es requerido.</small>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-map-marker"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText formControlName="direccion" placeholder="Dirección"
-                                [class.ng-invalid]="isInvalid('direccion')" [class.ng-dirty]="isInvalid('direccion')" />
-                        </p-inputgroup>
-                        @if(isInvalid('direccion')){
-                        <small class="p-error" style="color: red">La dirección es requerida.</small>
-                        }
-                    </div>
-                    <div class="form-group">
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-calendar"></i>
-                            </p-inputgroup-addon>
+        <div class="register-container">
+            
+            <h1 class="title-erp">Registrate</h1>
+            
+            <p-card>
+                <form [formGroup]="registroSeg" (ngSubmit)="onSubmit()">
+                    <div class="form-register">
+                        <div class="info-login">
+                            <small>¿Ya tienes cuenta? Inicia sesión <a href="/login">aquí.</a></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="usuario">Nombre de Usuario</label>
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-user"></i>
+                                </p-inputgroup-addon>
+                                <input pInputText [class.ng-invalid]="isInvalid('usuario')"
+                                    [class.ng-dirty]="isInvalid('usuario')" placeholder="Usuario" name="usuario"
+                                    formControlName="usuario" />
+                            </p-inputgroup>
+                            @if(isInvalid('usuario')){
+                            <small class="p-error" style="color: red">El usuario es requerido.</small>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-envelope"></i>
+                                </p-inputgroup-addon>
+                                <input pInputText formControlName="email" placeholder="Email"
+                                    [class.ng-invalid]="isInvalid('email')" [class.ng-dirty]="isInvalid('email')" />
+                            </p-inputgroup>
+                            @if(isInvalid('email')){
+                            <small class="p-error" style="color: red">Ingresa un correo válido.</small>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label for="contrasenia">Contraseña</label>
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-lock"></i>
+                                </p-inputgroup-addon>
+                                <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña"
+                                    [class.ng-invalid]="isInvalid('contrasenia')"
+                                    [class.ng-dirty]="isInvalid('contrasenia')" />
+                            </p-inputgroup>
+                            @if(isInvalid('contrasenia')){
+                            <small class="p-error" style="color: red">Ingresa una contraseña válida.</small><br>
+                            }
+                            <div class="info-password">
+                                <small id="username-help">Ingresa una contraseña con:</small><br>
+                                <small id="username-help"><i class="pi pi-check"></i>Mínimo 10 caracteres</small><br>
+                                <small id="username-help"><i class="pi pi-check"></i>1 letra mayúscula</small><br>
+                                <small id="username-help"><i class="pi pi-check"></i>1 letra minúscula</small><br>
+                                <small id="username-help"><i class="pi pi-check"></i>1 carácter especial ( $ @ $ ! % * ?&)</small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-check"></i>
+                                </p-inputgroup-addon>
+                                <p-password [toggleMask]="true" formControlName="concontrasenia"
+                                    placeholder="Confirmación de contraseña"
+                                    [class.ng-invalid]="isInvalid('concontrasenia')"
+                                    [class.ng-dirty]="isInvalid('concontrasenia')" />
+                            </p-inputgroup>
+                            @if(isInvalid('concontrasenia')){
+                            <small class="p-error" style="color: red">Las contraseñas no coinciden.</small>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-star"></i>
+                                </p-inputgroup-addon>
+                                <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo"
+                                    [class.ng-invalid]="isInvalid('nomCompleto')"
+                                    [class.ng-dirty]="isInvalid('nomCompleto')" />
+                            </p-inputgroup>
+                            @if(isInvalid('nomCompleto')){
+                            <small class="p-error" style="color: red">El nombre completo es requerido.</small>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-map-marker"></i>
+                                </p-inputgroup-addon>
+                                <input pInputText formControlName="direccion" placeholder="Dirección"
+                                    [class.ng-invalid]="isInvalid('direccion')" [class.ng-dirty]="isInvalid('direccion')" />
+                            </p-inputgroup>
+                            @if(isInvalid('direccion')){
+                            <small class="p-error" style="color: red">La dirección es requerida.</small>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-calendar"></i>
+                                </p-inputgroup-addon>
 
-                            <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
-                                dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false"
-                                [class.ng-invalid]="isInvalid('fechaNacimiento')"
-                                [class.ng-dirty]="isInvalid('fechaNacimiento')" />
-                        </p-inputgroup>
+                                <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
+                                    dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false"
+                                    [class.ng-invalid]="isInvalid('fechaNacimiento')"
+                                    [class.ng-dirty]="isInvalid('fechaNacimiento')" />
+                            </p-inputgroup>
 
-                        @if(registroSeg.get('fechaNacimiento')?.errors?.['menorDeEdad'] &&
-                        registroSeg.get('fechaNacimiento')?.touched){
-                        <small class="p-error" style="color: red; display: block; margin-top: 0.25rem;">
-                            Debes ser mayor de 18 años.
-                        </small>
-                        }
+                            @if(registroSeg.get('fechaNacimiento')?.errors?.['menorDeEdad'] &&
+                            registroSeg.get('fechaNacimiento')?.touched){
+                            <small class="p-error" style="color: red; display: block; margin-top: 0.25rem;">
+                                Debes ser mayor de 18 años.
+                            </small>
+                            }
 
-                        <small id="username-help" style="display: block; margin-top: 0.5rem;">
-                            <i class="pi pi-info-circle"></i> La página no permite menores de 18 años.
-                        </small>
-                    </div>
-                    <div class="form-group">
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-phone"></i>
-                            </p-inputgroup-addon>
-                            <p-inputnumber formControlName="telefono" placeholder="Número de teléfono" [useGrouping]="false"
-                                [class.ng-invalid]="isInvalid('telefono')" [class.ng-dirty]="isInvalid('telefono')" />
-                        </p-inputgroup>
-                        @if(isInvalid('telefono')){
-                        <small class="p-error" style="color: red">El teléfono es requerido.</small><br>
-                        }
-                        <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
-                            apartado.</small>
-                    </div>
-                    <div class="form-group form-button">
-                        <p-button label="Registrarse" type="submit" severity="success" [raised]="true" [rounded]="true">
-                        </p-button>
-                    </div>
-                </div>
+                            <small id="username-help" style="display: block; margin-top: 0.5rem;">
+                                <i class="pi pi-info-circle"></i> La página no permite menores de 18 años.
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <p-inputgroup>
+                                <p-inputgroup-addon>
+                                    <i class="pi pi-phone"></i>
+                                </p-inputgroup-addon>
+                                <p-inputnumber formControlName="telefono" placeholder="Número de teléfono" [useGrouping]="false"
+                                    [class.ng-invalid]="isInvalid('telefono')" [class.ng-dirty]="isInvalid('telefono')" />
+                            </p-inputgroup>
+                            @if(isInvalid('telefono')){
+                            <small class="p-error" style="color: red">El teléfono es requerido.</small><br>
+                            }
+                            <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
+                                apartado.</small>
+                        </div>
 
-            </form>
-        </p-card>
+                        <div class="form-group form-button">
+                            <p-button label="Registrarse" type="submit" severity="success" [rounded]="true">
+                            </p-button>
+                        </div>
+                    </div>
+
+                </form>
+            </p-card>
+        </div>
     </div>
-
 </div>

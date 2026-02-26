@@ -1,16 +1,43 @@
+.register-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;     /* Centra verticalmente */
+    min-height: 150vh;       /* Ocupa el 100% de la altura de la ventana */
+    /*background-color: #f4f4f4;  Opcional: un color de fondo suave */
+    flex-direction: column;
+}
+
+.title-erp {
+    color: #1678C9;
+    font-size: 40px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+.container-erp {
+    background-color: #B6DAF9;
+}
+
 .form-register {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    gap: 20px;
 }
 
 .form-group {
-    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
 }
 
 .form-button {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-content: center;
+    margin-top: 10px;
+    align-items: center;
 }
