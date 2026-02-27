@@ -1,0 +1,9 @@
+.main-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.content-area {
+    flex-grow: 1; /* Esto hace que el home rellene el espacio restante */
+    background-color: #A08AF3;
+}

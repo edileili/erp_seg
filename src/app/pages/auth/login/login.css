@@ -8,13 +8,13 @@
 }
 
 .title-erp {
-    color: #4521D0;
+    color: var(--color-purple-dark);
     font-size: 40px;
     font-family:Georgia, 'Times New Roman', Times, serif;
 }
 
 .container-erp {
-    background-color: #A08AF3;
+    background-color: #ac86f3;
 }
 
 .form-login {

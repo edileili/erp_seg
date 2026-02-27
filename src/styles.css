@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+:root {
+    --color-purple-dark: #3D0A49;
+    --color-purple: #5015BD;
+    --color-blue: #027FE9;
+    --color-blue-light: #00CAF8;
+    --color-white: #E0DAF7;
+
+    --glass-effect: rgba(255, 255, 255, 0.1);
+    --text-white: #ffffff;
+    --bg-main-gradient: linear-gradient(135deg,
+            var(--color-blue-erp-dark) 0%,
+            var(--color-purple-erp-dark) 100%);
+}

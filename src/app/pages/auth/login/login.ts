@@ -7,6 +7,7 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +18,9 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
   styleUrl: './login.css'
 })
 export class Login {
-    private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
+  private router = inject(Router);
 
   public loginSeg: FormGroup;
   public formSubmitted = false;
@@ -29,12 +31,6 @@ export class Login {
       contrasenia: ['', [Validators.required, Validators.minLength(10), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)]]
     });
   }
-  /*ngOnInit() {
-    this.loginSeg = new FormGroup({
-      'email': new FormControl('', [Validators.required, Validators.email]),
-      'password': new FormControl('', [Validators.required, Validators.minLength(6)])
-    });
-  }*/
 
   onSubmit() {
     this.formSubmitted = true;
@@ -52,6 +48,9 @@ export class Login {
         console.log(this.loginSeg.value);
         this.loginSeg.reset();
         this.formSubmitted = false;
+        setTimeout(() => {
+          this.router.navigate(['/home']);
+        }, 2000);
       } else {
         this.messageService.add({
           severity: 'error',
@@ -62,7 +61,7 @@ export class Login {
     }
   }
 
-    isInvalid(controlName: string) {
+  isInvalid(controlName: string) {
     const control = this.loginSeg.get(controlName);
     return control?.invalid && (control.touched || this.formSubmitted);
   }

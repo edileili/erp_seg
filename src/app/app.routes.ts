@@ -11,9 +11,11 @@ export const routes: Routes = [
     {path: 'register', component:Register},
     {path: 'landing', component:Landing},
     //Mainlayout solo contiene a sidebar
-    {path: 'home',
-        component:Home,
-        //children: {}
+    {path: '',
+        component:Mainlayout,
+        children: [
+            {path: 'home', component:Home}
+        ]
     }
     //{path: '**', redirectTo: ''} //solo redirecciona a la carpeta raíz
 ];

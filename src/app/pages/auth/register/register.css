@@ -8,13 +8,13 @@
 }
 
 .title-erp {
-    color: #1678C9;
+    color: var(--color-blue);
     font-size: 40px;
     font-family:Georgia, 'Times New Roman', Times, serif;
 }
 
 .container-erp {
-    background-color: #B6DAF9;
+    background-color: #a2e8f8;
 }
 
 .form-register {

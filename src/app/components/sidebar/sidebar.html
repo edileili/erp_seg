@@ -1,1 +1,60 @@
-<p>sidebar works!</p>
+<div class="sidebar" [class.collapsed]="!isExpanded">
+    <p-toast />
+    @if(isExpanded) {
+    <button class="menu-btn" (click)="toggle()">
+        <i class="pi pi-times"></i>
+    </button>
+    <nav>
+        <div>
+            <ul>
+                <li>
+                    <a class="item-sidebar">
+                        <i class="pi pi-home mr-2 icon-sidebar"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="item-sidebar">
+                        <i class="pi pi-gift mr-2 icon-sidebar"></i>
+                        <span>Productos</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="line-sidebar"></div>
+        <div>
+            <ul>
+                <li>
+                    <a class="item-sidebar">
+                        <img class="profile-img-sidebar" src="/images/tem-icon.png" alt="ProfileImg">
+                        <span>User</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="item-sidebar" (click)="signOut()">
+                        <i class="pi pi-sign-out mr-2 icon-sidebar sign-out"></i>
+                        <span class="sign-out">Cerrar Sesión</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    } @else {
+    <div>
+        <button class="menu-btn" (click)="toggle()">
+            <i class="pi pi-bars icon-sidebar"></i>
+        </button>
+    </div>
+    <div class="line-menu"></div>
+    <div>
+        <button class="menu-profile">
+            <img class="menu-icon" src="/images/tem-icon.png">
+        </button>
+    </div>
+    <div>
+        <button class="menu-profile" (click)="signOut()">
+            <i class="pi pi-sign-out icon-sidebar sign-out"></i>
+        </button>
+    </div>
+    }
+</div>
