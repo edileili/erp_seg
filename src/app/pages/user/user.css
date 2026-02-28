@@ -1,0 +1,17 @@
+h1 {
+    font-size: 24px;
+}
+
+.info-user {
+    padding: 1rem;
+    font-size: 18px;
+    box-shadow: 0 8px 32px 0 rgba(150, 155, 226, 0.37);
+}
+
+.label-user {
+    font-weight: bolder;
+}
+
+span {
+    font-weight: lighter;
+}
