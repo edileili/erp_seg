@@ -8,5 +8,80 @@
             <h1>Advance</h1>
             <p-card class="home-advance"></p-card>
         </div>
+        <div class="card flex justify-center card-crud">
+            <p-button (click)="showDialog()" label="Agregar Grupo" />
+        </div>
+        <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
+            <ng-template #header>
+                <div class="inline-flex items-center justify-center gap-2">
+                    <span class="font-bold whitespace-nowrap">Nuevo Grupo</span>
+                </div>
+            </ng-template>
+            <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
+                información.</span>
+            <form>
+                <div class="form-register">
+                    <div class="form-group">
+                        <label for="usuario">Nivel</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-star"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText placeholder="Nivel" name="nivel" formControlName="nivel" />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario">Autor</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-user"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText placeholder="Autor" name="autor" formControlName="autor" />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario">Nombre</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-user"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText placeholder="Nombre" name="nombre" formControlName="nombre" />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario">Integrantes</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-home"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText placeholder="Integrantes" name="integrantes" formControlName="integrantes" />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario">Tickets</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-user"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText placeholder="Tickets" name="tickets" formControlName="tickets" />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario">Descripción</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-user"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText placeholder="Descripcion" name="descripcion" formControlName="descripcion" />
+                        </p-inputgroup>
+                    </div>
+                </div>
+
+            </form>
+            <ng-template #footer>
+                <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
+                <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
+            </ng-template>
+        </p-dialog>
     </p-card>
 </div>

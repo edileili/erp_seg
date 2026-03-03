@@ -10,5 +10,107 @@
             <div class="label-user">Fecha de Nacimiento: <span>06/09/05</span> </div>
             <div class="label-user">Numero de Teléfono: <span>44444444444444</span></div>
         </div>
+        <div class="card flex justify-center card-crud">
+            <p-button (click)="showDialog()" label="Editar mis datos" />
+        </div>
+        <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
+            <ng-template #header>
+                <div class="inline-flex items-center justify-center gap-2">
+                    <span class="font-bold whitespace-nowrap">Editar Datos</span>
+                </div>
+            </ng-template>
+            <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
+                información.</span>
+            <form>
+                <div class="form-register">
+                    <div class="form-group">
+                        <label for="usuario">Nombre de Usuario</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-user"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText 
+                                placeholder="Usuario" name="usuario"
+                                formControlName="usuario" />
+                        </p-inputgroup>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-envelope"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText formControlName="email" placeholder="Email"
+                            />
+                        </p-inputgroup>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label for="contrasenia">Contraseña</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-lock"></i>
+                            </p-inputgroup-addon>
+                            <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña"
+                                />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="contrasenia">Nombre Completo</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-star"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo"
+                                 />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="contrasenia">Dirección</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-map-marker"></i>
+                            </p-inputgroup-addon>
+                            <input pInputText formControlName="direccion" placeholder="Dirección"
+                                />
+                        </p-inputgroup>
+                    </div>
+                    <div class="form-group">
+                        <label for="contrasenia">Fecha de Nacimiento</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-calendar"></i>
+                            </p-inputgroup-addon>
+
+                            <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
+                                dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false"
+                                />
+                        </p-inputgroup>
+
+                        <small id="username-help" style="display: block; margin-top: 0.5rem;">
+                            <i class="pi pi-info-circle"></i> La página no permite menores de 18 años.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="contrasenia">Número de Teléfono</label>
+                        <p-inputgroup>
+                            <p-inputgroup-addon>
+                                <i class="pi pi-phone"></i>
+                            </p-inputgroup-addon>
+                            <p-inputnumber formControlName="telefono" placeholder="Número de teléfono"
+                                [useGrouping]="false" />
+                        </p-inputgroup>
+                        <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
+                            apartado.</small>
+                    </div>
+                </div>
+
+            </form>
+            <ng-template #footer>
+                <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
+                <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
+            </ng-template>
+        </p-dialog>
     </p-card>
 </div>
