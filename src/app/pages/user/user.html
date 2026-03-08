@@ -10,8 +10,16 @@
             <div class="label-user">Fecha de Nacimiento: <span>06/09/05</span> </div>
             <div class="label-user">Numero de Teléfono: <span>44444444444444</span></div>
         </div>
-        <div class="card flex justify-center card-crud">
-            <p-button (click)="showDialog()" label="Editar mis datos" />
+        <div class="card-buttons">
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" (click)="showDialog()" label="Agregar Usuario" *hasPermission="'user_add'"/>
+            </div>
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" (click)="showDialog()" label="Editar mis datos" *hasPermission="'user_edit'" />
+            </div>
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Usuarios" *hasPermission="'users_view'"/>
+            </div>
         </div>
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>

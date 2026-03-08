@@ -8,6 +8,10 @@
     --color-blue-light: #00CAF8;
     --color-white: #E0DAF7;
 
+    --color-blue-btn: #1A37BD;
+    --color-yellow-btn: #FFDD04;
+    --color-orange-btn: #FF8504;
+
     --glass-effect: rgba(255, 255, 255, 0.1);
     --text-white: #ffffff;
     --bg-main-gradient: linear-gradient(135deg,

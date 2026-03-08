@@ -8,9 +8,11 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Password } from 'primeng/password';
 import { DatePicker } from 'primeng/datepicker';
 import { InputNumber } from 'primeng/inputnumber';
+import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
+
 @Component({
   selector: 'app-user',
-  imports: [CardModule, ButtonModule, DialogModule, InputGroupModule, InputGroupAddonModule, Password, DatePicker, InputNumber],
+  imports: [CardModule, ButtonModule, DialogModule, InputGroupModule, InputGroupAddonModule, Password, DatePicker, InputNumber, HasPermissionDirective],
   templateUrl: './user.html',
   styleUrl: './user.css',
 })

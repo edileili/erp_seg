@@ -30,6 +30,10 @@
     padding-bottom: 20px;
 }
 
+.menu-min {
+    margin: 5px;
+}
+
 .line-menu {
     border-top-width: 1px !important;
     border-top-style: solid;

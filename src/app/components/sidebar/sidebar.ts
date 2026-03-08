@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Toast } from "primeng/toast";
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, Toast],
+  imports: [CommonModule, Toast, ButtonModule],
   providers: [MessageService],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css',],
@@ -31,5 +32,13 @@ export class Sidebar {
     setTimeout(() => {
       this.router.navigate(['/login']);
     }, 2000);
+  }
+
+  users() {
+    this.router.navigate(['/home/user']);
+  }
+
+  groups() {
+    this.router.navigate(['/home/groups'])
   }
 }

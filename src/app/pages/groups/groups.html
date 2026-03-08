@@ -8,9 +8,30 @@
             <h1>Advance</h1>
             <p-card class="home-advance"></p-card>
         </div>
-        <div class="card flex justify-center card-crud">
-            <p-button (click)="showDialog()" label="Agregar Grupo" />
+        
+        <div class="card-buttons">
+            <div class="card flex justify-center card-crud">
+                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" (click)="showDialog()" label="Agregar Grupo" *hasPermission="'group_add'" />
+            </div>
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" (click)="showDialog()" label="Editar Grupo" *hasPermission="'group_edit'"/>
+            </div>
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Grupo" *hasPermission="'group_view'"/>
+            </div>
         </div>
+        <div class="card-buttons">
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" label="Agregar Ticket" *hasPermission="'ticket_add'"/>
+            </div>
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" label="Editar Ticket" *hasPermission="'ticket_edit'" />
+            </div>
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Ticket" *hasPermission="'ticket_view'"/>
+            </div>
+        </div>
+
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>
                 <div class="inline-flex items-center justify-center gap-2">

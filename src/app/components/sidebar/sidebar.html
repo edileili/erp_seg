@@ -8,15 +8,21 @@
         <div>
             <ul>
                 <li>
-                    <a class="item-sidebar">
+                    <a class="item-sidebar" (click)="'/home'">
                         <i class="pi pi-home mr-2 icon-sidebar"></i>
                         <span>Home</span>
                     </a>
                 </li>
                 <li>
-                    <a class="item-sidebar">
-                        <i class="pi pi-gift mr-2 icon-sidebar"></i>
-                        <span>Productos</span>
+                    <a class="item-sidebar" (click)="users()">
+                        <i class="pi pi-user mr-2 icon-sidebar"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="item-sidebar" (click)="groups()">
+                        <i class="pi pi-objects-column mr-2 icon-sidebar"></i>
+                        <span>Grupos</span>
                     </a>
                 </li>
             </ul>
@@ -40,21 +46,21 @@
         </div>
     </nav>
     } @else {
-    <div>
-        <button class="menu-btn" (click)="toggle()">
+    <div class="menu-min">
+        <a class="menu-btn" (click)="toggle()">
             <i class="pi pi-bars icon-sidebar"></i>
-        </button>
+        </a>
     </div>
     <div class="line-menu"></div>
-    <div>
-        <button class="menu-profile">
+    <div class="menu-min">
+        <a class="menu-profile">
             <img class="menu-icon" src="/images/tem-icon.png">
-        </button>
+        </a>
     </div>
-    <div>
-        <button class="menu-profile" (click)="signOut()">
+    <div class="menu-min">
+        <a class="menu-profile" (click)="signOut()">
             <i class="pi pi-sign-out icon-sidebar sign-out"></i>
-        </button>
+        </a>
     </div>
     }
 </div>
