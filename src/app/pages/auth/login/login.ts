@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Router } from '@angular/router';
-import { PermissionService, Roles } from '../../../core/services/permission.service';
+import { PermissionService, Permission } from '../../../core/services/permission.service';
 
 @Component({
   selector: 'app-login',
@@ -37,11 +37,13 @@ export class Login {
 
     if (this.loginSeg.valid) {
       const { email, contrasenia } = this.loginSeg.value;
-      const usersRoles: Record<string, keyof typeof Roles> = {
-        'eden@gmail.com': 'user',
-        'admin@test.com': 'admin'
+      const usersPermisos: Record<string, Permission[]> = {
+        'eden@gmail.com': [
+          'group_view', 'ticket_view', 'ticket_edit_state', 'user_view', 'user_edit'
+        ],
+        'admin@test.com': ['admin', 'group_view', 'group_edit', 'group_add', 'group_delete', 'ticket_view', 'ticket_edit', 'ticket_add', 'ticket_delete', 'ticket_edit_state', 'user_view', 'users_view', 'user_edit', 'user_add', 'user_delete']
       }
-      const role = usersRoles[email];
+      const conPermiso = usersPermisos[email];
       const user1 = {email: 'eden@gmail.com', contrasenia: 'Contrasenia$'}
       const user2 = {email: 'admin@test.com', contrasenia: 'Contrasenia$'}
 
@@ -52,14 +54,14 @@ export class Login {
           detail: 'Bienvenido a ERP',
           life: 3000
         });
-        if(role) {
-          this.permissionService.setRole(role);
+        if(conPermiso) {
+          this.permissionService.setPermissions(conPermiso);
         }
         console.log(this.loginSeg.value);
         this.loginSeg.reset();
         this.formSubmitted = false;
         setTimeout(() => {
-          this.router.navigate(['/home']);
+          this.router.navigate(['/dashboard/home']);
         }, 2000);
       } else {
         this.messageService.add({

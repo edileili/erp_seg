@@ -7,12 +7,7 @@ export type Permission =
   | 'ticket_view' | 'ticket_edit' | 'ticket_add' | 'ticket_delete' | 'ticket_edit_state' //ticket
   | 'user_view' | 'users_view' | 'user_edit' | 'user_add' | 'user_delete'; //user
 
-export interface UserRole {
-  name: string;
-  permissions: Permission[];
-}
-
-export const Roles: Record<string, UserRole> = {
+/*
   admin: {
     name: 'Administrador',
     permissions: ['admin', 'group_view', 'group_edit', 'group_add', 'group_delete', 'ticket_view', 'ticket_edit', 'ticket_add', 'ticket_delete', 'ticket_edit_state', 'user_view', 'users_view', 'user_edit', 'user_add', 'user_delete']
@@ -21,7 +16,7 @@ export const Roles: Record<string, UserRole> = {
     name: 'User',
     permissions: ['group_view', 'ticket_view', 'ticket_edit_state', 'user_view', 'user_edit']
   }
-}
+*/
 
 @Injectable({
   providedIn: 'root',
@@ -30,13 +25,7 @@ export class PermissionService {
   private permissions$ = new BehaviorSubject<Permission[]>([]);
 
   setPermissions(permissions: Permission[]): void {
-    //this.permissions$.set(permissions);
     this.permissions$.next(permissions);
-  }
-
-  setRole(roleName: keyof typeof Roles): void {
-    const role = Roles[roleName];
-    if(role) this.permissions$.next(role.permissions);
   }
 
   hasPermission(permission: Permission): boolean {

@@ -1,0 +1,41 @@
+.home-advance {
+    box-shadow: 0 8px 32px 0 rgba(150, 155, 226, 0.37);
+    margin: 1rem;
+}
+
+.card-crud {
+    padding: 1rem;
+}
+
+.card-buttons {
+    border-top-width: 1px;
+    border-top-style: solid;
+    color: #a9a9a9;
+    display: flex;
+    flex-direction: row;
+}
+
+.form-register {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.form-button {
+    margin-top: 10px;
+    align-items: center;
+}

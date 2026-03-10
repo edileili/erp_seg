@@ -1,21 +1,13 @@
 <div>
     <p-card class="glass-card">
-        <div class="card flex justify-center">
-            Total
-            <p-badge value="2" severity="info" badgeSize="xlarge" />
-        </div>
-        <div>
-            <h1>Advance</h1>
-            <p-card class="home-advance"></p-card>
-        </div>
-
-        <div>
+                <div>
             <table class="table table-light">
                 <thead class="thead-light">
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
                         <th>Descripcion</th>
+                        <th>Grupo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,30 +15,30 @@
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        
+
         <div class="card-buttons">
-            <div class="card flex justify-center card-crud">
-                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" (click)="showDialog()" label="Agregar Grupo" *hasPermission="'group_add'" />
+            <div class="card flex card-crud">
+                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" label="Agregar Ticket" *hasPermission="'ticket_add'" (click)="showDialog()"/>
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" (click)="showDialog()" label="Editar Grupo" *hasPermission="'group_edit'"/>
+                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" label="Editar Ticket" *hasPermission="'ticket_edit'" />
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Grupo" *hasPermission="'group_view'"/>
+                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Ticket" *hasPermission="'ticket_view'"/>
             </div>
         </div>
-
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>
                 <div class="inline-flex items-center justify-center gap-2">
-                    <span class="font-bold whitespace-nowrap">Nuevo Grupo</span>
+                    <span class="font-bold whitespace-nowrap">Nuevo Ticket</span>
                 </div>
             </ng-template>
-            <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
+            <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo ticket con la siguiente
                 información.</span>
             <form>
                 <div class="form-register">
@@ -77,24 +69,7 @@
                             <input pInputText placeholder="Nombre" name="nombre" formControlName="nombre" />
                         </p-inputgroup>
                     </div>
-                    <div class="form-group">
-                        <label for="usuario">Integrantes</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-home"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText placeholder="Integrantes" name="integrantes" formControlName="integrantes" />
-                        </p-inputgroup>
-                    </div>
-                    <div class="form-group">
-                        <label for="usuario">Tickets</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-user"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText placeholder="Tickets" name="tickets" formControlName="tickets" />
-                        </p-inputgroup>
-                    </div>
+                    
                     <div class="form-group">
                         <label for="usuario">Descripción</label>
                         <p-inputgroup>

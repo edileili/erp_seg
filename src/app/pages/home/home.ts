@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 import { CardModule } from 'primeng/card';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-home',
-  imports: [CardModule, RouterOutlet],
+  imports: [CardModule,],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
