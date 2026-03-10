@@ -8,37 +8,65 @@
             <h1>Advance</h1>
             <p-card class="home-advance"></p-card>
         </div>
+        <div class="groups-grid">
+            @for (group of groups; track group.id) {
+            <p-card class="glass-card group-item">
+                <ng-template pTemplate="header">
+                    <div class="card-header">
+                        <h2>{{ group.name }}</h2>
+                        <p-badge [value]="group.memberCount" severity="info" />
+                    </div>
+                </ng-template>
 
-        <div>
-            <table class="table table-light">
-                <thead class="thead-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Descripcion</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="group-content">
+                    <p><strong>Miembros:</strong></p>
+                    <ul>
+                        @for (user of group.members.slice(0, 3); track user.email) {
+                        <li>{{ user.email }}</li>
+                        }
+                    </ul>
+                    @if (group.members.length > 3) {
+                    <small>...y {{ group.members.length - 3 }} más</small>
+                    }
+                </div>
+
+                <ng-template pTemplate="footer">
+                    <div class="card-buttons">
+                        <p-button icon="pi pi-eye" label="Ver" [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" *hasPermission="'group_view'" />
+
+                        <p-button icon="pi pi-pencil" label="Editar" [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }" *hasPermission="'group_edit'"
+                            (click)="editGroup(group)" />
+
+                        <p-button icon="pi pi-trash" label="Borrar" severity="danger" *hasPermission="'group_delete'"
+                        (click)="deleteGroup(group)"/>
+                    </div>
+                </ng-template>
+            </p-card>
+            }
+
+            <div class="card flex justify-center card-crud">
+                <p-button
+                    [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
+                    (click)="showDialog()" label="Agregar Grupo" />
+            </div>
+
         </div>
-        
+        <!--
         <div class="card-buttons">
             <div class="card flex justify-center card-crud">
-                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" (click)="showDialog()" label="Agregar Grupo" *hasPermission="'group_add'" />
+                <p-button
+                    [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
+                    (click)="showDialog()" label="Agregar Grupo" *hasPermission="'group_add'" />
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" (click)="showDialog()" label="Editar Grupo" *hasPermission="'group_edit'"/>
+                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
+                    (click)="showDialog()" label="Editar Grupo" *hasPermission="'group_edit'" />
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Grupo" *hasPermission="'group_view'"/>
+                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }"
+                    label="Ver Grupo" *hasPermission="'group_view'" />
             </div>
-        </div>
+        </div>-->
 
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>
@@ -83,7 +111,8 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-home"></i>
                             </p-inputgroup-addon>
-                            <input pInputText placeholder="Integrantes" name="integrantes" formControlName="integrantes" />
+                            <input pInputText placeholder="Integrantes" name="integrantes"
+                                formControlName="integrantes" />
                         </p-inputgroup>
                     </div>
                     <div class="form-group">
@@ -101,7 +130,8 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-user"></i>
                             </p-inputgroup-addon>
-                            <input pInputText placeholder="Descripcion" name="descripcion" formControlName="descripcion" />
+                            <input pInputText placeholder="Descripcion" name="descripcion"
+                                formControlName="descripcion" />
                         </p-inputgroup>
                     </div>
                 </div>
@@ -110,6 +140,58 @@
             <ng-template #footer>
                 <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
                 <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
+            </ng-template>
+        </p-dialog>
+        <p-dialog 
+            [(visible)]="displayEditDialog" 
+            [header]="selectedGroup?.id ? 'Editar Grupo' : 'Nuevo Grupo'" 
+            [modal]="true" 
+            [style]="{ width: '450px' }" 
+            class="p-fluid">
+            
+            <div class="field mb-4">
+                <label for="name" class="block mb-2">Nombre del Grupo</label>
+                <input type="text" pInputText id="name"required autofocus />
+            </div>
+
+            <div class="field mb-4">
+                <label class="block mb-2">Añadir Integrante (Email)</label>
+                <div class="p-inputgroup">
+                    <input type="email" pInputText placeholder="usuario@correo.com"  />
+                    <button type="button" pButton icon="pi pi-plus" (click)="addUser()"></button>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="block mb-2">Lista de Miembros</label>
+                <div class="member-list">
+                    @for (user of selectedGroup.members; track user.email) {
+                        <div class="flex justify-between items-center p-2 border-b">
+                            <span>{{ user.email }}</span>
+                            <p-button icon="pi pi-user-minus" [rounded]="true" [text]="true" severity="danger" (click)="removeUser(user.email)" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <ng-template pTemplate="footer">
+                <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="displayEditDialog = false" />
+                <p-button label="Guardar" icon="pi pi-check" (click)="saveGroup()" />
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog 
+            [(visible)]="displayDeleteDialog" 
+            header="Confirmar Eliminación" 
+            [modal]="true" 
+            [style]="{ width: '350px' }">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem; color: var(--red-500)"></i>
+                <span>¿Estás seguro de eliminar el grupo <b>{{selectedGroup?.name}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <p-button label="No" icon="pi pi-times" [text]="true" (click)="displayDeleteDialog = false" />
+                <p-button label="Sí, eliminar" icon="pi pi-trash" severity="danger" (click)="confirmDelete()" />
             </ng-template>
         </p-dialog>
     </p-card>

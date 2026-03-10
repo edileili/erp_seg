@@ -52,3 +52,63 @@ span {
     margin-top: 10px;
     align-items: center;
 }
+
+/* Tabla Estilizada */
+.table-responsive {
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* Cabecera oscura profesional */
+.thead-dark th {
+    background-color: #1e293b !important; /* Azul pizarra profundo */
+    color: #ffffff;
+    font-weight: 500;
+    border: none;
+    padding: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-size: 0.8rem;
+}
+
+/* Filas y Celdas */
+.table tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+/* Efecto Hover */
+.table-hover tbody tr:hover {
+    background-color: #f8fafc !important;
+    cursor: pointer;
+}
+
+/* Badges personalizados */
+.badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px; /* Estilo píldora */
+    letter-spacing: 0.05em;
+}
+
+/* Ajustes de Prioridad */
+.text-danger {
+    color: #ef4444 !important;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}

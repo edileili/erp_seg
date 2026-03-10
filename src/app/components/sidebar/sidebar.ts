@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Toast } from "primeng/toast";
 import { ButtonModule } from 'primeng/button';
+import { HasPermissionDirective } from "../../core/directives/has-permission.directive";
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, Toast, ButtonModule],
+  imports: [CommonModule, Toast, ButtonModule, HasPermissionDirective],
   providers: [MessageService],
   templateUrl: './sidebar.html',
   styleUrls: ['./sidebar.css',],

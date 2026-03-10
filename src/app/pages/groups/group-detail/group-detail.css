@@ -1,0 +1,157 @@
+
+h1 {
+    font-size: 24px;
+}
+
+.dashboard-header {
+    background: white;
+    border-radius: 12px;
+}
+
+.kanban-wrapper {
+    display: grid;
+    grid-template-columns: repeat(5, 2fr); /* 4 columnas fijas */
+    gap: 1.5rem;
+    padding: 10px;
+}
+
+.kanban-col {
+    background: #ececec;
+    border-radius: 10px;
+    padding: 1rem;
+    width: auto;
+    height: auto;
+    min-height: 70vh;
+}
+
+.kanban-list {
+    min-height: 60vh;
+}
+
+.ticket-card {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 4px solid; /* El color se inyecta por [style] */
+    cursor: grab;
+    transition: transform 0.2s;
+}
+
+.ticket-card:active { cursor: grabbing; }
+
+.kanban-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f4f5f7;
+  overflow-x: auto;
+}
+
+.kanban-column {
+  background-color: #ebedf0;
+  border-radius: 8px;
+  width: 250px;
+  min-height: 400px;
+  padding: 10px;
+}
+
+.kanban-list {
+  min-height: 350px;
+}
+
+.kanban-card {
+  background: white;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  cursor: move;
+}
+
+/* Efecto visual al arrastrar */
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-family, 'Inter', sans-serif);
+    color: #495057;
+}
+
+/* Inputs y Selects que imitan a PrimeNG */
+.form-control-sm {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-sm:focus {
+    outline: 0;
+    border-color: #3b82f6; /* Azul Prime */
+    box-shadow: 0 0 0 2px #bfdbfe; /* Halo de enfoque */
+}
+
+/* Tabla Estilizada */
+.table-responsive {
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* Cabecera oscura profesional */
+.thead-dark th {
+    background-color: #1e293b !important; /* Azul pizarra profundo */
+    color: #ffffff;
+    font-weight: 500;
+    border: none;
+    padding: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-size: 0.8rem;
+}
+
+/* Filas y Celdas */
+.table tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+/* Efecto Hover */
+.table-hover tbody tr:hover {
+    background-color: #f8fafc !important;
+    cursor: pointer;
+}
+
+/* Badges personalizados */
+.badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px; /* Estilo píldora */
+    letter-spacing: 0.05em;
+}
+
+/* Ajustes de Prioridad */
+.text-danger {
+    color: #ef4444 !important;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}

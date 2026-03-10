@@ -3,6 +3,30 @@
     <p-card class="glass-card">
       <h1 class="title">Bienvenido, <span class="user-name">User</span></h1>
       <p class="subtitle">Aquí encontrarás todo lo que necesites</p>
+
+      <div class="group-user">
+        <h1>Tus Grupos</h1>
+        <div class="groups-grid">
+          @for (group of groups; track group.id) {
+          <p-card class="glass-card group-item">
+              <ng-template pTemplate="header">
+                  <div class="card-header">
+                      <h2>{{ group.name }}</h2>
+                      <p-badge [value]="group.memberCount" severity="info" />
+                  </div>
+              </ng-template>
+              <ng-template pTemplate="footer">
+                <p-button label="Ver Grupo" [routerLink]="['/dashboard/groups', group.id]"></p-button>
+              </ng-template>
+
+          </p-card>
+          }
+        </div>
+      </div>
+      <div class="tickets-user">
+        <h1>Ticket</h1>
+      </div>
+
       <p-card class="img-home">
         <img src="/images/zorro_kiss.webp" alt="home" class="img-fox">
       </p-card>

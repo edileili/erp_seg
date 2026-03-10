@@ -2,17 +2,85 @@
     box-shadow: 0 8px 32px 0 rgba(150, 155, 226, 0.37);
     margin: 1rem;
 }
+.p-card {
+    padding: 1rem;
+}
+/* Contenedor principal gris y redondeado */
+.card-filters {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Flexbox para poner todo en una fila */
+.filters-container {
+    display: flex;
+    align-items: flex-end; /* Alinea los inputs y el botón por la base */
+    gap: 15px;            /* Espacio entre cada filtro */
+    flex-wrap: nowrap;    /* Fuerza a que no se rompa la fila */
+}
+
+/* Estilos de etiquetas */
+.filter-label {
+    display: block;
+    font-weight: bold;
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+/* El input de búsqueda ocupa más espacio (40%) */
+.filter-group-large {
+    flex: 2; 
+}
+
+/* Los selects ocupan menos espacio */
+.filter-group {
+    flex: 1;
+}
+
+/* Estilo común para inputs y selects */
+.filter-input, .filter-select {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    height: 38px;
+}
+
+/* Botón Limpiar */
+.btn-clear {
+    height: 38px;
+    padding: 0 15px;
+    background-color: transparent;
+    border: 1px solid #6c757d;
+    color: #6c757d;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap; /* Evita que el texto del botón se parta */
+}
+
+.btn-clear:hover {
+    background-color: #6c757d;
+    color: white;
+}
 
 .card-crud {
     padding: 1rem;
 }
 
 .card-buttons {
-    border-top-width: 1px;
-    border-top-style: solid;
-    color: #a9a9a9;
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+    
+    button {
+        flex: 1;
+    }
 }
 
 .form-register {
@@ -38,4 +106,343 @@
 .form-button {
     margin-top: 10px;
     align-items: center;
+}
+
+.kanban-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f4f5f7;
+  overflow-x: auto;
+}
+
+.kanban-column {
+  background-color: #ebedf0;
+  border-radius: 8px;
+  width: 250px;
+  min-height: 400px;
+  padding: 10px;
+}
+
+.kanban-list {
+  min-height: 350px;
+}
+
+.kanban-card {
+  background: white;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  cursor: move;
+}
+
+/* Sobrescribir el encabezado del diálogo con tu color ERP */
+:host ::ng-deep .p-dialog-header {
+    background-color: var(--blue-erp);
+    
+}
+
+.ticket-card:hover {
+    background-color: #f0f4ff; /* Un tono muy claro de tu azul */
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+/* El fondo del Kanban para que resalte */
+.kanban-wrapper {
+    background-color: #f4f7f9;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+
+.kanban-wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 2fr); /* 4 columnas fijas */
+    gap: 1.5rem;
+    padding: 10px;
+}
+
+.kanban-col {
+    background: #ececec;
+    border-radius: 10px;
+    padding: 1rem;
+    width: auto;
+    height: auto;
+    min-height: 70vh;
+}
+
+.kanban-list {
+    min-height: 60vh;
+}
+
+.ticket-card {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-left: 4px solid; /* El color se inyecta por [style] */
+    cursor: grab;
+    transition: transform 0.2s;
+}
+
+.ticket-card:active { cursor: grabbing; }
+
+.kanban-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f4f5f7;
+  overflow-x: auto;
+}
+
+.kanban-column {
+  background-color: #ebedf0;
+  border-radius: 8px;
+  width: 250px;
+  min-height: 400px;
+  padding: 10px;
+}
+
+.kanban-list {
+  min-height: 350px;
+}
+
+.kanban-card {
+  background: white;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  cursor: move;
+}
+
+/* Efecto visual al arrastrar */
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-family, 'Inter', sans-serif);
+    color: #495057;
+}
+
+/* Inputs y Selects que imitan a PrimeNG */
+.form-control-sm {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 0.75rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-sm:focus {
+    outline: 0;
+    border-color: #3b82f6; /* Azul Prime */
+    box-shadow: 0 0 0 2px #bfdbfe; /* Halo de enfoque */
+}
+
+/* Tabla Estilizada */
+.table-responsive {
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+/* Cabecera oscura profesional */
+.thead-dark th {
+    background-color: #1e293b !important; /* Azul pizarra profundo */
+    color: #ffffff;
+    font-weight: 500;
+    border: none;
+    padding: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-size: 0.8rem;
+}
+
+/* Filas y Celdas */
+.table tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+/* Efecto Hover */
+.table-hover tbody tr:hover {
+    background-color: #f8fafc !important;
+    cursor: pointer;
+}
+
+/* Badges personalizados */
+.badge {
+    padding: 0.5em 0.8em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px; /* Estilo píldora */
+    letter-spacing: 0.05em;
+}
+
+/* Ajustes de Prioridad */
+.text-danger {
+    color: #ef4444 !important;
+}
+
+.font-weight-bold {
+    font-weight: 700;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Sección de Historial */
+.history-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.history-title {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-container {
+    padding-left: 1rem;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.history-item {
+    position: relative;
+    padding-left: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-left: 2px solid #e5e7eb;
+}
+
+/* El círculo de la línea de tiempo */
+.history-marker {
+    position: absolute;
+    left: -7px;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--blue-erp);
+    border: 2px solid white;
+}
+
+.history-item:last-child {
+    border-left: 2px solid transparent;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+}
+
+.history-user {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #1f2937;
+}
+
+.history-date {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.history-action {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.history-note {
+    display: block;
+    margin-top: 0.3rem;
+    font-style: italic;
+    color: #6b7280;
+    background: #f9fafb;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+}
+
+.p-dialog-title {
+    color: #000;
+}
+
+.quick-filters-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.quick-filters-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.quick-filters-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-quick-filter {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 0.85rem;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-quick-filter:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.btn-quick-filter.active {
+    background: var(--blue-erp);
+    color: white;
+    border-color: var(--blue-erp);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-quick-filter i {
+    font-size: 0.8rem;
 }

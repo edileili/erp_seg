@@ -39,3 +39,65 @@
     margin-top: 10px;
     align-items: center;
 }
+
+.groups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.group-item {
+    transition: transform 0.2s;
+    &:hover {
+        transform: translateY(-5px);
+    }
+}
+
+.card-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    
+    button {
+        flex: 1;
+    }
+}
+
+.add-group-card {
+    border: 2px dashed var(--color-purple-dark);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    min-height: 200px;
+    color: var(--color-purple-dark);
+    &:hover {
+        background: rgba(var(--color-purple-rgb), 0.05);
+    }
+}
+
+.member-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--surface-border);
+    border-radius: 6px;
+    background: var(--surface-card);
+}
+
+.flex.justify-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+

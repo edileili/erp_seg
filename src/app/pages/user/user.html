@@ -12,13 +12,17 @@
         </div>
         <div class="card-buttons">
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" (click)="showDialog()" label="Agregar Usuario" *hasPermission="'user_add'"/>
+                <p-button
+                    [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
+                    (click)="showDialog()" label="Agregar Usuario" *hasPermission="'user_add'" />
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" (click)="showDialog()" label="Editar mis datos" *hasPermission="'user_edit'" />
+                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
+                    (click)="showDialog()" label="Editar mis datos" *hasPermission="'user_edit'" />
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" label="Ver Usuarios" *hasPermission="'users_view'"/>
+                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }"
+                    label="Ver Usuarios" *hasPermission="'users_view'" />
             </div>
         </div>
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
@@ -37,11 +41,9 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-user"></i>
                             </p-inputgroup-addon>
-                            <input pInputText 
-                                placeholder="Usuario" name="usuario"
-                                formControlName="usuario" />
+                            <input pInputText placeholder="Usuario" name="usuario" formControlName="usuario" />
                         </p-inputgroup>
-                        
+
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -49,10 +51,9 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-envelope"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="email" placeholder="Email"
-                            />
+                            <input pInputText formControlName="email" placeholder="Email" />
                         </p-inputgroup>
-                        
+
                     </div>
                     <div class="form-group">
                         <label for="contrasenia">Contraseña</label>
@@ -60,8 +61,7 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-lock"></i>
                             </p-inputgroup-addon>
-                            <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña"
-                                />
+                            <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña" />
                         </p-inputgroup>
                     </div>
                     <div class="form-group">
@@ -70,8 +70,7 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-star"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo"
-                                 />
+                            <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo" />
                         </p-inputgroup>
                     </div>
                     <div class="form-group">
@@ -80,8 +79,7 @@
                             <p-inputgroup-addon>
                                 <i class="pi pi-map-marker"></i>
                             </p-inputgroup-addon>
-                            <input pInputText formControlName="direccion" placeholder="Dirección"
-                                />
+                            <input pInputText formControlName="direccion" placeholder="Dirección" />
                         </p-inputgroup>
                     </div>
                     <div class="form-group">
@@ -92,8 +90,7 @@
                             </p-inputgroup-addon>
 
                             <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
-                                dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false"
-                                />
+                                dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false" />
                         </p-inputgroup>
 
                         <small id="username-help" style="display: block; margin-top: 0.5rem;">
@@ -112,6 +109,51 @@
                         <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
                             apartado.</small>
                     </div>
+                    <div class="permissions-section" *hasPermission="'user_add'">
+                        <h3 class="section-title"><i class="pi pi-lock"></i> Gestión de Permisos</h3>
+
+                        <div class="permissions-selector">
+                            <label class="block mb-2 font-bold">Asignar Nuevos Permisos</label>
+                            <div class="flex gap-2">
+                                <p-multiSelect [options]="listaPermisosDisponibles" placeholder="Selecciona permisos"
+                                    display="chip" class="flex-1">
+                                </p-multiSelect>
+                                <p-button label="Asignar" icon="pi pi-plus" (click)="agregarPermisos()"
+                                    [disabled]="!permisosSeleccionados.length">
+                                </p-button>
+                            </div>
+                        </div>
+
+                        <div class="permissions-table-container">
+                            <p-table [value]="usuarioSeleccionado?.permisos || []" class="p-datatable-sm">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Permiso</th>
+                                        <th class="text-center" style="width: 5rem">Acción</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-permiso>
+                                    <tr>
+                                        <td>
+                                            <p-tag [value]="permiso" [severity]="getSeverity(permiso)"></p-tag>
+                                        </td>
+                                        <td class="text-center">
+                                            <p-button icon="pi pi-trash" severity="danger" [text]="true"
+                                                (click)="removerPermiso(permiso)">
+                                            </p-button>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="2" class="text-center p-3 text-muted">
+                                            El usuario no tiene permisos asignados.
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
                 </div>
 
             </form>
@@ -120,5 +162,59 @@
                 <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
             </ng-template>
         </p-dialog>
+    </p-card>
+    <p-card class="glass-card">
+        <h1>Tickets</h1>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover bg-white">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th>Fecha Límite</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (ticket of tickets; track ticket.id) {
+                    <tr>
+                        <td><strong>#{{ ticket.id }}</strong></td>
+                        <td>
+                            @if (ticket.estado === 'Completado') {
+                            <span class="badge bg-success text-white">Completado</span>
+                            } @else if (ticket.estado === 'En Proceso') {
+                            <span class="badge bg-warning text-dark">En Proceso</span>
+                            } @else {
+                            <span class="badge bg-secondary text-white">{{ ticket.estado }}</span>
+                            }
+                        </td>
+                        <td>
+                            <span [class.text-danger]="ticket.prioridad === 'Alta'"
+                                [class.font-weight-bold]="ticket.prioridad === 'Alta'">
+                                {{ ticket.prioridad }}
+                            </span>
+                        </td>
+                        <td>{{ ticket.fecha }}</td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">
+                            No se encontraron tickets con esos filtros.
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td>Abiertos: </td>
+                        <td>En progreso: </td>
+                        <td>Hechos: </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
     </p-card>
 </div>

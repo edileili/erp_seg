@@ -19,7 +19,7 @@
                         <span>Usuarios</span>
                     </a>
                 </li>
-                <li>
+                <li *hasPermission="['group_add', 'group_edit', 'group_delete']">
                     <a class="item-sidebar" (click)="groups()">
                         <i class="pi pi-objects-column mr-2 icon-sidebar"></i>
                         <span>Grupos</span>
