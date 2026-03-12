@@ -1,4 +1,5 @@
 <div>
+    <!--Vista 2. Dashboard Grupo del usuario-->
     <p-card class="glass-card">
         <p-button label="Volver" icon="pi pi-arrow-left" [routerLink]="['/dashboard/home']" class="mb-4"
             severity="secondary" [text]="true"></p-button>
@@ -75,4 +76,115 @@
             }
         </div>
     </p-card>
+
+    <p-dialog
+    [(visible)]="displayEditDialog"
+    [header]="selectedTicket?.id ? 'Editar Ticket #' + selectedTicket?.id : 'Nuevo Ticket'"
+    [modal]="true"
+    class="p-fluid custom-modal">
+
+    <form [formGroup]="formTicket" class="form-grid">
+
+      <!-- Título -->
+      <div class="field full-width">
+        <label for="titulo">Título del Ticket</label>
+        <input type="text" pInputText id="titulo" formControlName="titulo" placeholder="Ej: Corregir login de usuarios" />
+      </div>
+
+      <!-- Descripción -->
+      <div class="field full-width">
+        <label for="descripcion">Descripción</label>
+        <textarea pInputTextarea id="descripcion" formControlName="descripcion" rows="3"
+          placeholder="Describe el problema o tarea en detalle..."></textarea>
+      </div>
+
+      <!-- Estado -->
+      <div class="field">
+        <label for="estado">Estado</label>
+        <select id="estado" formControlName="estado">
+          <option value="Pendiente">Pendiente</option>
+          <option value="En Progreso">En Progreso</option>
+          <option value="En Revisión">En Revisión</option>
+          <option value="Hecho">Hecho</option>
+        </select>
+      </div>
+
+      <!-- Asignado a -->
+      <div class="field">
+        <label for="asignado">Asignado a</label>
+        <select id="asignado" formControlName="asignado">
+          <option value="Eden">Eden (Yo)</option>
+          <option value="Karol">Karol</option>
+          <option value="Sergio">Sergio</option>
+          <option value="Ana">Ana</option>
+          <option value="Juan">Juan</option>
+          <option value="Sin asignar">Sin asignar</option>
+        </select>
+      </div>
+
+      <!-- Prioridad (7 opciones en chino) -->
+      <div class="field">
+        <label for="prioridad">Prioridad</label>
+        <select id="prioridad" formControlName="prioridad">
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+          <option value="Opcional">Opcional</option>
+        </select>
+      </div>
+
+      <!-- Fecha de Creación -->
+      <div class="field">
+        <label for="fecha_creacion">Fecha de Creación</label>
+        <input type="date" pInputText id="fecha_creacion" formControlName="fecha_creacion" />
+      </div>
+
+      <!-- Fecha Límite -->
+      <div class="field">
+        <label for="fecha_limite">Fecha Límite</label>
+        <input type="date" pInputText id="fecha_limite" formControlName="fecha_limite" />
+      </div>
+
+      <!-- Comentarios -->
+      <div class="field full-width">
+        <label for="comentarios">Comentarios / Actividad</label>
+        <textarea pInputTextarea id="comentarios" formControlName="comentarios" rows="3"
+          placeholder="Agrega un comentario o nota de seguimiento..."></textarea>
+      </div>
+
+    </form>
+
+    @if (selectedTicket?.historial?.length) {
+    <div class="history-section">
+      <h3 class="history-title">
+        <i class="pi pi-history"></i> Historial de Cambios
+      </h3>
+      <div class="history-container">
+        @for (item of selectedTicket?.historial; track $index) {
+        <div class="history-item">
+          <div class="history-marker"></div>
+          <div class="history-content">
+            <div class="history-header">
+              <span class="history-user">{{ item.usuario }}</span>
+              <span class="history-date">{{ item.fecha }}</span>
+            </div>
+            <p class="history-action">{{ item.accion }}</p>
+            @if (item.comentario) {
+            <small class="history-note">"{{ item.comentario }}"</small>
+            }
+          </div>
+        </div>
+        } @empty {
+        <p class="text-center text-muted py-3">No hay cambios registrados aún.</p>
+        }
+      </div>
+    </div>
+    }
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="closeEditDialog()" />
+      <p-button label="Guardar" icon="pi pi-check" (click)="saveTicket()" />
+    </ng-template>
+  </p-dialog>
+
 </div>

@@ -1,0 +1,39 @@
+[
+    {
+        "id": 1,
+        "email": "eden@gmail.com",
+        "nombre": "Eden",
+        "contrasenia": "Contrasenia$",
+        "permisos": [
+            "group_view",
+            "ticket_view",
+            "ticket_edit_state",
+            "ticket_add",
+            "user_view",
+            "user_edit"
+        ]
+    },
+    {
+        "id": 2,
+        "email": "admin@test.com",
+        "nombre": "SuperAdmin",
+        "contrasenia": "Contrasenia$",
+        "permisos": [
+            "admin",
+            "group_view",
+            "group_edit",
+            "group_add",
+            "group_delete",
+            "ticket_view",
+            "ticket_edit",
+            "ticket_add",
+            "ticket_delete",
+            "ticket_edit_state",
+            "user_view",
+            "users_view",
+            "user_edit",
+            "user_add",
+            "user_delete"
+        ]
+    }
+]

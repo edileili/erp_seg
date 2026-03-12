@@ -5,14 +5,13 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormGroup, FormControl } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
-//import { KanbanModule } from '@syncfusion/ej2-angular-kanban';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { BrowserModule } from '@angular/platform-browser';
 import { TagModule } from 'primeng/tag';
+import { DatePipe } from '@angular/common';
 
 export interface TicketLog {
   fecha: string;
@@ -21,90 +20,207 @@ export interface TicketLog {
   comentario?: string;
 }
 
-interface Ticket {
+export interface Ticket {
   id: number;
   title: string;
+  description: string;
+  estado: string;
   assignedTo: string;
-  priority: 'Alta' | 'Media' | 'Baja';
+  priority: string;
   createdAt: Date;
   deadline?: Date;
-  description: string;
   historial: TicketLog[];
 }
 
+export interface TicketRow {
+  id: number;
+  title: string;
+  description: string;
+  estado: string;
+  assignedTo: string;
+  priority: string;
+  createdAt: Date;
+  historial: TicketLog[];
+}
+
+
 @Component({
   selector: 'app-tickets',
-  imports: [CardModule, BadgeModule, OverlayBadgeModule, DialogModule, ButtonModule, InputGroupAddonModule, InputGroupModule, HasPermissionDirective, FormsModule, ReactiveFormsModule, DragDropModule, TagModule],
   standalone: true,
+  imports: [
+    CardModule,
+    BadgeModule,
+    OverlayBadgeModule,
+    DialogModule,
+    ButtonModule,
+    InputGroupAddonModule,
+    InputGroupModule,
+    HasPermissionDirective,
+    FormsModule,
+    ReactiveFormsModule,
+    DragDropModule,
+    TagModule,
+    DatePipe,
+  ],
   providers: [MessageService],
   templateUrl: './tickets.html',
   styleUrl: './tickets.css',
 })
 export class Tickets {
+  displayEditDialog = false;
   displayDeleteDialog = false;
+  selectedTicket: Ticket | null = null;
 
   formTicket = new FormGroup({
-    titulo: new FormControl(''),
-    descripcion: new FormControl(''),
-    estado: new FormControl(''),
-    asignado: new FormControl(''),
-    prioridad: new FormControl(''),
+    titulo:         new FormControl(''),
+    descripcion:    new FormControl(''),
+    estado:         new FormControl('Pendiente'),
+    asignado:       new FormControl('Sin asignar'),
+    prioridad:      new FormControl('Media'),
     fecha_creacion: new FormControl(''),
-    fecha_limite: new FormControl(''),
-    comentarios: new FormControl(''),
-    historial: new FormControl('')
+    fecha_limite:   new FormControl(''),
+    comentarios:    new FormControl(''),
   });
 
-  displayEditDialog = false;
-  selectedTicket: Ticket | null = null;
-  visible: boolean = false;
-
-  // Ejemplo de datos con objetos
   todo: Ticket[] = [
-    { id: 101, title: 'Diseñar UI', assignedTo: 'Eden', priority: 'Alta', createdAt: new Date(), description: 'Crear prototipos en Figma', historial: [{ 
-            fecha: '10/03/2026 10:00', 
-            usuario: 'Admin', 
-            accion: 'Cambió estado de Pendiente a En Progreso',
-            comentario: 'Iniciando revisión de logs'
-        }]},
-    { id: 102, title: 'Configurar DB', assignedTo: 'Juan', priority: 'Media', createdAt: new Date(), description: 'Script de migración SQL', historial: [
-      { 
-            fecha: '10/03/2026 10:00', 
-            usuario: 'Admin', 
-            accion: 'Cambió estado de Pendiente a En Progreso',
-            comentario: 'Iniciando revisión de logs'
-        }
-    ] }
+    {
+      id: 101,
+      title: 'Diseñar UI',
+      description: 'Crear prototipos en Figma para el módulo de reportes.',
+      estado: 'Pendiente',
+      assignedTo: 'Eden',
+      priority: 'Alta',
+      createdAt: new Date('2026-03-01'),
+      historial: [
+        { fecha: '01/03/2026 09:00', usuario: 'Eden', accion: 'Ticket creado', comentario: 'Se abrió el ticket' },
+      ],
+    },
+    {
+      id: 102,
+      title: 'Configurar DB',
+      description: 'Escribir el script de migración SQL para la nueva tabla de usuarios.',
+      estado: 'Pendiente',
+      assignedTo: 'Juan',
+      priority: 'Media',
+      createdAt: new Date('2026-03-02'),
+      historial: [
+        { fecha: '02/03/2026 10:00', usuario: 'Admin', accion: 'Asignado a Juan', comentario: 'Revisión de base de datos' },
+      ],
+    },
   ];
+
   inProgress: Ticket[] = [
-    { id: 103, title: 'Añadir nuevos componentes', assignedTo: 'Ana', priority: 'Baja', createdAt: new Date(), description: 'Componentes de Angular', historial: [
-      { 
-            fecha: '10/03/2026 10:00', 
-            usuario: 'Admin', 
-            accion: 'Cambió estado de Pendiente a En Progreso',
-            comentario: 'Iniciando revisión de logs'
-        }
-    ] }
+    {
+      id: 103,
+      title: 'Añadir nuevos componentes',
+      description: 'Integrar componentes Angular reutilizables en el módulo de ventas.',
+      estado: 'En Progreso',
+      assignedTo: 'Ana',
+      priority: 'Baja',
+      createdAt: new Date('2026-03-03'),
+      historial: [
+        { fecha: '03/03/2026 11:00', usuario: 'Ana', accion: 'Cambió estado a En Progreso', comentario: 'Iniciando desarrollo' },
+      ],
+    },
   ];
+
   review: Ticket[] = [
-    { id: 104, title: 'Revisar UX', assignedTo: 'Karol', priority: 'Media', createdAt: new Date(), description: 'Revisar estilos y diseños', historial: [
-      { 
-            fecha: '10/03/2026 10:00', 
-            usuario: 'Admin', 
-            accion: 'Cambió estado de Pendiente a En Progreso',
-            comentario: 'Iniciando revisión de logs'
-        }
-    ]}
+    {
+      id: 104,
+      title: 'Revisar UX',
+      description: 'Revisar estilos, accesibilidad y consistencia visual del sistema.',
+      estado: 'En Revisión',
+      assignedTo: 'Karol',
+      priority: 'Media',
+      createdAt: new Date('2026-03-04'),
+      historial: [
+        { fecha: '04/03/2026 14:00', usuario: 'Karol', accion: 'Enviado a revisión', comentario: 'Pendiente de aprobación' },
+      ],
+    },
   ];
+
   done: Ticket[] = [
-    { id: 101, title: 'Comprar computadora', assignedTo: 'Sergio', priority: 'Alta', createdAt: new Date(), description: 'Una nueva computadora', historial: [
-      { 
-            fecha: '10/03/2026 10:00', 
-            usuario: 'Admin', 
-            accion: 'Cambió estado de Pendiente a En Progreso',
-            comentario: 'Iniciando revisión de logs'
-        }
-    ] }
+    {
+      id: 105,
+      title: 'Comprar computadora',
+      description: 'Adquisición de equipo de desarrollo para el nuevo integrante.',
+      estado: 'Hecho',
+      assignedTo: 'Sergio',
+      priority: 'Alta',
+      createdAt: new Date('2026-02-20'),
+      historial: [
+        { fecha: '25/02/2026 16:00', usuario: 'Sergio', accion: 'Ticket completado', comentario: 'Equipo recibido y configurado' },
+      ],
+    },
+  ];
+
+  usuarioLogueado = 'Eden';
+  filtroTexto    = '';
+  filtroEstado   = '';
+  filtroPrioridad = '';
+  filtroRapido   = '';
+
+  tickets: TicketRow[] = [
+    {
+      id: 101,
+      title: 'Diseñar UI',
+      description: 'Crear prototipos en Figma para el módulo de reportes.',
+      estado: 'Pendiente',
+      assignedTo: 'Eden',
+      priority: 'Alta',
+      createdAt: new Date('2026-03-01'),
+      historial: [
+        { fecha: '01/03/2026 09:00', usuario: 'Eden', accion: 'Ticket creado', comentario: 'Se abrió el ticket' },
+      ],
+    },
+    {
+      id: 102,
+      title: 'Configurar DB',
+      description: 'Escribir el script de migración SQL para la nueva tabla de usuarios.',
+      estado: 'Pendiente',
+      assignedTo: 'Juan',
+      priority: 'Media',
+      createdAt: new Date('2026-03-02'),
+      historial: [
+        { fecha: '02/03/2026 10:00', usuario: 'Admin', accion: 'Asignado a Juan', comentario: 'Revisión de base de datos' },
+      ],
+    },
+    {
+      id: 103,
+      title: 'Añadir nuevos componentes',
+      description: 'Integrar componentes Angular reutilizables en el módulo de ventas.',
+      estado: 'En Progreso',
+      assignedTo: 'Ana',
+      priority: 'Baja',
+      createdAt: new Date('2026-03-03'),
+      historial: [
+        { fecha: '03/03/2026 11:00', usuario: 'Ana', accion: 'Cambió estado a En Progreso', comentario: 'Iniciando desarrollo' },
+      ],
+    },
+    {
+      id: 104,
+      title: 'Revisar UX',
+      description: 'Revisar estilos, accesibilidad y consistencia visual del sistema.',
+      estado: 'En Revisión',
+      assignedTo: 'Karol',
+      priority: 'Media',
+      createdAt: new Date('2026-03-04'),
+      historial: [
+        { fecha: '04/03/2026 14:00', usuario: 'Karol', accion: 'Enviado a revisión', comentario: 'Pendiente de aprobación' },
+      ],
+    },
+    {
+      id: 105,
+      title: 'Comprar computadora',
+      description: 'Adquisición de equipo de desarrollo para el nuevo integrante.',
+      estado: 'Hecho',
+      assignedTo: 'Sergio',
+      priority: 'Alta',
+      createdAt: new Date('2026-02-20'),
+      historial: [
+        { fecha: '25/02/2026 16:00', usuario: 'Sergio', accion: 'Ticket completado', comentario: 'Equipo recibido y configurado' },
+      ],
+    },
   ];
 
   drop(event: CdkDragDrop<Ticket[]>) {
@@ -118,142 +234,108 @@ export class Tickets {
         event.currentIndex,
       );
     }
-    // Aquí podrías disparar un Service para actualizar el estado en la DB
   }
 
   viewTicket(ticket: Ticket) {
     this.selectedTicket = { ...ticket };
-    this.displayEditDialog = true;
-  }
-
-  getPrioritySeverity(priority: string) {
-    switch (priority) {
-      case 'Alta': return 'danger';
-      case 'Media': return 'warning';
-      case 'Baja': return 'info';
-      default: return 'secondary';
-    }
-  }
-openEditDialog(ticket: Ticket) {
-    this.selectedTicket = { ...ticket };
-    
-    // Mapeo manual porque tu Form usa nombres en español y tu Interface en inglés
     this.formTicket.patchValue({
-      titulo: ticket.title,
-      descripcion: ticket.description,
-      asignado: ticket.assignedTo,
-      prioridad: ticket.priority,
-      fecha_creacion: ticket.createdAt.toLocaleDateString(),
-      // añade los demás campos según necesites
+      titulo:         ticket.title,
+      descripcion:    ticket.description,
+      estado:         ticket.estado,
+      asignado:       ticket.assignedTo,
+      prioridad:      ticket.priority,
+      fecha_creacion: ticket.createdAt.toISOString().split('T')[0],
+      fecha_limite:   ticket.deadline ? ticket.deadline.toISOString().split('T')[0] : '',
+      comentarios:    '',
     });
-    
     this.displayEditDialog = true;
   }
 
-  // 2. Abrir eliminación
+  openEditDialog(ticket: Ticket) {
+    this.viewTicket(ticket);
+  }
+
+  openCreateTicket() {
+    this.selectedTicket = null;
+    this.formTicket.reset({
+      estado:    'Pendiente',
+      asignado:  'Sin asignar',
+      prioridad: 'Media',
+    });
+    this.displayEditDialog = true;
+  }
+
+  closeEditDialog() {
+    this.formTicket.reset();
+    this.selectedTicket = null;
+    this.displayEditDialog = false;
+  }
+
+  saveTicket() {
+    const values = this.formTicket.value;
+    console.log('Guardando ticket:', values);
+    this.closeEditDialog();
+  }
+
   openDeleteDialog(ticket: Ticket) {
     this.selectedTicket = ticket;
     this.displayDeleteDialog = true;
   }
 
-  // 3. Confirmar eliminación real en las listas Kanban
   confirmDelete() {
-    if (this.selectedTicket) {
-      const id = this.selectedTicket.id;
-      
-      // Función auxiliar para remover de cualquier lista
-      const removerDeLista = (lista: Ticket[]) => lista.filter(t => t.id !== id);
+    if (!this.selectedTicket) return;
+    const id = this.selectedTicket.id;
+    const remove = (list: Ticket[]) => list.filter(t => t.id !== id);
 
-      this.todo = removerDeLista(this.todo);
-      this.inProgress = removerDeLista(this.inProgress);
-      this.review = removerDeLista(this.review);
-      this.done = removerDeLista(this.done);
+    this.todo       = remove(this.todo);
+    this.inProgress = remove(this.inProgress);
+    this.review     = remove(this.review);
+    this.done       = remove(this.done);
 
-      this.displayDeleteDialog = false;
-      this.selectedTicket = null;
-      
-      this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Ticket borrado correctamente' });
-    }
+    this.displayDeleteDialog = false;
+    this.selectedTicket = null;
+    this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Ticket borrado correctamente' });
   }
 
-  saveTicket() {
-    console.log("Salvado ticket");
-  }
-  showDialog() {
-    this.visible = true;
-  }
-  private fb = inject(FormBuilder);
-  private messageService = inject(MessageService);
-
-  //public registroSeg: FormGroup;
-  public formSubmitted = false;
-
-  filtroTexto: string = '';
-  filtroEstado: string = '';
-  filtroPrioridad: string = '';
-  tickets = [
-    { id: 101, estado: 'Abierto', asignado: 'Eden', prioridad: 'Alta', fecha: new Date() },
-    { id: 102, estado: 'En Progreso', asignado: 'Ana', prioridad: 'Media', fecha: new Date() },
-    { id: 103, estado: 'Abierto', asignado: 'Sin asignar', prioridad: 'Baja', fecha: new Date() },
-    { id: 104, estado: 'En Progreso', asignado: 'Sin asignar', prioridad: 'Media', fecha: new Date() },
-  ];
-
-
-  limpiarFiltros() {
-    this.filtroTexto = '';
-    this.filtroEstado = '';
-    this.filtroPrioridad = '';
-  }
-
-  openCreateTicket() {
-    this.displayEditDialog = true;
-  }
-usuarioLogueado: string = 'Eden'; 
-  filtroRapido: string = ''; // 'mis-tickets' | 'sin-asignar' | 'alta-prioridad' | ''
-
-  // Actualizamos la función de filtrado
   ticketsFiltrados() {
     return this.tickets.filter(ticket => {
-      // 1. Filtro de Texto (ID o Asignado)
-      const matchTexto = ticket.id.toString().includes(this.filtroTexto.toLowerCase()) || 
-                         ticket.asignado.toLowerCase().includes(this.filtroTexto.toLowerCase());
+      const matchTexto = ticket.id.toString().includes(this.filtroTexto.toLowerCase()) ||
+                         ticket.assignedTo.toLowerCase().includes(this.filtroTexto.toLowerCase());
+      const matchEstado    = this.filtroEstado    ? ticket.estado    === this.filtroEstado    : true;
+      const matchPrioridad = this.filtroPrioridad ? ticket.priority === this.filtroPrioridad : true;
 
-      // 2. Filtros de Selectores
-      const matchEstado = this.filtroEstado ? ticket.estado === this.filtroEstado : true;
-      const matchPrioridad = this.filtroPrioridad ? ticket.prioridad === this.filtroPrioridad : true;
-
-      // 3. Lógica de Filtros Rápidos (Botones)
       let matchRapido = true;
-      if (this.filtroRapido === 'mis-tickets') {
-        matchRapido = ticket.asignado === this.usuarioLogueado;
-      } else if (this.filtroRapido === 'sin-asignar') {
-        matchRapido = ticket.asignado === 'Sin asignar' || !ticket.asignado;
-      } else if (this.filtroRapido === 'alta-prioridad') {
-        matchRapido = ticket.prioridad === 'Alta';
-      }
+      if      (this.filtroRapido === 'mis-tickets')    matchRapido = ticket.assignedTo === this.usuarioLogueado;
+      else if (this.filtroRapido === 'sin-asignar')    matchRapido = ticket.assignedTo === 'Sin asignar' || !ticket.assignedTo;
+      else if (this.filtroRapido === 'alta-prioridad') matchRapido = ticket.priority === 'Alta';
 
       return matchTexto && matchEstado && matchPrioridad && matchRapido;
     });
   }
 
   aplicarFiltroRapido(tipo: string) {
-    // Si ya está seleccionado, lo quitamos. Si no, lo ponemos.
     this.filtroRapido = this.filtroRapido === tipo ? '' : tipo;
 
-    // Sincronización visual: Si marcas "Alta prioridad", actualizamos el select de prioridad
-    if (this.filtroRapido === 'alta-prioridad') {
-      this.filtroPrioridad = 'Alta';
-    } else if (tipo === 'alta-prioridad' && this.filtroRapido === '') {
-      // Si desmarcaste el botón de alta prioridad, limpiamos el select también
-      this.filtroPrioridad = '';
+    if      (this.filtroRapido === 'alta-prioridad') this.filtroPrioridad = 'Alta';
+    else if (tipo === 'alta-prioridad' && !this.filtroRapido) this.filtroPrioridad = '';
+  }
+
+  limpiarTodosLosFiltros() {
+    this.filtroTexto     = '';
+    this.filtroEstado    = '';
+    this.filtroPrioridad = '';
+    this.filtroRapido    = '';
+  }
+
+  getPrioritySeverity(priority: string): string {
+    switch (priority) {
+      case 'Alta':   return 'danger';
+      case 'Media':   return 'warning';
+      case 'Baja':   return 'info';
+      case 'Opcional': return 'secondary';
+      default:     return 'secondary';
     }
   }
 
-  // Sustituye tu limpiarFiltros por esta
-  limpiarTodosLosFiltros() {
-    this.filtroTexto = '';
-    this.filtroEstado = '';
-    this.filtroPrioridad = '';
-    this.filtroRapido = '';
-  }
+  private messageService = inject(MessageService);
 }

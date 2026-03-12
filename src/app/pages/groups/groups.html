@@ -1,4 +1,5 @@
 <div>
+    <!--Vista 7. Gestión de los grupos-->
     <p-card class="glass-card">
         <div class="card flex justify-center">
             Total
@@ -32,8 +33,6 @@
 
                 <ng-template pTemplate="footer">
                     <div class="card-buttons">
-                        <p-button icon="pi pi-eye" label="Ver" [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }" *hasPermission="'group_view'" />
-
                         <p-button icon="pi pi-pencil" label="Editar" [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }" *hasPermission="'group_edit'"
                             (click)="editGroup(group)" />
 

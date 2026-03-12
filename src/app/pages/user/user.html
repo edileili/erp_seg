@@ -1,4 +1,5 @@
 <div>
+    <!--Vista 6. Perfil de Usuario (tickets der user)-->
     <p-card class="glass-card">
         <h1 class="tittle">Datos del Usuario</h1>
         <div class="info-user">
@@ -25,10 +26,12 @@
                     label="Ver Usuarios" *hasPermission="'users_view'" />
             </div>
         </div>
+
+        <!--Vista 10. Gestión de usuarios-->
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>
                 <div class="inline-flex items-center justify-center gap-2">
-                    <span class="font-bold whitespace-nowrap">Editar Datos</span>
+                    <span class="font-bold whitespace-nowrap">Crear usuario</span>
                 </div>
             </ng-template>
             <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
@@ -115,8 +118,13 @@
                         <div class="permissions-selector">
                             <label class="block mb-2 font-bold">Asignar Nuevos Permisos</label>
                             <div class="flex gap-2">
-                                <p-multiSelect [options]="listaPermisosDisponibles" placeholder="Selecciona permisos"
-                                    display="chip" class="flex-1">
+                                <p-multiSelect 
+                                    [options]="listaPermisosDisponibles" 
+                                    optionLabel="label" 
+                                    optionValue="value"
+                                    placeholder="Selecciona permisos"
+                                    display="chip" 
+                                    class="flex-1">
                                 </p-multiSelect>
                                 <p-button label="Asignar" icon="pi pi-plus" (click)="agregarPermisos()"
                                     [disabled]="!permisosSeleccionados.length">
@@ -163,8 +171,8 @@
             </ng-template>
         </p-dialog>
     </p-card>
-    <p-card class="glass-card">
-        <h1>Tickets</h1>
+    <p-card *hasPermission=" 'ticket_edit_state'" class="glass-card">
+        <h1>Mis Tickets</h1>
         <div class="table-responsive shadow-sm rounded">
             <table class="table table-hover bg-white">
                 <thead class="thead-dark">
@@ -196,6 +204,11 @@
                             </span>
                         </td>
                         <td>{{ ticket.fecha }}</td>
+                        <td>
+                            <p-button icon="pi pi-pencil" label="Editar Estado"
+                                [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
+                                *hasPermission="'ticket_edit_state'" (click)="openEditState()" />
+                        </td>
                     </tr>
                     } @empty {
                     <tr>
@@ -208,13 +221,31 @@
                 <tfoot>
                     <tr>
                         <td></td>
-                        <td>Abiertos: </td>
-                        <td>En progreso: </td>
-                        <td>Hechos: </td>
+                        <td>Pendientes: 1</td>
+                        <td>En progreso: 1</td>
+                        <td>Hechos: 0</td>
                         <td></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
     </p-card>
+    <p-dialog [(visible)]="displayEditState" [header]="'Editar Estado del Ticket'" [modal]="true"
+        class="p-fluid custom-modal">
+        <form class="form-grid">
+            <div class="field">
+                <label for="estado">Estado Actual: </label>
+                <select name="" id="">
+                    <option>Pendiente</option>
+                    <option>En progreso</option>
+                    <option>En revisión</option>
+                    <option>Hecho</option>
+                </select>
+            </div>
+        </form>
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="displayEditState = false" />
+            <p-button label="Guardar" icon="pi pi-check" />
+        </ng-template>
+    </p-dialog>
 </div>

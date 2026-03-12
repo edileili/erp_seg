@@ -7,7 +7,9 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Router } from '@angular/router';
-import { PermissionService, Permission } from '../../../core/services/permission.service';
+import { PermissionService, Permission, UsersPermisos } from '../../../core/services/permission.service';
+import { AuthService } from '../../../core/services/auth.service';
+import usersConPermisos from './../../../core/assets/users.json';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +23,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   public loginSeg: FormGroup;
   public formSubmitted = false;
@@ -32,46 +35,36 @@ export class Login {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     this.formSubmitted = true;
+    if (!this.loginSeg.valid) return;
 
-    if (this.loginSeg.valid) {
-      const { email, contrasenia } = this.loginSeg.value;
-      const usersPermisos: Record<string, Permission[]> = {
-        'eden@gmail.com': [
-          'group_view', 'ticket_view', 'ticket_edit_state', 'user_view', 'user_edit'
-        ],
-        'admin@test.com': ['admin', 'group_view', 'group_edit', 'group_add', 'group_delete', 'ticket_view', 'ticket_edit', 'ticket_add', 'ticket_delete', 'ticket_edit_state', 'user_view', 'users_view', 'user_edit', 'user_add', 'user_delete']
-      }
-      const conPermiso = usersPermisos[email];
-      const user1 = {email: 'eden@gmail.com', contrasenia: 'Contrasenia$'}
-      const user2 = {email: 'admin@test.com', contrasenia: 'Contrasenia$'}
+    const { email, contrasenia } = this.loginSeg.value;
+    const response = await this.authService.login(email, contrasenia);
+    //const user = usersConPermisos.find(u => u.email === email);
 
-      if (user1 || user2) {
-        this.messageService.add({
-          severity: 'success',
-          summary: '¡Éxito!',
-          detail: 'Bienvenido a ERP',
-          life: 3000
-        });
-        if(conPermiso) {
-          this.permissionService.setPermissions(conPermiso);
-        }
-        console.log(this.loginSeg.value);
-        this.loginSeg.reset();
-        this.formSubmitted = false;
-        setTimeout(() => {
-          this.router.navigate(['/dashboard/home']);
-        }, 2000);
-      } else {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error de acceso',
-          detail: 'Usuario o contraseña incorrectos',
-        });
-      }
+    if (response) {
+      this.permissionService.setPermissions(response.permisos);
+      this.messageService.add({
+        severity: 'success',
+        summary: `¡Bienvenido a ERP!`,
+        detail: 'Acceso concedido',
+        life: 3000
+      });
+
+      this.loginSeg.reset();
+      this.formSubmitted = false;
+      setTimeout(() => this.router.navigate(['/dashboard/home']), 2000);
+
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error de acceso',
+        detail: 'Usuario o contraseña incorrectos',
+      });
     }
   }
+
 
   isInvalid(controlName: string) {
     const control = this.loginSeg.get(controlName);

@@ -26,7 +26,6 @@ export class Groups {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
 
-  //public registroSeg: FormGroup;
   public formSubmitted = false;
 
   groups = [
@@ -65,29 +64,25 @@ export class Groups {
     }
   ];
 
-  // Variables de estado
 displayEditDialog: boolean = false;
 displayDeleteDialog: boolean = false;
 selectedGroup: any = { name: '', members: [] };
 newUserEmail: string = '';
 
-// Abrir diálogo de edición
 editGroup(group: any) {
-    this.selectedGroup = { ...group }; // Clonamos para no editar el original antes de guardar
+    this.selectedGroup = { ...group }; 
     this.displayEditDialog = true;
 }
 
-// Abrir diálogo de borrado
 deleteGroup(group: any) {
     this.selectedGroup = group;
     this.displayDeleteDialog = true;
 }
 
-// Lógica de usuarios dentro del diálogo
 addUser() {
     if (this.newUserEmail) {
         this.selectedGroup.members.push({ email: this.newUserEmail, role: 'member' });
-        this.newUserEmail = ''; // Limpiar input
+        this.newUserEmail = '';
     }
 }
 
@@ -95,7 +90,6 @@ removeUser(email: string) {
     this.selectedGroup.members = this.selectedGroup.members.filter((u: any) => u.email !== email);
 }
 
-// Persistencia simple
 saveGroup() {
     const index = this.groups.findIndex(g => g.id === this.selectedGroup.id);
     if (index !== -1) {

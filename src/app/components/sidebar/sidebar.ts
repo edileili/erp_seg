@@ -39,6 +39,10 @@ export class Sidebar {
     this.router.navigate(['/dashboard/user']);
   }
 
+  home() {
+    this.router.navigate(['/dashboard/home']);
+  }
+
   groups() {
     this.router.navigate(['/dashboard/groups'])
   }

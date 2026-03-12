@@ -8,7 +8,7 @@
         <div>
             <ul>
                 <li>
-                    <a class="item-sidebar" (click)="'/home'">
+                    <a class="item-sidebar" (click)="home()">
                         <i class="pi pi-home mr-2 icon-sidebar"></i>
                         <span>Home</span>
                     </a>
@@ -25,7 +25,7 @@
                         <span>Grupos</span>
                     </a>
                 </li>
-                <li>
+                <li *hasPermission="['ticket_delete']">
                     <a class="item-sidebar" (click)="tickets()">
                         <i class="pi pi-ticket mr-2 icon-sidebar"></i>
                         <span>Tickets</span>

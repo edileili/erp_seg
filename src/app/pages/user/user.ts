@@ -23,46 +23,47 @@ import { MultiSelectModule } from 'primeng/multiselect';
 export class User {
   visible: boolean = false;
 
-    showDialog() {
-        this.visible = true;
-    }
+  showDialog() {
+    this.visible = true;
+  }
 
   tickets = [
-    { id: 101, estado: 'Abierto', prioridad: 'Alta', fecha: new Date() },
+    { id: 101, estado: 'Pendiente', prioridad: 'Alta', fecha: new Date() },
     { id: 103, estado: 'En Progreso', prioridad: 'Media', fecha: new Date() },
   ];
 
-  // En tu .ts
-listaPermisosDisponibles = [
-    'admin', 'group_view', 'group_edit', 'group_add', 'group_delete',
-    'ticket_view', 'ticket_edit', 'ticket_add', 'ticket_delete', 'ticket_edit_state',
-    'user_view', 'users_view', 'user_edit', 'user_add', 'user_delete'
-];
+  listaPermisosDisponibles = [
+    { label: 'Admin', value: 'admin' }, { label: 'Ver Grupo', value: 'group_view' }, { label: 'Editar Grupo', value: 'group_edit' }, { label: 'Agregar Grupo', value: 'group_add' }, { label: 'Borrar Grupo', value: 'group_delete' },
+    { label: 'Ver Ticket', value: 'ticket_view' }, { label: 'Editar Ticket', value: 'ticket_edit' }, { label: 'Agregar Ticket', value: 'ticket_add' }, { label: 'Borrar Ticket', value: 'ticket_delete' }, { label: 'Editar Estado Ticket', value: 'ticket_edit_state' },
+    { label: 'Ver Usuario', value: 'user_view' }, { label: 'Ver Usuarios', value: 'users_view' }, { label: 'Editar Usuario', value: 'user_edit' }, { label: 'Agregar Usuario', value: 'user_add' }, { label: 'Borrar Usuario', value: 'user_delete' }
+  ];
 
-permisosSeleccionados: string[] = [];
-usuarioSeleccionado: any; // El usuario que estás editando
+  permisosSeleccionados: string[] = [];
+  usuarioSeleccionado: any;
 
-agregarPermisos() {
+  agregarPermisos() {
     if (!this.usuarioSeleccionado.permisos) {
-        this.usuarioSeleccionado.permisos = [];
+      this.usuarioSeleccionado.permisos = [];
     }
-    
-    // Evitar duplicados
+
     const nuevos = this.permisosSeleccionados.filter(p => !this.usuarioSeleccionado.permisos.includes(p));
     this.usuarioSeleccionado.permisos.push(...nuevos);
-    
-    this.permisosSeleccionados = []; // Limpiar selección
-}
 
-removerPermiso(permiso: string) {
+    this.permisosSeleccionados = [];
+  }
+
+  removerPermiso(permiso: string) {
     this.usuarioSeleccionado.permisos = this.usuarioSeleccionado.permisos.filter((p: string) => p !== permiso);
-}
+  }
 
-// Opcional: Colores por categoría
-getSeverity(permiso: string) {
+  getSeverity(permiso: string) {
     if (permiso === 'admin') return 'danger';
     if (permiso.startsWith('ticket')) return 'info';
     if (permiso.startsWith('user')) return 'success';
     return 'secondary';
-}
+  }
+  displayEditState: boolean = false;
+  openEditState() {
+    this.displayEditState = true;
+  }
 }
