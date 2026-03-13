@@ -13,6 +13,19 @@
     margin: 1rem;
 }
 
+.content-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; 
+}
+
+:host ::ng-deep .p-card {
+    width: 100%;
+}
+
 :root {
     --color-purple-dark: #3D0A49;
     --color-purple: #5015BD;

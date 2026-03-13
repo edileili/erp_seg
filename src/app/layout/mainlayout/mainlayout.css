@@ -1,13 +1,16 @@
-.main-layout {
+.dashboard-container {
   display: flex;
-  min-height: 100vh;
-  background: #E0DAF7;
-  background-size: 200% 200%;
-  color: var(--text-white);
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
-.content-area {
+.dashboard-content {
   flex-grow: 1;
-  padding: 2rem;
-  overflow-y: auto;
+  overflow-y: auto; 
+  display: flex;
+  flex-direction: column;
+  padding: 1rem; 
+  box-sizing: border-box;
+  background-color: #E0DAF7;
 }
