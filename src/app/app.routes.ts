@@ -8,6 +8,7 @@ import { User } from './pages/user/user';
 import { Groups } from './pages/groups/groups';
 import { GroupDetail } from './pages/groups/group-detail/group-detail';
 import { Tickets } from './pages/tickets/tickets';
+import { Perfil } from './pages/perfil/perfil';
 
 export const routes: Routes = [
     {path: '', component:Landing},
@@ -22,7 +23,8 @@ export const routes: Routes = [
             { path: 'user', component:User},
             { path: 'groups', component:Groups},
             { path: 'groups/:id-group', component:GroupDetail},
-            { path: 'tickets', component:Tickets}
+            { path: 'tickets', component:Tickets},
+            {path: 'perfil', component:Perfil}
 
         ]
     }

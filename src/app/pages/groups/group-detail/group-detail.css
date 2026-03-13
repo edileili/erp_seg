@@ -69,6 +69,16 @@ h1 {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   cursor: move;
 }
+.p-tag {
+    margin: 5px;
+    background-color: #000;
+    color: #f0f4ff;
+}
+
+.ticket-title {
+    font-weight: bold;
+    text-align: center;
+}
 
 /* Efecto visual al arrastrar */
 .cdk-drag-placeholder {

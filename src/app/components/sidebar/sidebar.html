@@ -14,11 +14,18 @@
                     </a>
                 </li>
                 <li>
-                    <a class="item-sidebar" (click)="users()">
+                    <a class="item-sidebar" (click)="perfil()">
+                        <i class="pi pi-user mr-2 icon-sidebar"></i>
+                        <span>Perfil</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="item-sidebar" *hasPermission="'user_add'" (click)="users()">
                         <i class="pi pi-user mr-2 icon-sidebar"></i>
                         <span>Usuarios</span>
                     </a>
                 </li>
+                
                 <li *hasPermission="['group_add', 'group_edit', 'group_delete']">
                     <a class="item-sidebar" (click)="groups()">
                         <i class="pi pi-objects-column mr-2 icon-sidebar"></i>
@@ -36,12 +43,13 @@
         <div class="line-sidebar"></div>
         <div>
             <ul>
+                <!--
                 <li>
                     <a class="item-sidebar">
                         <img class="profile-img-sidebar" src="/images/tem-icon.png" alt="ProfileImg">
                         <span>User</span>
                     </a>
-                </li>
+                </li>-->
                 <li>
                     <a class="item-sidebar" (click)="signOut()">
                         <i class="pi pi-sign-out mr-2 icon-sidebar sign-out"></i>
@@ -58,11 +66,12 @@
         </a>
     </div>
     <div class="line-menu"></div>
+    <!--
     <div class="menu-min">
         <a class="menu-profile">
             <img class="menu-icon" src="/images/tem-icon.png">
         </a>
-    </div>
+    </div>-->
     <div class="menu-min">
         <a class="menu-profile" (click)="signOut()">
             <i class="pi pi-sign-out icon-sidebar sign-out"></i>

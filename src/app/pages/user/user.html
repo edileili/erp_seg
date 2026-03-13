@@ -1,16 +1,6 @@
 <div>
     <!--Vista 6. Perfil de Usuario (tickets der user)-->
     <p-card class="glass-card">
-        <h1 class="tittle">Datos del Usuario</h1>
-        <div class="info-user">
-            <div class="label-user">Nombre de Usuario: <span>User</span></div>
-            <div class="label-user">Email: <span>eden@gmail.com</span></div>
-            <div class="label-user">Contraseña: <span>******</span></div>
-            <div class="label-user">Nombre Completo: <span>Edén Leilani Romero Serrano</span></div>
-            <div class="label-user">Dirección: <span>Av Del Ferrocarril 45</span> </div>
-            <div class="label-user">Fecha de Nacimiento: <span>06/09/05</span> </div>
-            <div class="label-user">Numero de Teléfono: <span>44444444444444</span></div>
-        </div>
         <div class="card-buttons">
             <div class="card flex card-crud">
                 <p-button
@@ -18,16 +8,12 @@
                     (click)="showDialog()" label="Agregar Usuario" *hasPermission="'user_add'" />
             </div>
             <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
-                    (click)="showDialog()" label="Editar mis datos" *hasPermission="'user_edit'" />
-            </div>
-            <div class="card flex card-crud">
                 <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }"
                     label="Ver Usuarios" *hasPermission="'users_view'" />
             </div>
         </div>
-
-        <!--Vista 10. Gestión de usuarios-->
+    </p-card>
+            <!--Vista 10. Gestión de usuarios-->
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>
                 <div class="inline-flex items-center justify-center gap-2">
@@ -170,63 +156,33 @@
                 <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
             </ng-template>
         </p-dialog>
-    </p-card>
-    <p-card *hasPermission=" 'ticket_edit_state'" class="glass-card">
-        <h1>Mis Tickets</h1>
+    <p-card *hasPermission=" 'user_add'" class="glass-card">
+        <h1>Usuarios</h1>
         <div class="table-responsive shadow-sm rounded">
             <table class="table table-hover bg-white">
                 <thead class="thead-dark">
                     <tr>
                         <th>ID</th>
-                        <th>Estado</th>
-                        <th>Prioridad</th>
-                        <th>Fecha Límite</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Permisos</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for (ticket of tickets; track ticket.id) {
                     <tr>
-                        <td><strong>#{{ ticket.id }}</strong></td>
-                        <td>
-                            @if (ticket.estado === 'Completado') {
-                            <span class="badge bg-success text-white">Completado</span>
-                            } @else if (ticket.estado === 'En Proceso') {
-                            <span class="badge bg-warning text-dark">En Proceso</span>
-                            } @else {
-                            <span class="badge bg-secondary text-white">{{ ticket.estado }}</span>
-                            }
+                        <td><strong>#1</strong></td>
+                        <td>Eden
                         </td>
-                        <td>
-                            <span [class.text-danger]="ticket.prioridad === 'Alta'"
-                                [class.font-weight-bold]="ticket.prioridad === 'Alta'">
-                                {{ ticket.prioridad }}
-                            </span>
+                        <td>Romero
                         </td>
-                        <td>{{ ticket.fecha }}</td>
+                        <td>'user_add'</td>
                         <td>
-                            <p-button icon="pi pi-pencil" label="Editar Estado"
+                            <p-button icon="pi pi-pencil" label="Editar"
                                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                                *hasPermission="'ticket_edit_state'" (click)="openEditState()" />
+                                *hasPermission="'ticket_edit_state'" (click)="showDialog()" />
                         </td>
                     </tr>
-                    } @empty {
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">
-                            No se encontraron tickets con esos filtros.
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                        <td>Pendientes: 1</td>
-                        <td>En progreso: 1</td>
-                        <td>Hechos: 0</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </p-card>

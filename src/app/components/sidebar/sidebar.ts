@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 import { Toast } from "primeng/toast";
 import { ButtonModule } from 'primeng/button';
 import { HasPermissionDirective } from "../../core/directives/has-permission.directive";
-
+import { PermissionService } from '../../core/services/permission.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -17,6 +17,7 @@ import { HasPermissionDirective } from "../../core/directives/has-permission.dir
 export class Sidebar {
   private router = inject(Router);
   private messageService = inject(MessageService);
+  constructor(public permissionService: PermissionService){}
 
   isExpanded = true;
   toggle() {
@@ -30,6 +31,8 @@ export class Sidebar {
       detail: '¡Vuelve pronto!',
       life: 3000
     });
+    this.permissionService.clearPermissions();
+    localStorage.removeItem('erp_token');
     setTimeout(() => {
       this.router.navigate(['/login']);
     }, 2000);
@@ -49,5 +52,9 @@ export class Sidebar {
 
   tickets() {
     this.router.navigate(['/dashboard/tickets'])
+  }
+
+  perfil() {
+    this.router.navigate(['/dashboard/perfil'])
   }
 }

@@ -1,12 +1,13 @@
 <div>
     <!--Vista 7. Gestión de los grupos-->
     <p-card class="glass-card">
+        <h1>Administración de Grupos</h1>
         <div class="card flex justify-center">
             Total
             <p-badge value="2" severity="info" badgeSize="xlarge" />
         </div>
-        <div>
-            <h1>Advance</h1>
+        <div class="card flex justify-center">
+            Advance
             <p-card class="home-advance"></p-card>
         </div>
         <div class="groups-grid">
@@ -75,7 +76,7 @@
             </ng-template>
             <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
                 información.</span>
-            <form>
+            <form form [formGroup]="groupForm">
                 <div class="form-register">
                     <div class="form-group">
                         <label for="usuario">Nivel</label>
@@ -150,14 +151,14 @@
             
             <div class="field mb-4">
                 <label for="name" class="block mb-2">Nombre del Grupo</label>
-                <input type="text" pInputText id="name"required autofocus />
+                <input type="text" pInputText id="name" [ngModel]="selectedGroup.name" required autofocus />
             </div>
 
             <div class="field mb-4">
                 <label class="block mb-2">Añadir Integrante (Email)</label>
                 <div class="p-inputgroup">
-                    <input type="email" pInputText placeholder="usuario@correo.com"  />
-                    <button type="button" pButton icon="pi pi-plus" (click)="addUser()"></button>
+                    <input type="email" pInputText placeholder="usuario@correo.com" [ngModel]="newUserEmail"  />
+                    <p-button type="button" icon="pi pi-plus" (click)="addUser()"></p-button>
                 </div>
             </div>
 

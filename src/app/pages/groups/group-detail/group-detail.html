@@ -48,11 +48,11 @@
 
             <div class="kanban-wrapper" cdkDropListGroup>
                 @let columns = [
-                { label: 'Pendiente', data: todo, color: 'var(--blue-erp)' },
-                { label: 'En Progreso', data: inProgress, color: 'var(--purple-erp)' },
-                { label: 'En revisión', data: review, color: 'var(--purple-erp)' },
-                { label: 'Bloqueado', data: blocked, color: '#ef4444' },
-                { label: 'Hecho', data: done, color: '#22c55e' }
+                { label: 'Pendiente', data: todo, },
+                { label: 'En Progreso', data: inProgress,},
+                { label: 'En revisión', data: review, },
+                { label: 'Bloqueado', data: blocked, },
+                { label: 'Hecho', data: done, }
                 ];
 
                 @for (col of columns; track col.label) {
@@ -65,8 +65,26 @@
                     <div cdkDropList [cdkDropListData]="col.data" class="kanban-list"
                         (cdkDropListDropped)="drop($event)">
                         @for (ticket of col.data; track ticket) {
-                        <div class="ticket-card" cdkDrag [style.border-left-color]="col.color">
-                            {{ ticket }}
+                        <div class="ticket-card" cdkDrag (click)="openEditDialog(ticket)">
+                          <div class="ticket-header">
+              <p-tag [value]="ticket.priority"></p-tag>
+              <small class="ticket-id">#{{ ticket.id }}</small>
+            </div>
+            <div class="ticket-title">{{ ticket.title }}</div>
+            <div class="ticket-info">
+              <i class="pi pi-user"></i> <span>Asignado: {{ ticket.assignedTo }}</span>
+            </div>
+            <div class="ticket-info">
+              <i class="pi pi-pencil"></i> <span>Creado: {{ ticket.createdFrom }}</span>
+            </div>
+            @let fechaCreacion = asDate(ticket.createdAt);
+            <div class="ticket-date">
+              <i class="pi pi-calendar"></i>Fecha Creación: {{ fechaCreacion | date:'dd/MM/yyyy' }}
+            </div>
+            @let fechaLimite = asDate(ticket.deadline);
+            <div class="ticket-date">
+              <i class="pi pi-calendar"></i>Fecha Límite: {{ fechaLimite | date:'dd/MM/yyyy' }}
+            </div>
                         </div>
                         }
                     </div>

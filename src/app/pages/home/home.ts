@@ -3,14 +3,17 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { BadgeModule } from 'primeng/badge';
 import { RouterLink } from '@angular/router';
+import { HasPermissionDirective } from "../../core/directives/has-permission.directive";
+import { PermissionService } from '../../core/services/permission.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CardModule, ButtonModule, BadgeModule, RouterLink],
+  imports: [CardModule, ButtonModule, BadgeModule, RouterLink, HasPermissionDirective],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
+  constructor(public permissionService: PermissionService){}
   groups = [
     {
       id: 1,

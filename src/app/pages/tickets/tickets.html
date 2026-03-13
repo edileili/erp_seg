@@ -1,27 +1,28 @@
 <div>
   <!--Vista 9. Filtros Rápidos -->
   <p-card class="glass-card">
+    <h1>Administración de Tickets</h1>
     <div class="card-filters">
       <div class="quick-filters-container">
         <span class="quick-filters-label">
           <i class="pi pi-bolt"></i> Filtros rápidos:
         </span>
         <div class="quick-filters-list">
-          <button class="btn-quick-filter"
+          <p-button class="btn-quick-filter" [style]="{ 'background': 'none', 'border-color': 'white', 'color': '#64748b' }"
             [class.active]="filtroRapido === 'mis-tickets'"
             (click)="aplicarFiltroRapido('mis-tickets')">
             Mis tickets
-          </button>
-          <button class="btn-quick-filter"
+          </p-button>
+          <p-button class="btn-quick-filter" [style]="{ 'background': 'none', 'border-color': 'white', 'color': '#64748b' }"
             [class.active]="filtroRapido === 'sin-asignar'"
             (click)="aplicarFiltroRapido('sin-asignar')">
             Sin asignar
-          </button>
-          <button class="btn-quick-filter"
+          </p-button>
+          <p-button class="btn-quick-filter" [style]="{ 'background': 'none', 'border-color': 'white', 'color': '#64748b' }"
             [class.active]="filtroRapido === 'alta-prioridad'"
             (click)="aplicarFiltroRapido('alta-prioridad')">
             <i class="pi pi-exclamation-circle"></i> Alta prioridad
-          </button>
+          </p-button>
         </div>
       </div>
 
@@ -30,11 +31,9 @@
           <label class="filter-label">Buscar Ticket</label>
           <input type="text" class="filter-input" placeholder="Ej: #101 o Título..." [(ngModel)]="filtroTexto">
         </div>
-        <div class="filter-actions">
-          <button class="btn-clear" (click)="limpiarTodosLosFiltros()">
+          <p-button [style]="{ 'background': 'white', 'border-color': '#64748b', 'color': '#64748b' }" (click)="limpiarTodosLosFiltros()">
             <i class="fas fa-eraser"></i> Limpiar
-          </button>
-        </div>
+          </p-button>
       </div>
     </div>
 
@@ -46,7 +45,8 @@
             <th>ID</th>
             <th>Titulo</th>
             <th>Estado</th>
-            <th>Asignado</th>
+            <th>Asignado a</th>
+            <th>Creado por</th>
             <th>Prioridad</th>
             <th>Fecha Límite</th>
             <th class="text-center">Acciones</th>
@@ -67,13 +67,16 @@
               }
             </td>
             <td>{{ ticket.assignedTo }}</td>
+            <td>{{ ticket.createdFrom }}</td>
             <td>
               <span [class.text-danger]="ticket.priority === 'Alta'"
                 [class.font-weight-bold]="ticket.priority === 'Alta'">
                 {{ ticket.priority }}
               </span>
             </td>
-            <td>{{ ticket.createdAt }}</td>
+             @let fechaCreacion = asDate(ticket.createdAt);
+            <td>{{ fechaCreacion | date:'dd/MM/yyyy' }}</td>
+            
             <td>
                 <p-button icon="pi pi-pencil" label="Editar"
                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
@@ -103,10 +106,10 @@
 
     <div class="kanban-wrapper" cdkDropListGroup>
       @let columns = [
-        { label: 'Pendiente',   data: todo,       color: 'var(--blue-erp)' },
-        { label: 'En Progreso', data: inProgress,  color: 'var(--purple-erp)' },
-        { label: 'Revisión',    data: review,      color: '#f59e0b' },
-        { label: 'Hecho',       data: done,        color: '#22c55e' }
+        { label: 'Pendiente',   data: todo,       },
+        { label: 'En Progreso', data: inProgress,  },
+        { label: 'Revisión',    data: review,     },
+        { label: 'Hecho',       data: done,        }
       ];
 
       @for (col of columns; track col.label) {
@@ -114,17 +117,25 @@
         <h3 class="column-header">{{ col.label }}</h3>
         <div cdkDropList [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
           @for (ticket of col.data; track ticket.id) {
-          <div class="ticket-card" cdkDrag (click)="viewTicket(ticket)" [style.border-left-color]="col.color">
+          <div class="ticket-card" cdkDrag (click)="viewTicket(ticket)" >
             <div class="ticket-header">
               <p-tag [value]="ticket.priority"></p-tag>
               <small class="ticket-id">#{{ ticket.id }}</small>
             </div>
             <div class="ticket-title">{{ ticket.title }}</div>
             <div class="ticket-info">
-              <i class="pi pi-user"></i> <span>{{ ticket.assignedTo }}</span>
+              <i class="pi pi-user"></i> <span>Asignado: {{ ticket.assignedTo }}</span>
             </div>
+            <div class="ticket-info">
+              <i class="pi pi-pencil"></i> <span>Creado: {{ ticket.createdFrom }}</span>
+            </div>
+            @let fechaCreacion = asDate(ticket.createdAt);
             <div class="ticket-date">
-              <i class="pi pi-calendar"></i> {{ ticket.createdAt | date:'dd/MM/yyyy' }}
+              <i class="pi pi-calendar"></i>Fecha Creación: {{ fechaCreacion | date:'dd/MM/yyyy' }}
+            </div>
+            @let fechaLimite = asDate(ticket.deadline);
+            <div class="ticket-date">
+              <i class="pi pi-calendar"></i>Fecha Límite: {{ fechaLimite | date:'dd/MM/yyyy' }}
             </div>
             <div class="card-buttons">
               <p-button icon="pi pi-pencil" label="Editar"

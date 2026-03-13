@@ -5,20 +5,30 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule, FormControl } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
 
 @Component({
   selector: 'app-groups',
-  imports: [CardModule, BadgeModule, OverlayBadgeModule, DialogModule, ButtonModule, InputGroupAddonModule, InputGroupModule, HasPermissionDirective],
+  imports: [CardModule, BadgeModule, OverlayBadgeModule, DialogModule, ButtonModule, InputGroupAddonModule, InputGroupModule, HasPermissionDirective, ReactiveFormsModule, FormsModule],
   providers: [MessageService],
   templateUrl: './groups.html',
   styleUrl: './groups.css',
 })
 export class Groups {
   visible: boolean = false;
+  newMemberEmail: string = '';
+
+  groupForm = new FormGroup({
+    nivel: new FormControl(''),
+    autor: new FormControl(''),
+    nombre: new FormControl(''),
+    integrantes: new FormControl(''),
+    tickets: new FormControl(''),
+    descripcion: new FormControl('')
+  });
 
   showDialog() {
     this.visible = true;

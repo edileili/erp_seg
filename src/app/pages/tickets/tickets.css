@@ -2,8 +2,20 @@
     box-shadow: 0 8px 32px 0 rgba(150, 155, 226, 0.37);
     margin: 1rem;
 }
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
 .p-card {
     padding: 1rem;
+}
+.p-tag {
+    margin: 5px;
+    background-color: #000;
+    color: #f0f4ff;
 }
 /* Contenedor principal gris y redondeado */
 .card-filters {
@@ -141,6 +153,11 @@
 :host ::ng-deep .p-dialog-header {
     background-color: var(--blue-erp);
     
+}
+
+.ticket-title {
+    font-weight: bold;
+    text-align: center;
 }
 
 .ticket-card:hover {
