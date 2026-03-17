@@ -18,7 +18,7 @@
                 </div>
               </ng-template>
               <ng-template pTemplate="footer">
-                <p-button label="Ver Grupo" [routerLink]="['/dashboard/groups', group.id]"></p-button>
+                <p-button label="Ver Grupo" *hasPermission="'group_view'" [routerLink]="['/dashboard/groups', group.id]"></p-button>
               </ng-template>
 
             </p-card>

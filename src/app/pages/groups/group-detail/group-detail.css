@@ -1,8 +1,4 @@
 
-h1 {
-    font-size: 24px;
-}
-
 .dashboard-header {
     background: white;
     border-radius: 12px;
@@ -169,4 +165,80 @@ h1 {
 
 .font-weight-bold {
     font-weight: 700;
+}
+
+.history-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.history-title {
+    font-size: 1.1rem;
+    color: #374151;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-container {
+    padding-left: 1rem;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.history-item {
+    position: relative;
+    padding-left: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-left: 2px solid #e5e7eb;
+}
+
+.history-marker {
+    position: absolute;
+    left: -7px;
+    top: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--blue-erp);
+    border: 2px solid white;
+}
+
+.history-item:last-child {
+    border-left: 2px solid transparent;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+}
+
+.history-user {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #1f2937;
+}
+
+.history-date {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.history-action {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.history-note {
+    display: block;
+    margin-top: 0.3rem;
+    font-style: italic;
+    color: #6b7280;
+    background: #f9fafb;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
 }

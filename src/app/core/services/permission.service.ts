@@ -10,8 +10,8 @@ export interface UsersPermisos {
 
 export type Permission = 
   'admin'
-  | 'group_view' | 'group_edit' | 'group_add' | 'group_delete' //grupos
-  | 'ticket_view' | 'ticket_edit' | 'ticket_add' | 'ticket_delete' | 'ticket_edit_state' //ticket
+  | 'group_view' | 'group_edit' | 'group_add' | 'group_delete' | 'group_add_member' | 'group_remove_member' //grupos
+  | 'ticket_view' | 'ticket_edit' | 'ticket_add' | 'ticket_delete' | 'ticket_edit_state' | 'tickets_view' //ticket
   | 'user_view' | 'users_view' | 'user_edit' | 'user_add' | 'user_delete'; //user
 
 @Injectable({

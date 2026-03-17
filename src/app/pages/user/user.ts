@@ -27,6 +27,11 @@ export class User {
     this.visible = true;
   }
 
+  users = [
+    {id: 201, nombre: 'Eden', apellido: 'Romero', permisos: 'ticket_view'},
+    {id: 202, nombre: 'Admin', apellido: 'Admin', permisos: 'admin'}
+  ];
+
   tickets = [
     { id: 101, estado: 'Pendiente', prioridad: 'Alta', fecha: new Date() },
     { id: 103, estado: 'En Progreso', prioridad: 'Media', fecha: new Date() },

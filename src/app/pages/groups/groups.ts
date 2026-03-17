@@ -9,6 +9,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule, F
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { HasPermissionDirective } from '../../core/directives/has-permission.directive';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-groups',
@@ -18,6 +19,8 @@ import { HasPermissionDirective } from '../../core/directives/has-permission.dir
   styleUrl: './groups.css',
 })
 export class Groups {
+  private router = inject(Router);
+
   visible: boolean = false;
   newMemberEmail: string = '';
 
@@ -29,6 +32,10 @@ export class Groups {
     tickets: new FormControl(''),
     descripcion: new FormControl('')
   });
+
+  viewTickets(group: any) {
+    this.router.navigate(['/dashboard/groups', group.id, 'tickets']);
+  }
 
   showDialog() {
     this.visible = true;

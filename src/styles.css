@@ -9,23 +9,6 @@
 @import '../node_modules/@syncfusion/ej2-popups/styles/tailwind3.css';
 @import '../node_modules/@syncfusion/ej2-kanban/styles/tailwind3.css';
 
-.p-card {
-    margin: 1rem;
-}
-
-.content-wrapper {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem; 
-}
-
-:host ::ng-deep .p-card {
-    width: 100%;
-}
-
 :root {
     --color-purple-dark: #3D0A49;
     --color-purple: #5015BD;
@@ -42,4 +25,134 @@
     --bg-main-gradient: linear-gradient(135deg,
             var(--color-blue-erp-dark) 0%,
             var(--color-purple-erp-dark) 100%);
+}
+
+h1 {
+    font-size: 24px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.p-card {
+    margin: 1rem;
+}
+
+.content-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+:host ::ng-deep .p-card {
+    width: 100%;
+}
+
+/*Tabla*/
+.p-datatable.custom-table .p-datatable-thead > tr > th {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    border: none !important;
+    padding: 1rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    font-size: 0.8rem;
+}
+
+.table-responsive {
+    border: 1px solid #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/*Botones*/
+.card-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    button {
+        flex: 1;
+    }
+}
+
+/* Kanban */
+.kanban-wrapper {
+    display: flex; 
+    gap: 1.5rem;
+    padding: 10px;
+    overflow-x: auto;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.kanban-col {
+    background: #ececec;
+    border-radius: 10px;
+    padding: 1rem;
+    flex: 1;
+    min-width: 280px;
+    height: auto;
+    min-height: 70vh;
+}
+
+.kanban-list {
+    min-height: 60vh;
+}
+
+.ticket-card {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 0.8rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid var(--blue-erp);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ticket-card:active {
+    cursor: grabbing;
+}
+
+.ticket-title {
+    font-weight: bold;
+    text-align: center;
+}
+
+.ticket-card:hover {
+    background-color: #f0f4ff;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.kanban-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f4f5f7;
+    overflow-x: auto;
+}
+
+.kanban-column {
+    background-color: #ebedf0;
+    border-radius: 8px;
+    width: 250px;
+    min-height: 400px;
+    padding: 10px;
+}
+
+.kanban-list {
+    min-height: 350px;
+}
+
+.kanban-card {
+    background: white;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    cursor: move;
 }

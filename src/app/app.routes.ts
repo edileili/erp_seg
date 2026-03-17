@@ -23,7 +23,7 @@ export const routes: Routes = [
             { path: 'user', component:User},
             { path: 'groups', component:Groups},
             { path: 'groups/:id-group', component:GroupDetail},
-            { path: 'tickets', component:Tickets},
+            { path: 'groups/:idGroup/tickets', component:Tickets},
             {path: 'perfil', component:Perfil}
 
         ]

@@ -34,6 +34,8 @@
 
                 <ng-template pTemplate="footer">
                     <div class="card-buttons">
+                        <p-button icon="pi pi-eye" label="Tickets" [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }" *hasPermission="'tickets_view'"
+                            (click)="viewTickets(group)" />
                         <p-button icon="pi pi-pencil" label="Editar" [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }" *hasPermission="'group_edit'"
                             (click)="editGroup(group)" />
 
@@ -46,27 +48,11 @@
 
             <div class="card flex justify-center card-crud">
                 <p-button
-                    [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
+                    [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }" *hasPermission="'group_add'"
                     (click)="showDialog()" label="Agregar Grupo" />
             </div>
 
         </div>
-        <!--
-        <div class="card-buttons">
-            <div class="card flex justify-center card-crud">
-                <p-button
-                    [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
-                    (click)="showDialog()" label="Agregar Grupo" *hasPermission="'group_add'" />
-            </div>
-            <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
-                    (click)="showDialog()" label="Editar Grupo" *hasPermission="'group_edit'" />
-            </div>
-            <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }"
-                    label="Ver Grupo" *hasPermission="'group_view'" />
-            </div>
-        </div>-->
 
         <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
             <ng-template #header>
@@ -158,7 +144,7 @@
                 <label class="block mb-2">Añadir Integrante (Email)</label>
                 <div class="p-inputgroup">
                     <input type="email" pInputText placeholder="usuario@correo.com" [ngModel]="newUserEmail"  />
-                    <p-button type="button" icon="pi pi-plus" (click)="addUser()"></p-button>
+                    <p-button type="button" icon="pi pi-plus" (click)="addUser()" *hasPermission="'group_add_member'"></p-button>
                 </div>
             </div>
 
@@ -168,7 +154,7 @@
                     @for (user of selectedGroup.members; track user.email) {
                         <div class="flex justify-between items-center p-2 border-b">
                             <span>{{ user.email }}</span>
-                            <p-button icon="pi pi-user-minus" [rounded]="true" [text]="true" severity="danger" (click)="removeUser(user.email)" />
+                            <p-button icon="pi pi-user-minus" [rounded]="true" [text]="true" severity="danger" *hasPermission="'group_remove_member'" (click)="removeUser(user.email)" />
                         </div>
                     }
                 </div>

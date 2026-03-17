@@ -16,6 +16,7 @@ import {
   CdkDrag 
 } from '@angular/cdk/drag-drop';
 import { TagModule } from 'primeng/tag';
+import { HasPermissionDirective } from "../../../core/directives/has-permission.directive";
 
 export interface TicketLog {
   fecha: string;
@@ -40,7 +41,7 @@ export interface Ticket {
 @Component({
   selector: 'app-group-detail',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, TableModule, RouterLink, CdkDropListGroup, CdkDropList, CdkDrag, BadgeModule, DialogModule, FormsModule, ReactiveFormsModule, TagModule],
+  imports: [CommonModule, CardModule, ButtonModule, TableModule, RouterLink, CdkDropListGroup, CdkDropList, CdkDrag, BadgeModule, DialogModule, FormsModule, ReactiveFormsModule, TagModule, HasPermissionDirective],
   templateUrl: './group-detail.html',
   styleUrl: './group-detail.css'
 })

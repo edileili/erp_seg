@@ -1,104 +1,101 @@
 <div class="content-wrapper">
-    <!--Vista 2. Dashboard Grupo del usuario-->
-    <p-card class="glass-card">
-        <p-button label="Volver" icon="pi pi-arrow-left" [routerLink]="['/dashboard/home']" class="mb-4"
-            severity="secondary" [text]="true"></p-button>
+  <!--Vista 2. Dashboard Grupo del usuario-->
+  <p-card class="glass-card">
+    <p-button label="Volver" icon="pi pi-arrow-left" [routerLink]="['/dashboard/home']" class="mb-4"
+      severity="secondary" [text]="true"></p-button>
 
-        @if (group) {
-        <p-card [header]="group.name" [subheader]="group.description">
-            <div class="flex flex-column gap-3">
-                <h3>Miembros del equipo ({{group.members.length}})</h3>
+    @if (group) {
+    <p-card [header]="group.name" [subheader]="group.description">
+      <div class="flex flex-column gap-3">
+        <h3>Miembros del equipo ({{group.members.length}})</h3>
 
-                <p-table [value]="group.members" [tableStyle]="{ 'min-width': '50rem' }">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Email</th>
-                            <th>Rol</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-member>
-                        <tr>
-                            <td>{{ member.email }}</td>
-                            <td>{{ member.role }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-        </p-card>
-        } @else {
-        <p-card header="Grupo no encontrado">
-            <p>El grupo solicitado no existe o ha sido eliminado.</p>
-        </p-card>
-        }
+        <p-table [value]="group.members" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Email</th>
+              <th>Rol</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-member>
+            <tr>
+              <td>{{ member.email }}</td>
+              <td>{{ member.role }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </p-card>
-    <p-card class="glass-card">
-        <div>
-            <h1>Tickets del Grupo</h1>
-            @if (group) {
-            <div class="dashboard-header p-4 shadow-1 mb-4">
-                <div class="flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="m-0">{{group.name}}</h2>
-                        <p class="text-secondary">Total de tickets: <b>{{ totalTickets() }}</b></p>
-                    </div>
-                    <p-button label="Crear Ticket" icon="pi pi-plus" (onClick)="openCreateTicket()"
-                        severity="primary"></p-button>
-                </div>
-            </div>
+    } @else {
+    <p-card header="Grupo no encontrado">
+      <p>El grupo solicitado no existe o ha sido eliminado.</p>
+    </p-card>
+    }
+  </p-card>
+  <p-card class="glass-card">
+    <div>
+      <h1>Tickets del Grupo</h1>
+      @if (group) {
+      <div class="dashboard-header p-4 shadow-1 mb-4">
+        <div class="flex justify-content-between align-items-center">
+          <div>
+            <h2 class="m-0">{{group.name}}</h2>
+            <p class="text-secondary">Total de tickets: <b>{{ totalTickets() }}</b></p>
+          </div>
+          <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="'ticket_add'" (onClick)="openCreateTicket()"
+            severity="primary"></p-button>
+        </div>
+      </div>
 
-            <div class="kanban-wrapper" cdkDropListGroup>
-                @let columns = [
-                { label: 'Pendiente', data: todo, },
-                { label: 'En Progreso', data: inProgress,},
-                { label: 'En revisión', data: review, },
-                { label: 'Bloqueado', data: blocked, },
-                { label: 'Hecho', data: done, }
-                ];
+      <div class="kanban-wrapper" cdkDropListGroup>
+        @let columns = [
+        { label: 'Pendiente', data: todo, },
+        { label: 'En Progreso', data: inProgress,},
+        { label: 'En revisión', data: review, },
+        { label: 'Bloqueado', data: blocked, },
+        { label: 'Hecho', data: done, }
+        ];
 
-                @for (col of columns; track col.label) {
-                <div class="kanban-col">
-                    <div class="flex justify-content-between align-items-center mb-3">
-                        <span class="font-bold">{{ col.label }}</span>
-                        <p-badge [value]="col.data.length" severity="secondary"></p-badge>
-                    </div>
+        @for (col of columns; track col.label) {
+        <div class="kanban-col">
+          <div class="flex justify-content-between align-items-center mb-3">
+            <span class="font-bold">{{ col.label }}</span>
+            <p-badge [value]="col.data.length" severity="secondary"></p-badge>
+          </div>
 
-                    <div cdkDropList [cdkDropListData]="col.data" class="kanban-list"
-                        (cdkDropListDropped)="drop($event)">
-                        @for (ticket of col.data; track ticket) {
-                        <div class="ticket-card" cdkDrag (click)="openEditDialog(ticket)">
-                          <div class="ticket-header">
-              <p-tag [value]="ticket.priority"></p-tag>
-              <small class="ticket-id">#{{ ticket.id }}</small>
-            </div>
-            <div class="ticket-title">{{ ticket.title }}</div>
-            <div class="ticket-info">
-              <i class="pi pi-user"></i> <span>Asignado: {{ ticket.assignedTo }}</span>
-            </div>
-            <div class="ticket-info">
-              <i class="pi pi-pencil"></i> <span>Creado: {{ ticket.createdFrom }}</span>
-            </div>
-            @let fechaCreacion = asDate(ticket.createdAt);
-            <div class="ticket-date">
-              <i class="pi pi-calendar"></i>Fecha Creación: {{ fechaCreacion | date:'dd/MM/yyyy' }}
-            </div>
-            @let fechaLimite = asDate(ticket.deadline);
-            <div class="ticket-date">
-              <i class="pi pi-calendar"></i>Fecha Límite: {{ fechaLimite | date:'dd/MM/yyyy' }}
-            </div>
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
+          <div cdkDropList [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
+            @for (ticket of col.data; track ticket) {
+            <div class="ticket-card" cdkDrag (click)="openEditDialog(ticket)">
+              <div class="ticket-header">
+                <p-tag [value]="ticket.priority"></p-tag>
+                <small class="ticket-id">#{{ ticket.id }}</small>
+              </div>
+              <div class="ticket-title">{{ ticket.title }}</div>
+              <div class="ticket-info">
+                <i class="pi pi-user"></i> <span>Asignado: {{ ticket.assignedTo }}</span>
+              </div>
+              <div class="ticket-info">
+                <i class="pi pi-pencil"></i> <span>Creado: {{ ticket.createdFrom }}</span>
+              </div>
+              @let fechaCreacion = asDate(ticket.createdAt);
+              <div class="ticket-date">
+                <i class="pi pi-calendar"></i>Fecha Creación: {{ fechaCreacion | date:'dd/MM/yyyy' }}
+              </div>
+              @let fechaLimite = asDate(ticket.deadline);
+              <div class="ticket-date">
+                <i class="pi pi-calendar"></i>Fecha Límite: {{ fechaLimite | date:'dd/MM/yyyy' }}
+              </div>
             </div>
             }
+          </div>
         </div>
-    </p-card>
+        }
+      </div>
+      }
+    </div>
+  </p-card>
 
-    <p-dialog
-    [(visible)]="displayEditDialog"
-    [header]="selectedTicket?.id ? 'Editar Ticket #' + selectedTicket?.id : 'Nuevo Ticket'"
-    [modal]="true"
+  <p-dialog [(visible)]="displayEditDialog"
+    [header]="selectedTicket?.id ? 'Editar Ticket #' + selectedTicket?.id : 'Nuevo Ticket'" [modal]="true"
     class="p-fluid custom-modal">
 
     <form [formGroup]="formTicket" class="form-grid">
@@ -106,7 +103,8 @@
       <!-- Título -->
       <div class="field full-width">
         <label for="titulo">Título del Ticket</label>
-        <input type="text" pInputText id="titulo" formControlName="titulo" placeholder="Ej: Corregir login de usuarios" />
+        <input type="text" pInputText id="titulo" formControlName="titulo"
+          placeholder="Ej: Corregir login de usuarios" />
       </div>
 
       <!-- Descripción -->

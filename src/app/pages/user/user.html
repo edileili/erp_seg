@@ -7,160 +7,156 @@
                     [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
                     (click)="showDialog()" label="Agregar Usuario" *hasPermission="'user_add'" />
             </div>
-            <div class="card flex card-crud">
-                <p-button [style]="{ 'background': 'var(--color-blue)', 'border-color': 'var(--color-blue)' }"
-                    label="Ver Usuarios" *hasPermission="'users_view'" />
-            </div>
         </div>
     </p-card>
-            <!--Vista 10. Gestión de usuarios-->
-        <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
-            <ng-template #header>
-                <div class="inline-flex items-center justify-center gap-2">
-                    <span class="font-bold whitespace-nowrap">Crear usuario</span>
+    <!--Vista 10. Gestión de usuarios-->
+    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
+        <ng-template #header>
+            <div class="inline-flex items-center justify-center gap-2">
+                <span class="font-bold whitespace-nowrap">Crear usuario</span>
+            </div>
+        </ng-template>
+        <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
+            información.</span>
+        <form>
+            <div class="form-register">
+                <div class="form-group">
+                    <label for="usuario">Nombre de Usuario</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-user"></i>
+                        </p-inputgroup-addon>
+                        <input pInputText placeholder="Usuario" name="usuario" formControlName="usuario" />
+                    </p-inputgroup>
+
                 </div>
-            </ng-template>
-            <span class="text-surface-500 dark:text-surface-400 block mb-8">Ingresa un nuevo grupo con la siguiente
-                información.</span>
-            <form>
-                <div class="form-register">
-                    <div class="form-group">
-                        <label for="usuario">Nombre de Usuario</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-user"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText placeholder="Usuario" name="usuario" formControlName="usuario" />
-                        </p-inputgroup>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-envelope"></i>
+                        </p-inputgroup-addon>
+                        <input pInputText formControlName="email" placeholder="Email" />
+                    </p-inputgroup>
 
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-envelope"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText formControlName="email" placeholder="Email" />
-                        </p-inputgroup>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia">Contraseña</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-lock"></i>
+                        </p-inputgroup-addon>
+                        <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña" />
+                    </p-inputgroup>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia">Nombre Completo</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-star"></i>
+                        </p-inputgroup-addon>
+                        <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo" />
+                    </p-inputgroup>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia">Dirección</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-map-marker"></i>
+                        </p-inputgroup-addon>
+                        <input pInputText formControlName="direccion" placeholder="Dirección" />
+                    </p-inputgroup>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia">Fecha de Nacimiento</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-calendar"></i>
+                        </p-inputgroup-addon>
 
-                    </div>
-                    <div class="form-group">
-                        <label for="contrasenia">Contraseña</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-lock"></i>
-                            </p-inputgroup-addon>
-                            <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña" />
-                        </p-inputgroup>
-                    </div>
-                    <div class="form-group">
-                        <label for="contrasenia">Nombre Completo</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-star"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText formControlName="nomCompleto" placeholder="Nombre Completo" />
-                        </p-inputgroup>
-                    </div>
-                    <div class="form-group">
-                        <label for="contrasenia">Dirección</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-map-marker"></i>
-                            </p-inputgroup-addon>
-                            <input pInputText formControlName="direccion" placeholder="Dirección" />
-                        </p-inputgroup>
-                    </div>
-                    <div class="form-group">
-                        <label for="contrasenia">Fecha de Nacimiento</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-calendar"></i>
-                            </p-inputgroup-addon>
+                        <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
+                            dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false" />
+                    </p-inputgroup>
 
-                            <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
-                                dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false" />
-                        </p-inputgroup>
+                    <small id="username-help" style="display: block; margin-top: 0.5rem;">
+                        <i class="pi pi-info-circle"></i> La página no permite menores de 18 años.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenia">Número de Teléfono</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-phone"></i>
+                        </p-inputgroup-addon>
+                        <p-inputnumber formControlName="telefono" placeholder="Número de teléfono"
+                            [useGrouping]="false" />
+                    </p-inputgroup>
+                    <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
+                        apartado.</small>
+                </div>
+                <div class="permissions-section" *hasPermission="'user_add'">
+                    <h3 class="section-title"><i class="pi pi-lock"></i> Gestión de Permisos</h3>
 
-                        <small id="username-help" style="display: block; margin-top: 0.5rem;">
-                            <i class="pi pi-info-circle"></i> La página no permite menores de 18 años.
-                        </small>
-                    </div>
-                    <div class="form-group">
-                        <label for="contrasenia">Número de Teléfono</label>
-                        <p-inputgroup>
-                            <p-inputgroup-addon>
-                                <i class="pi pi-phone"></i>
-                            </p-inputgroup-addon>
-                            <p-inputnumber formControlName="telefono" placeholder="Número de teléfono"
-                                [useGrouping]="false" />
-                        </p-inputgroup>
-                        <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
-                            apartado.</small>
-                    </div>
-                    <div class="permissions-section" *hasPermission="'user_add'">
-                        <h3 class="section-title"><i class="pi pi-lock"></i> Gestión de Permisos</h3>
-
-                        <div class="permissions-selector">
-                            <label class="block mb-2 font-bold">Asignar Nuevos Permisos</label>
-                            <div class="flex gap-2">
-                                <p-multiSelect 
-                                    [options]="listaPermisosDisponibles" 
-                                    optionLabel="label" 
-                                    optionValue="value"
-                                    placeholder="Selecciona permisos"
-                                    display="chip" 
-                                    class="flex-1">
-                                </p-multiSelect>
-                                <p-button label="Asignar" icon="pi pi-plus" (click)="agregarPermisos()"
-                                    [disabled]="!permisosSeleccionados.length">
-                                </p-button>
-                            </div>
-                        </div>
-
-                        <div class="permissions-table-container">
-                            <p-table [value]="usuarioSeleccionado?.permisos || []" class="p-datatable-sm">
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th>Permiso</th>
-                                        <th class="text-center" style="width: 5rem">Acción</th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-permiso>
-                                    <tr>
-                                        <td>
-                                            <p-tag [value]="permiso" [severity]="getSeverity(permiso)"></p-tag>
-                                        </td>
-                                        <td class="text-center">
-                                            <p-button icon="pi pi-trash" severity="danger" [text]="true"
-                                                (click)="removerPermiso(permiso)">
-                                            </p-button>
-                                        </td>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="emptymessage">
-                                    <tr>
-                                        <td colspan="2" class="text-center p-3 text-muted">
-                                            El usuario no tiene permisos asignados.
-                                        </td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
+                    <div class="permissions-selector">
+                        <label class="block mb-2 font-bold">Asignar Nuevos Permisos</label>
+                        <div class="flex gap-2">
+                            <p-multiSelect 
+                                [options]="listaPermisosDisponibles" 
+                                optionLabel="label" 
+                                optionValue="value"
+                                placeholder="Selecciona permisos"
+                                display="chip" 
+                                class="flex-1">
+                            </p-multiSelect>
+                            <p-button label="Asignar" icon="pi pi-plus" (click)="agregarPermisos()"
+                                [disabled]="!permisosSeleccionados.length">
+                            </p-button>
                         </div>
                     </div>
-                </div>
 
-            </form>
-            <ng-template #footer>
-                <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
-                <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
-            </ng-template>
-        </p-dialog>
-    <p-card *hasPermission=" 'user_add'" class="glass-card">
+                    <div class="permissions-table-container">
+                        <p-table [value]="usuarioSeleccionado?.permisos || []" class="p-datatable-sm">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Permiso</th>
+                                    <th class="text-center" style="width: 5rem">Acción</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-permiso>
+                                <tr>
+                                    <td>
+                                        <p-tag [value]="permiso" [severity]="getSeverity(permiso)"></p-tag>
+                                    </td>
+                                    <td class="text-center">
+                                        <p-button icon="pi pi-trash" severity="danger" [text]="true"
+                                            (click)="removerPermiso(permiso)">
+                                        </p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="2" class="text-center p-3 text-muted">
+                                        El usuario no tiene permisos asignados.
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+        <ng-template #footer>
+            <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
+            <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
+        </ng-template>
+    </p-dialog>
+    <p-card *hasPermission="'users_view'" class="glass-card">
         <h1>Usuarios</h1>
         <div class="table-responsive shadow-sm rounded">
-            <table class="table table-hover bg-white">
-                <thead class="thead-dark">
+            <p-table [value]="users" class="custom-table">
+                <ng-template pTemplate="header">
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
@@ -168,8 +164,8 @@
                         <th>Permisos</th>
                         <th class="text-center">Acciones</th>
                     </tr>
-                </thead>
-                <tbody>
+                </ng-template>
+                <ng-template pTemplate="body" let-users>
                     <tr>
                         <td><strong>#1</strong></td>
                         <td>Eden
@@ -180,10 +176,11 @@
                         <td>
                             <p-button icon="pi pi-pencil" label="Editar"
                                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                                *hasPermission="'ticket_edit_state'" (click)="showDialog()" />
+                                *hasPermission="'user_edit'" (click)="showDialog()" />
                         </td>
                     </tr>
-            </table>
+                </ng-template>
+            </p-table>
         </div>
     </p-card>
     <p-dialog [(visible)]="displayEditState" [header]="'Editar Estado del Ticket'" [modal]="true"

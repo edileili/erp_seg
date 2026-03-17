@@ -1,7 +1,10 @@
 <div class="content-wrapper">
   <!--Vista 9. Filtros Rápidos -->
   <p-card class="glass-card">
+    <p-button label="Volver" icon="pi pi-arrow-left" [routerLink]="['/dashboard/groups']" class="mb-4"
+            severity="secondary" [text]="true"></p-button>
     <h1>Administración de Tickets</h1>
+    <h3>{{ group.name }}</h3>
     <div class="card-filters">
       <div class="quick-filters-container">
         <span class="quick-filters-label">
@@ -39,11 +42,12 @@
 
     <!--Vista 5. Tabla de Tickets -->
     <div class="table-responsive shadow-sm rounded">
-      <table class="table table-hover bg-white">
-        <thead class="thead-dark">
+      <p-table [value]="ticketsFiltrados()" class="custom-table" [responsiveLayout]="'scroll'">
+        
+        <ng-template pTemplate="header">
           <tr>
             <th>ID</th>
-            <th>Titulo</th>
+            <th>Título</th>
             <th>Estado</th>
             <th>Asignado a</th>
             <th>Creado por</th>
@@ -51,70 +55,77 @@
             <th>Fecha Límite</th>
             <th class="text-center">Acciones</th>
           </tr>
-        </thead>
-        <tbody>
-          @for (ticket of ticketsFiltrados(); track ticket.id) {
+        </ng-template>
+
+        <ng-template pTemplate="body" let-ticket>
           <tr>
             <td><strong>#{{ ticket.id }}</strong></td>
-            <td><strong>#{{ ticket.title }}</strong></td>
+            <td><strong>{{ ticket.title }}</strong></td>
             <td>
               @if (ticket.estado === 'Completado') {
-              <span class="badge bg-success text-white">Completado</span>
+                <span class="badge bg-success text-white">Completado</span>
               } @else if (ticket.estado === 'En Proceso') {
-              <span class="badge bg-warning text-dark">En Proceso</span>
+                <span class="badge bg-warning text-dark">En Proceso</span>
               } @else {
-              <span class="badge bg-secondary text-white">{{ ticket.estado }}</span>
+                <span class="badge bg-secondary text-white">{{ ticket.estado }}</span>
               }
             </td>
             <td>{{ ticket.assignedTo }}</td>
             <td>{{ ticket.createdFrom }}</td>
             <td>
               <span [class.text-danger]="ticket.priority === 'Alta'"
-                [class.font-weight-bold]="ticket.priority === 'Alta'">
+                    [class.font-weight-bold]="ticket.priority === 'Alta'">
                 {{ ticket.priority }}
               </span>
             </td>
-             @let fechaCreacion = asDate(ticket.createdAt);
-            <td>{{ fechaCreacion | date:'dd/MM/yyyy' }}</td>
-            
-            <td>
-                <p-button icon="pi pi-pencil" label="Editar"
-                [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                *hasPermission="'ticket_edit'"
-                (click)="openEditDialog(ticket); $event.stopPropagation()" />
-              <p-button icon="pi pi-trash" label="Eliminar" severity="danger"
-                *hasPermission="'ticket_delete'"
-                (click)="openDeleteDialog(ticket); $event.stopPropagation()" />
+            <td>{{ asDate(ticket.createdAt) | date:'dd/MM/yyyy' }}</td>
+            <td class="text-center">
+              <div class="d-flex gap-2 justify-content-center card-buttons">
+                <p-button class="btn-edit" icon="pi pi-pencil" label="Editar"
+                  [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
+                  *hasPermission="'ticket_edit'"
+                  (click)="openEditDialog(ticket); $event.stopPropagation()" />
+                <p-button class="btn-delete" icon="pi pi-trash" label="Eliminar" severity="danger"
+                  *hasPermission="'ticket_delete'"
+                  (click)="openDeleteDialog(ticket); $event.stopPropagation()" />
+              </div>
             </td>
           </tr>
-          } @empty {
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="6" class="text-center text-muted">
+            <td colspan="8" class="text-center text-muted">
               No se encontraron tickets con esos filtros.
             </td>
           </tr>
-          }
-        </tbody>
-      </table>
+        </ng-template>
+        
+      </p-table>
     </div>
   </p-card>
 
   <!--Vista 3. Kanban Tablero -->
   <p-card class="glass-card">
     <h1 class="kanban-title">Tablero de Tickets</h1>
-    <p-button label="Crear Ticket" icon="pi pi-plus" (onClick)="openCreateTicket()" severity="primary"></p-button>
+    <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="'ticket_add'" (onClick)="openCreateTicket()" severity="primary"></p-button>
 
     <div class="kanban-wrapper" cdkDropListGroup>
       @let columns = [
         { label: 'Pendiente',   data: todo,       },
         { label: 'En Progreso', data: inProgress,  },
         { label: 'Revisión',    data: review,     },
+        { label: 'Bloqueado',   data: blocked},
         { label: 'Hecho',       data: done,        }
       ];
 
       @for (col of columns; track col.label) {
+
       <div class="kanban-col">
-        <h3 class="column-header">{{ col.label }}</h3>
+        <div class="flex justify-content-between align-items-center mb-3">
+          <span class="font-bold">{{ col.label }}</span>
+          <p-badge [value]="col.data.length" severity="secondary"></p-badge>
+        </div>
         <div cdkDropList [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
           @for (ticket of col.data; track ticket.id) {
           <div class="ticket-card" cdkDrag (click)="viewTicket(ticket)" >

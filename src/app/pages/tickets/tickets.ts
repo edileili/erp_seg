@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { ReactiveFormsModule, FormsModule, FormGroup, FormControl } from '@angular/forms';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -13,6 +14,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from 
 import { TagModule } from 'primeng/tag';
 import { DatePipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 export interface TicketLog {
   fecha: string;
@@ -64,19 +66,35 @@ export interface TicketRow {
     ReactiveFormsModule,
     DragDropModule,
     TagModule,
+    TableModule,
     DatePipe,
-    CommonModule
+    CommonModule, RouterLink
   ],
   providers: [MessageService],
   templateUrl: './tickets.html',
   styleUrl: './tickets.css',
 })
-export class Tickets {
+export class Tickets implements OnInit {
   displayEditDialog = false;
   displayDeleteDialog = false;
   selectedTicket: Ticket | null = null;
+  private route = inject(ActivatedRoute);
 
   asDate(d: any) { return new Date(d); }
+
+  group: any;
+
+  groups = [
+    { id: 1, name: 'Equipo de Desarrollo Alfa', memberCount: 3, members: [{ email: 'admin@empresa.com', role: 'admin' }, { email: 'juan.perez@empresa.com', role: 'member' }, { email: 'ana.garcia@empresa.com', role: 'member' }], description: 'Espacio de trabajo para el frontend core.' },
+    { id: 2, name: 'Marketing Digital', memberCount: 5, members: [{ email: 'mkt.lead@empresa.com', role: 'admin' }, { email: 'creative@empresa.com', role: 'member' }], description: 'Gestión de campañas.' },
+    { id: 3, name: 'Recursos Humanos', memberCount: 2, members: [{ email: 'rrhh@empresa.com', role: 'admin' }] }
+  ];
+
+  ngOnInit() {
+    const id = Number(this.route.snapshot.paramMap.get('idGroup'));
+    this.group = this.groups.find(g => g.id === id);
+    // Filtra o carga los tickets de este grupo
+  }
 
   formTicket = new FormGroup({
     titulo:         new FormControl(''),
@@ -153,6 +171,8 @@ export class Tickets {
       ],
     },
   ];
+
+  blocked: Ticket[] = [];
 
   done: Ticket[] = [
     {
