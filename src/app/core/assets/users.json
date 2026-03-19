@@ -19,24 +19,7 @@
         "nombre": "SuperAdmin",
         "contrasenia": "Contrasenia$",
         "permisos": [
-            "admin",
-            "group_view",
-            "group_edit",
-            "group_add",
-            "group_delete",
-            "group_add_member",
-            "group_remove_member",
-            "ticket_view",
-            "ticket_edit",
-            "ticket_add",
-            "ticket_delete",
-            "ticket_edit_state",
-            "tickets_view",
-            "user_view",
-            "users_view",
-            "user_edit",
-            "user_add",
-            "user_delete"
+            "group_view", "group_edit", "group_add", "group_remove", "group_add_member","group_remove_member", "group_manage","ticket_view","ticket_edit","ticket_edit_state","ticket_edit_comment","ticket_add","ticket_delete","tickets_view", "ticket_manage","user_view","users_view","user_edit","user_edit_profile","user_edit_permissions","user_add","user_remove","user_manage"
         ]
     }
 ]

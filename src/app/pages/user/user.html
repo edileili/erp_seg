@@ -165,14 +165,14 @@
                         <th class="text-center">Acciones</th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-users>
+                <ng-template pTemplate="body" let-user>
                     <tr>
-                        <td><strong>#1</strong></td>
-                        <td>Eden
+                        <td><strong>{{user.id}}</strong></td>
+                        <td>{{user.nombre}}
                         </td>
-                        <td>Romero
+                        <td>{{user.apellido}}
                         </td>
-                        <td>'user_add'</td>
+                        <td>{{user.permisos}}</td>
                         <td>
                             <p-button icon="pi pi-pencil" label="Editar"
                                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"

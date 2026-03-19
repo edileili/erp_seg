@@ -56,7 +56,7 @@
         ];
 
         @for (col of columns; track col.label) {
-        <div class="kanban-col">
+        <div class="kanban-col" *hasPermission="'ticket_view'">
           <div class="flex justify-content-between align-items-center mb-3">
             <span class="font-bold">{{ col.label }}</span>
             <p-badge [value]="col.data.length" severity="secondary"></p-badge>

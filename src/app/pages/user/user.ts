@@ -37,11 +37,33 @@ export class User {
     { id: 103, estado: 'En Progreso', prioridad: 'Media', fecha: new Date() },
   ];
 
-  listaPermisosDisponibles = [
-    { label: 'Admin', value: 'admin' }, { label: 'Ver Grupo', value: 'group_view' }, { label: 'Editar Grupo', value: 'group_edit' }, { label: 'Agregar Grupo', value: 'group_add' }, { label: 'Borrar Grupo', value: 'group_delete' },
-    { label: 'Ver Ticket', value: 'ticket_view' }, { label: 'Editar Ticket', value: 'ticket_edit' }, { label: 'Agregar Ticket', value: 'ticket_add' }, { label: 'Borrar Ticket', value: 'ticket_delete' }, { label: 'Editar Estado Ticket', value: 'ticket_edit_state' },
-    { label: 'Ver Usuario', value: 'user_view' }, { label: 'Ver Usuarios', value: 'users_view' }, { label: 'Editar Usuario', value: 'user_edit' }, { label: 'Agregar Usuario', value: 'user_add' }, { label: 'Borrar Usuario', value: 'user_delete' }
-  ];
+listaPermisosDisponibles = [
+  { label: 'Ver Grupo', value: 'group_view' },
+  { label: 'Editar Grupo', value: 'group_edit' },
+  { label: 'Agregar Grupo', value: 'group_add' },
+  { label: 'Eliminar Grupo', value: 'group_remove' },
+  { label: 'Agregar Miembro al Grupo', value: 'group_add_member' },
+  { label: 'Eliminar Miembro del Grupo', value: 'group_remove_member' },
+  { label: 'Gestionar Grupos', value: 'group_manage' },
+
+  { label: 'Ver Ticket', value: 'ticket_view' },
+  { label: 'Ver Todos los Tickets', value: 'tickets_view' },
+  { label: 'Editar Ticket', value: 'ticket_edit' },
+  { label: 'Editar Estado de Ticket', value: 'ticket_edit_state' },
+  { label: 'Editar Comentario de Ticket', value: 'ticket_edit_comment' },
+  { label: 'Agregar Ticket', value: 'ticket_add' },
+  { label: 'Eliminar Ticket', value: 'ticket_delete' },
+  { label: 'Gestionar Tickets', value: 'ticket_manage' },
+
+  { label: 'Ver Usuario', value: 'user_view' },
+  { label: 'Ver Lista de Usuarios', value: 'users_view' },
+  { label: 'Editar Usuario', value: 'user_edit' },
+  { label: 'Editar Perfil de Usuario', value: 'user_edit_profile' },
+  { label: 'Editar Permisos de Usuario', value: 'user_edit_permissions' },
+  { label: 'Agregar Usuario', value: 'user_add' },
+  { label: 'Eliminar Usuario', value: 'user_remove' },
+  { label: 'Gestionar Usuarios', value: 'user_manage' }
+];
 
   permisosSeleccionados: string[] = [];
   usuarioSeleccionado: any;
