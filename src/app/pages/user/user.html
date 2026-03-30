@@ -5,7 +5,7 @@
             <div class="card flex card-crud">
                 <p-button
                     [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
-                    (click)="showDialog()" label="Agregar Usuario" *hasPermission="'user_add'" />
+                    (click)="showDialog()" label="Agregar Usuario" *hasPermission="['user_add']" />
             </div>
         </div>
     </p-card>
@@ -94,7 +94,7 @@
                     <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
                         apartado.</small>
                 </div>
-                <div class="permissions-section" *hasPermission="'user_add'">
+                <div class="permissions-section" *hasPermission="['user_add']">
                     <h3 class="section-title"><i class="pi pi-lock"></i> Gestión de Permisos</h3>
 
                     <div class="permissions-selector">
@@ -152,7 +152,7 @@
             <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
         </ng-template>
     </p-dialog>
-    <p-card *hasPermission="'users_view'" class="glass-card">
+    <p-card *hasPermission="['users_view']" class="glass-card">
         <h1>Usuarios</h1>
         <div class="table-responsive shadow-sm rounded">
             <p-table [value]="users" class="custom-table">
@@ -176,7 +176,7 @@
                         <td>
                             <p-button icon="pi pi-pencil" label="Editar"
                                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                                *hasPermission="'user_edit'" (click)="showDialog()" />
+                                *hasPermission="['user_edit']" (click)="showDialog()" />
                         </td>
                     </tr>
                 </ng-template>

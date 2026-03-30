@@ -2,8 +2,12 @@ import { Directive, Input, TemplateRef, ViewContainerRef, OnInit } from '@angula
 import { Permission, PermissionService } from '../services/permission.service';
 
 @Directive({ selector: '[hasPermission]', standalone: true})
-export class HasPermissionDirective {
-  @Input() hasPermission!: Permission | Permission[];
+export class HasPermissionDirective implements OnInit {
+  private requiredPermissions: Permission[] = [];
+
+  @Input() set hasPermission(permissions: Permission[]) {
+    this.requiredPermissions = permissions;
+  }
   @Input() hasPermissionMode: 'all' | 'any' = 'any';
 
   constructor(
@@ -13,7 +17,15 @@ export class HasPermissionDirective {
   ) {}
 
   ngOnInit(): void {
-    this.updateView();
+    const hasAccess = this.hasPermissionMode === 'all'
+      ? this.permissionService.hasAllPermissions(this.requiredPermissions)
+      : this.permissionService.hastAnyPermission(this.requiredPermissions);
+
+    if (hasAccess) {
+      this.viewContainer.createEmbeddedView(this.templateRef);
+    } else {
+      this.viewContainer.clear();
+    }
   }
 
   private updateView(): void {

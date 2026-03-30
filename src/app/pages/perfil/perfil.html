@@ -13,7 +13,7 @@
         </div>
         <div class="card flex card-crud">
             <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
-                (click)="showDialog()" label="Editar mis datos" *hasPermission="'user_edit'" />
+                (click)="showDialog()" label="Editar mis datos" *hasPermission="['user_edit']" />
         </div>
     </p-card>
     <p-card class="glass-card">
@@ -56,7 +56,7 @@
                         <td>
                             <p-button icon="pi pi-pencil" label="Editar Estado"
                                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                                *hasPermission="'ticket_edit_state'" (click)="editState()" />
+                                *hasPermission="['ticket_edit_state']" (click)="editState()" />
                         </td>
                     </tr>
                     } @empty {

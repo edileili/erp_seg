@@ -104,10 +104,13 @@
                                     <i class="pi pi-calendar"></i>
                                 </p-inputgroup-addon>
 
-                                <p-datepicker formControlName="fechaNacimiento" placeholder="Fecha de Nacimiento"
-                                    dateFormat="dd/mm/yy" [fluid]="true" [showIcon]="false"
+                                <p-datepicker 
+                                    formControlName="fechaNacimiento" 
+                                    dateFormat="yy-mm-dd" [fluid]="true"
+                                    [showIcon]="true"
                                     [class.ng-invalid]="isInvalid('fechaNacimiento')"
-                                    [class.ng-dirty]="isInvalid('fechaNacimiento')" />
+                                    [class.ng-dirty]="isInvalid('fechaNacimiento')">
+                                </p-datepicker>
                             </p-inputgroup>
 
                             @if(registroSeg.get('fechaNacimiento')?.errors?.['menorDeEdad'] &&

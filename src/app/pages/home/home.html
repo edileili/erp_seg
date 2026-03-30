@@ -5,7 +5,7 @@
       <h1 class="title">Bienvenido, <span class="user-name">User</span></h1>
       <p class="subtitle">Aquí encontrarás todo lo que necesites</p>
 
-      @if(!permissionService.hasPermission('admin')) {
+      @if(!permissionService.hasPermission('group_manage')) {
         <div class="group-user">
           <h1>Tus Grupos</h1>
           <div class="groups-grid">
@@ -18,7 +18,7 @@
                 </div>
               </ng-template>
               <ng-template pTemplate="footer">
-                <p-button label="Ver Grupo" *hasPermission="'group_view'" [routerLink]="['/dashboard/groups', group.id]"></p-button>
+                <p-button label="Ver Grupo" *hasPermission="['group_view']" [routerLink]="['/dashboard/groups', group.id]"></p-button>
               </ng-template>
 
             </p-card>

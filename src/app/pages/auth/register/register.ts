@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { PasswordModule } from 'primeng/password';
 import { DatePickerModule } from 'primeng/datepicker';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -25,6 +26,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 export class Register {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
+  private authService = inject(AuthService);
 
   public registroSeg: FormGroup;
   public formSubmitted = false;
@@ -56,26 +58,54 @@ export class Register {
 
     return edad >= 18 ? null : { menorDeEdad: true };
   }
-  onSubmit() {
-    this.formSubmitted = true;
 
-    if (this.registroSeg.valid) {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Éxito',
-        detail: 'Registro completado',
-        life: 3000
-      });
-      console.log(this.registroSeg.value);
+  async onSubmit() {
+    this.formSubmitted = true;
+    
+
+    if (this.registroSeg.invalid) {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Revisa los campos', life: 3000 });
+      return;
+    }
+
+    const { contrasenia, concontrasenia } = this.registroSeg.value;
+    if (contrasenia !== concontrasenia) {
+      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Las contraseñas no coinciden', life: 3000 });
+      return;
+    }
+
+    try {
+      const values = this.registroSeg.value;
+      const fecha = new Date(values.fechaNacimiento);
+
+      // Extraemos año, mes y día localmente
+      const year = fecha.getFullYear();
+      const month = String(fecha.getMonth() + 1).padStart(2, '0');
+      const day = String(fecha.getDate()).padStart(2, '0');
+      
+      const fechaLimpia = `${year}-${month}-${day}`; // Resultado: "2005-07-31"
+
+      const dataToSubmit = {
+        usuario: values.usuario,
+        email: values.email,
+        contrasenia: values.contrasenia,
+        nombre_com: values.nomCompleto,
+        direccion: values.direccion,
+        fecha_nacimiento: fechaLimpia, 
+        telefono: values.telefono
+      };
+
+      console.log('Enviando a la API:', dataToSubmit);
+      await this.authService.register(dataToSubmit);
+
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
       this.registroSeg.reset();
       this.formSubmitted = false;
-    } else {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Por favor, revisa los campos',
-        life: 3000
-      });
+      
+    } catch (error: any) {
+      // Manejo del error 409 (Conflicto) que envía tu API
+      const errorMsg = error.error?.message || 'Error al registrar usuario';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg, life: 3000 });
     }
   }
 

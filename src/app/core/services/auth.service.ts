@@ -1,16 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Permission } from './permission.service';
+import { Permission, PermissionService } from './permission.service';
 import usersConPermisos from './../assets/users.json';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
-interface UserPermisos {
-  id: number;
-  email: string;
-  nombre: string;
-  contrasenia: string;
-  permisos: Permission[];
+interface LoginResponse {
+  statusCode: number;
+  data: [{
+    accessToken: string;
+    usuario: {
+      id: string;
+      usuario: string;
+      email: string;
+      nombre_com: string;
+      permisos: Permission[];
+    };
+  }];
 }
-
 interface TokenPayload {
   id: number;
   email: string;
@@ -22,33 +29,40 @@ interface TokenPayload {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly TOKEN_KEY = 'erp_token';
+  private readonly PERMISOS_KEY = 'erp_permisos';
+  private readonly API = 'http://localhost:3000/api';
 
-  constructor(private http: HttpClient) {}
-
-  async login(email: string, contrasenia: string): Promise<TokenPayload | null> {
-    const users = usersConPermisos as UserPermisos[];
-    const user = users.find(u => u.email === email && u.contrasenia === contrasenia);
-
-    if (!user) return null;
-
-    const payload: TokenPayload = {
-      id: user.id,
-      email: user.email,
-      nombre: user.nombre,
-      permisos: user.permisos,
-      exp: Date.now() + 1000 * 60 * 60
-    };
-
-    const token = this.generateMockToken(payload);
-    localStorage.setItem(this.TOKEN_KEY, token);
-    return payload;
+  constructor(
+    private http: HttpClient,
+    private permissionService: PermissionService  // ← inyecta aquí
+  ) {
+    // ⚠️ MUY IMPORTANTE: restaura los permisos al recargar la página
+    this.restoreSession();
   }
 
-  private generateMockToken(payload: TokenPayload): string {
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const body   = btoa(JSON.stringify(payload));
-    const signature = btoa('mock-signature');
-    return `${header}.${body}.${signature}`;
+  async login(email: string, contrasenia: string): Promise<TokenPayload | null> {
+    try {
+      const res = await firstValueFrom(
+        this.http.post<LoginResponse>(`${this.API}/usuarios/login`, { email, contrasenia })
+      );
+
+      const { accessToken, usuario } = res.data[0];
+
+      localStorage.setItem(this.TOKEN_KEY, accessToken);
+      localStorage.setItem(this.PERMISOS_KEY, JSON.stringify(usuario.permisos));
+      this.permissionService.setPermissions(usuario.permisos as Permission[]);
+
+      return this.getTokenPayload();
+    } catch (error) {
+      console.error('Error en login:', error);
+      return null;
+    }
+  }
+
+  async register(userData: any) {
+    return firstValueFrom(
+      this.http.post(`${this.API}/usuarios/registro`, userData)
+    );
   }
 
   getTokenPayload(): TokenPayload | null {
@@ -57,16 +71,30 @@ export class AuthService {
 
     try {
       const body = token.split('.')[1];
-      const payload: TokenPayload = JSON.parse(atob(body));
+      const payload = JSON.parse(atob(body));
 
-      if (payload.exp < Date.now()) {
+      if (payload.exp * 1000 < Date.now()) {
         this.logout();
         return null;
       }
-      return payload;
+
+      const permisos = this.getPermisos();
+      return { ...payload, permisos };
     } catch {
       return null;
     }
+  }
+
+  private restoreSession(): void {
+    const raw = localStorage.getItem(this.PERMISOS_KEY);
+    if (raw && this.isAuthenticated()) {
+      this.permissionService.setPermissions(JSON.parse(raw) as Permission[]);
+    }
+  }
+
+  getPermisos(): Permission[] {
+    const raw = localStorage.getItem(this.PERMISOS_KEY);
+    return raw ? JSON.parse(raw) : [];
   }
 
   isAuthenticated(): boolean {
@@ -75,5 +103,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.PERMISOS_KEY);
+    this.permissionService.clearPermissions();
   }
 }

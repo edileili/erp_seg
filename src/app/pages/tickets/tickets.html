@@ -83,10 +83,10 @@
               <div class="d-flex gap-2 justify-content-center card-buttons">
                 <p-button class="btn-edit" icon="pi pi-pencil" label="Editar"
                   [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                  *hasPermission="'ticket_edit'"
+                  *hasPermission="['ticket_edit']"
                   (click)="openEditDialog(ticket); $event.stopPropagation()" />
                 <p-button class="btn-delete" icon="pi pi-trash" label="Eliminar" severity="danger"
-                  *hasPermission="'ticket_delete'"
+                  *hasPermission="['ticket_delete']"
                   (click)="openDeleteDialog(ticket); $event.stopPropagation()" />
               </div>
             </td>
@@ -108,7 +108,7 @@
   <!--Vista 3. Kanban Tablero -->
   <p-card class="glass-card">
     <h1 class="kanban-title">Tablero de Tickets</h1>
-    <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="'ticket_add'" (onClick)="openCreateTicket()" severity="primary"></p-button>
+    <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="['ticket_add']" (onClick)="openCreateTicket()" severity="primary"></p-button>
 
     <div class="kanban-wrapper" cdkDropListGroup>
       @let columns = [
@@ -151,10 +151,10 @@
             <div class="card-buttons">
               <p-button icon="pi pi-pencil" label="Editar"
                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                *hasPermission="'ticket_edit'"
+                *hasPermission="['ticket_edit']"
                 (click)="openEditDialog(ticket); $event.stopPropagation()" />
               <p-button icon="pi pi-trash" label="Eliminar" severity="danger"
-                *hasPermission="'ticket_delete'"
+                *hasPermission="['ticket_delete']"
                 (click)="openDeleteDialog(ticket); $event.stopPropagation()" />
             </div>
           </div>

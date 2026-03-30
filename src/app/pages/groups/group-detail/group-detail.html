@@ -41,7 +41,7 @@
             <h2 class="m-0">{{group.name}}</h2>
             <p class="text-secondary">Total de tickets: <b>{{ totalTickets() }}</b></p>
           </div>
-          <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="'ticket_add'" (onClick)="openCreateTicket()"
+          <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="['ticket_add']" (onClick)="openCreateTicket()"
             severity="primary"></p-button>
         </div>
       </div>
@@ -56,7 +56,7 @@
         ];
 
         @for (col of columns; track col.label) {
-        <div class="kanban-col" *hasPermission="'ticket_view'">
+        <div class="kanban-col" *hasPermission="['ticket_view']">
           <div class="flex justify-content-between align-items-center mb-3">
             <span class="font-bold">{{ col.label }}</span>
             <p-badge [value]="col.data.length" severity="secondary"></p-badge>

@@ -9,7 +9,6 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { Router } from '@angular/router';
 import { PermissionService, Permission, UsersPermisos } from '../../../core/services/permission.service';
 import { AuthService } from '../../../core/services/auth.service';
-import usersConPermisos from './../../../core/assets/users.json';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +30,7 @@ export class Login {
   constructor(private permissionService: PermissionService) {
     this.loginSeg = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      contrasenia: ['', [Validators.required, Validators.minLength(10), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}$/)]]
+      contrasenia: ['', [Validators.required]] // ← solo required, bcrypt compara en el backend
     });
   }
 
@@ -44,7 +43,6 @@ export class Login {
     //const user = usersConPermisos.find(u => u.email === email);
 
     if (response) {
-      this.permissionService.setPermissions(response.permisos);
       this.messageService.add({
         severity: 'success',
         summary: `¡Bienvenido a ERP!`,
