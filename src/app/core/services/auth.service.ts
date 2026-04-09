@@ -36,14 +36,13 @@ export class AuthService {
     private http: HttpClient,
     private permissionService: PermissionService  // ← inyecta aquí
   ) {
-    // ⚠️ MUY IMPORTANTE: restaura los permisos al recargar la página
     this.restoreSession();
   }
 
   async login(email: string, contrasenia: string): Promise<TokenPayload | null> {
     try {
       const res = await firstValueFrom(
-        this.http.post<LoginResponse>(`${this.API}/usuarios/login`, { email, contrasenia })
+        this.http.post<LoginResponse>(`${this.API}/auth/login`, { email, contrasenia })
       );
 
       const { accessToken, usuario } = res.data[0];
@@ -62,6 +61,12 @@ export class AuthService {
   async register(userData: any) {
     return firstValueFrom(
       this.http.post(`${this.API}/usuarios/registro`, userData)
+    );
+  }
+
+  async newUser(userData: any) {
+    return firstValueFrom(
+      this.http.post(`${this.API}/admin/usuarios`, userData)
     );
   }
 
