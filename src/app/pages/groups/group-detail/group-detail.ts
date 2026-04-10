@@ -231,7 +231,6 @@ export class GroupDetail implements OnInit {
   
     saveTicket() {
       const values = this.formTicket.value;
-      console.log('Guardando ticket:', values);
       this.closeEditDialog();
     }
 }

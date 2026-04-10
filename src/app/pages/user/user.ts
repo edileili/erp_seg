@@ -101,7 +101,6 @@ export class User {
         telefono: values.telefono
       };
 
-      console.log('Enviando a la API:', dataToSubmit);
       await this.authService.newUser(dataToSubmit);
 
       this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });

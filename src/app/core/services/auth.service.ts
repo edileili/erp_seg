@@ -34,7 +34,7 @@ export class AuthService {
 
   constructor(
     private http: HttpClient,
-    private permissionService: PermissionService  // ← inyecta aquí
+    private permissionService: PermissionService
   ) {
     this.restoreSession();
   }

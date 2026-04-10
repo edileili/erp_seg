@@ -21,7 +21,6 @@
         <form [formGroup]="newUser" (ngSubmit)="onSubmit()">
             <div class="form-register">
                 <div class="info-login">
-                    <small>¿Ya tienes cuenta? Inicia sesión <a href="/login">aquí.</a></small>
                 </div>
                 <div class="form-group">
                     <label for="usuario">Nombre de Usuario</label>
@@ -144,6 +143,57 @@
                     }
                     <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
                         apartado.</small>
+                </div>
+
+                <div class="permissions-section" *hasPermission="['user_add']">
+                    <h3 class="section-title"><i class="pi pi-lock"></i> Gestión de Permisos</h3>
+
+                    <div class="permissions-selector">
+                        <label class="block mb-2 font-bold">Asignar Nuevos Permisos</label>
+                        <div class="flex gap-2">
+                            <p-multiSelect 
+                                [options]="listaPermisosDisponibles" 
+                                optionLabel="label" 
+                                optionValue="value"
+                                placeholder="Selecciona permisos"
+                                display="chip" 
+                                class="flex-1">
+                            </p-multiSelect>
+                            <p-button label="Asignar" icon="pi pi-plus" (click)="agregarPermisos()"
+                                [disabled]="!permisosSeleccionados.length">
+                            </p-button>
+                        </div>
+                    </div>
+
+                    <div class="permissions-table-container">
+                        <p-table [value]="usuarioSeleccionado?.permisos || []" class="p-datatable-sm">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Permiso</th>
+                                    <th class="text-center" style="width: 5rem">Acción</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-permiso>
+                                <tr>
+                                    <td>
+                                        <p-tag [value]="permiso" [severity]="getSeverity(permiso)"></p-tag>
+                                    </td>
+                                    <td class="text-center">
+                                        <p-button icon="pi pi-trash" severity="danger" [text]="true"
+                                            (click)="removerPermiso(permiso)">
+                                        </p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="2" class="text-center p-3 text-muted">
+                                        El usuario no tiene permisos asignados.
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
                 </div>
 
                 <div class="form-group form-button">
