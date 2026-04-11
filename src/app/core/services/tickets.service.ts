@@ -73,6 +73,10 @@ export class TicketsService {
     return this.http.post(`${this.API}/${ticketId}/comentarios`, ticket);
   }
 
+  getMisTickets(grupoId: number): Observable<any> {
+    return this.http.get(`${this.API}/mis-tickets/${grupoId}`)
+  }
+
   /*getHistorial(ticketId: Number): Observable<any> {
     return this.http.get(`${this.API}/${ticketId}/historial`)
   }*/

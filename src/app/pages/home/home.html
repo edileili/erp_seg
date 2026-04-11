@@ -8,20 +8,35 @@
       @if(!permissionService.hasPermission('group_manage')) {
         <div class="group-user">
           <h1>Tus Grupos</h1>
-          <div class="groups-grid">
+          <div class="groups-grid grid p-3">
             @for (group of groups; track group.id) {
-            <p-card class="glass-card group-item">
-              <ng-template pTemplate="header">
-                <div class="card-header">
-                  <h2>{{ group.name }}</h2>
-                  <p-badge [value]="group.memberCount" severity="info" />
-                </div>
-              </ng-template>
-              <ng-template pTemplate="footer">
-                <p-button label="Ver Grupo" *hasPermission="['group_view']" [routerLink]="['/dashboard/groups', group.id]"></p-button>
-              </ng-template>
+              <div class="col-12 md:col-6 lg:col-4">
+                <p-card class="glass-card group-item">
+                  <ng-template pTemplate="header">
+                    <div class="p-3">
+                      <div class="flex justify-content-between align-items-center mb-2">
+                        <h2 class="m-0 text-xl font-bold">Nombre del grupo: {{ group.nombre }}</h2>
+                        <p-badge [value]="group.total_miembros.toString()" severity="info"></p-badge>
+                      </div>
+                      <p class="text-sm text-600 mb-2">{{ group.descripcion }}</p>
+                    </div>
+                  </ng-template>
 
-            </p-card>
+                  <div class="flex align-items-center text-xs text-500">
+                    <i class="pi pi-calendar mr-1"></i>
+                    @let fechaCreacion = asDate(group.creado_fecha);
+                    <span>Creado: {{ fechaCreacion | date:'dd/MM/yyyy' }}</span>
+                  </div>
+
+                  <ng-template pTemplate="footer">
+                    <p-button label="Ver Grupo" icon="pi pi-arrow-right" 
+                              iconPos="right"
+                              *hasPermission="['group_view']" 
+                              [routerLink]="['/dashboard/groups', group.id]"
+                              styleClass="p-button-sm w-full"></p-button>
+                  </ng-template>
+                </p-card>
+              </div>
             }
           </div>
         </div>

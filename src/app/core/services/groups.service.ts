@@ -33,4 +33,8 @@ export class GroupsService {
   update(grupoId: number, grupo: any): Observable<any> {
     return this.http.put(`${this.API}/${grupoId}`, grupo);
   }
+
+  getMyGroups(): Observable<any> {
+    return this.http.get(`${this.API}/mis-grupos`)
+  }
 }

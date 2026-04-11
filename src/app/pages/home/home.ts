@@ -5,16 +5,50 @@ import { BadgeModule } from 'primeng/badge';
 import { RouterLink } from '@angular/router';
 import { HasPermissionDirective } from "../../core/directives/has-permission.directive";
 import { PermissionService } from '../../core/services/permission.service';
+import { GroupsService } from '../../core/services/groups.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { DatePipe } from '@angular/common';
+
+export interface Grupo {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  creado_fecha: string;
+  total_miembros: number;
+}
 
 @Component({
   selector: 'app-home',
-  imports: [CardModule, ButtonModule, BadgeModule, RouterLink, HasPermissionDirective],
+  imports: [CardModule, ButtonModule, BadgeModule, RouterLink, HasPermissionDirective, DatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
-  constructor(public permissionService: PermissionService){}
-  groups = [
+  constructor(
+    public permissionService: PermissionService,
+    private groupsService: GroupsService,
+    private cdr: ChangeDetectorRef
+  ){}
+
+  ngOnInit() {
+    this.loadMyGroups();
+  }
+
+  loadMyGroups() {
+    this.groupsService.getMyGroups().subscribe({
+      next: (res: any) => {
+        console.log('Respuesta raw grupo:', res);
+        this.groups = res.data ?? res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar grupo', err),
+    });
+  }
+
+  asDate(d: any) { return new Date(d); }
+
+  groups: any[] = [];
+  groups1 = [
     {
       id: 1,
       name: 'Equipo de Desarrollo Alfa',

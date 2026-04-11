@@ -1,28 +1,48 @@
 <div class="content-wrapper">
+  <p-toast />
   <!--Vista 2. Dashboard Grupo del usuario-->
   <p-card class="glass-card">
     <p-button label="Volver" icon="pi pi-arrow-left" [routerLink]="['/dashboard/home']" class="mb-4"
       severity="secondary" [text]="true"></p-button>
 
     @if (group) {
-    <p-card [header]="group.name" [subheader]="group.description">
+    <p-card [header]="group.nombre" [subheader]="group.descripcion">
       <div class="flex flex-column gap-3">
-        <h3>Miembros del equipo ({{group.members.length}})</h3>
 
-        <p-table [value]="group.members" [tableStyle]="{ 'min-width': '50rem' }">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Email</th>
-              <th>Rol</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-member>
-            <tr>
-              <td>{{ member.email }}</td>
-              <td>{{ member.role }}</td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <p-card header="Miembros del Equipo" class="mt-4">
+          <p-table 
+            [value]="loadedMembers[group.id] || []" 
+            [tableStyle]="{ 'min-width': '50rem' }"
+            styleClass="p-datatable-striped">
+            
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nombre</th>
+                <th>Correo Electrónico</th>
+              </tr>
+            </ng-template>
+            
+            <ng-template pTemplate="body" let-member>
+              <tr>
+                <td>
+                  <div class="flex align-items-center gap-2">
+                    <i class="pi pi-user text-primary"></i>
+                    {{ member.nombre_com || 'Sin nombre' }}
+                  </div>
+                </td>
+                <td>{{ member.email }}</td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3" class="text-center p-4">
+                  No hay miembros registrados en este grupo.
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </p-card>
       </div>
     </p-card>
     } @else {
@@ -38,7 +58,7 @@
       <div class="dashboard-header p-4 shadow-1 mb-4">
         <div class="flex justify-content-between align-items-center">
           <div>
-            <h2 class="m-0">{{group.name}}</h2>
+            <h2 class="m-0">{{group.nombre}}</h2>
             <p class="text-secondary">Total de tickets: <b>{{ totalTickets() }}</b></p>
           </div>
           <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="['ticket_add']" (onClick)="openCreateTicket()"
@@ -48,41 +68,46 @@
 
       <div class="kanban-wrapper" cdkDropListGroup>
         @let columns = [
-        { label: 'Pendiente', data: todo, },
-        { label: 'En Progreso', data: inProgress,},
-        { label: 'En revisión', data: review, },
-        { label: 'Bloqueado', data: blocked, },
-        { label: 'Hecho', data: done, }
+          { label: 'Pendiente', data: todo, estadoId: 1 },
+          { label: 'En Progreso', data: inProgress, estadoId: 2 },
+          { label: 'En revisión', data: review, estadoId: 3 },
+          { label: 'Bloqueado', data: blocked, estadoId: 4 },
+          { label: 'Hecho', data: done, estadoId: 5 }
         ];
 
         @for (col of columns; track col.label) {
         <div class="kanban-col" *hasPermission="['ticket_view']">
           <div class="flex justify-content-between align-items-center mb-3">
             <span class="font-bold">{{ col.label }}</span>
-            <p-badge [value]="col.data.length" severity="secondary"></p-badge>
+            <p-badge [value]="(col.data().length || 0).toString()" severity="secondary"></p-badge>
           </div>
 
-          <div cdkDropList [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
-            @for (ticket of col.data; track ticket) {
+          <div cdkDropList 
+          [id]="col.estadoId.toString()" [cdkDropListData]="col.data()" class="kanban-list" (cdkDropListDropped)="drop($event)">
+
+            @for (ticket of col.data(); track ticket.id) {
             <div class="ticket-card" cdkDrag (click)="openEditDialog(ticket)">
               <div class="ticket-header">
-                <p-tag [value]="ticket.priority"></p-tag>
+                <p-tag [value]="ticket.nivel_prioridad"></p-tag>
                 <small class="ticket-id">#{{ ticket.id }}</small>
               </div>
-              <div class="ticket-title">{{ ticket.title }}</div>
+              <div class="ticket-title">{{ ticket.titulo }}</div>
               <div class="ticket-info">
-                <i class="pi pi-user"></i> <span>Asignado: {{ ticket.assignedTo }}</span>
+                <i class="pi pi-user"></i> <span>Asignado: {{ ticket.asignado_a_nombre }}</span>
               </div>
               <div class="ticket-info">
-                <i class="pi pi-pencil"></i> <span>Creado: {{ ticket.createdFrom }}</span>
+                <i class="pi pi-pencil"></i> <span>Creado: {{ ticket.creado_por_nombre }}</span>
               </div>
-              @let fechaCreacion = asDate(ticket.createdAt);
               <div class="ticket-date">
-                <i class="pi pi-calendar"></i>Fecha Creación: {{ fechaCreacion | date:'dd/MM/yyyy' }}
+                <i class="pi pi-calendar"></i>
+                @let fechaCreacion = asDate(ticket.creado_fecha);
+                <span>Fecha Creación: {{ (fechaCreacion.getTime() ? (fechaCreacion | date:'dd/MM/yyyy') : 'N/A') }}</span>
               </div>
-              @let fechaLimite = asDate(ticket.deadline);
+
               <div class="ticket-date">
-                <i class="pi pi-calendar"></i>Fecha Límite: {{ fechaLimite | date:'dd/MM/yyyy' }}
+                <i class="pi pi-calendar"></i>
+                @let fechaLimite = asDate(ticket.fecha_cierre);
+                <span>Fecha Límite: {{ (ticket.fecha_cierre && fechaLimite.getTime()) ? (fechaLimite | date:'dd/MM/yyyy') : 'Sin fecha' }}</span>
               </div>
             </div>
             }
@@ -94,111 +119,144 @@
     </div>
   </p-card>
 
-  <p-dialog [(visible)]="displayEditDialog"
-    [header]="selectedTicket?.id ? 'Editar Ticket #' + selectedTicket?.id : 'Nuevo Ticket'" [modal]="true"
+  <p-dialog
+    [(visible)]="displayEditDialog"
+    [header]="selectedTicket?.id ? 'Ticket #' + selectedTicket?.id : 'Nuevo Ticket'"
+    [modal]="true"
     class="p-fluid custom-modal">
 
-    <form [formGroup]="formTicket" class="form-grid">
-
-      <!-- Título -->
-      <div class="field full-width">
-        <label for="titulo">Título del Ticket</label>
-        <input type="text" pInputText id="titulo" formControlName="titulo"
-          placeholder="Ej: Corregir login de usuarios" />
-      </div>
-
-      <!-- Descripción -->
-      <div class="field full-width">
-        <label for="descripcion">Descripción</label>
-        <textarea pInputTextarea id="descripcion" formControlName="descripcion" rows="3"
-          placeholder="Describe el problema o tarea en detalle..."></textarea>
-      </div>
-
-      <!-- Estado -->
-      <div class="field">
-        <label for="estado">Estado</label>
-        <select id="estado" formControlName="estado">
-          <option value="Pendiente">Pendiente</option>
-          <option value="En Progreso">En Progreso</option>
-          <option value="En Revisión">En Revisión</option>
-          <option value="Hecho">Hecho</option>
-        </select>
-      </div>
-
-      <!-- Asignado a -->
-      <div class="field">
-        <label for="asignado">Asignado a</label>
-        <select id="asignado" formControlName="asignado">
-          <option value="Eden">Eden (Yo)</option>
-          <option value="Karol">Karol</option>
-          <option value="Sergio">Sergio</option>
-          <option value="Ana">Ana</option>
-          <option value="Juan">Juan</option>
-          <option value="Sin asignar">Sin asignar</option>
-        </select>
-      </div>
-
-      <!-- Prioridad (7 opciones en chino) -->
-      <div class="field">
-        <label for="prioridad">Prioridad</label>
-        <select id="prioridad" formControlName="prioridad">
-          <option value="Alta">Alta</option>
-          <option value="Media">Media</option>
-          <option value="Baja">Baja</option>
-          <option value="Opcional">Opcional</option>
-        </select>
-      </div>
-
-      <!-- Fecha de Creación -->
-      <div class="field">
-        <label for="fecha_creacion">Fecha de Creación</label>
-        <input type="date" pInputText id="fecha_creacion" formControlName="fecha_creacion" />
-      </div>
-
-      <!-- Fecha Límite -->
-      <div class="field">
-        <label for="fecha_limite">Fecha Límite</label>
-        <input type="date" pInputText id="fecha_limite" formControlName="fecha_limite" />
-      </div>
-
-      <!-- Comentarios -->
-      <div class="field full-width">
-        <label for="comentarios">Comentarios / Actividad</label>
-        <textarea pInputTextarea id="comentarios" formControlName="comentarios" rows="3"
-          placeholder="Agrega un comentario o nota de seguimiento..."></textarea>
-      </div>
-
-    </form>
-
-    @if (selectedTicket?.historial?.length) {
-    <div class="history-section">
-      <h3 class="history-title">
-        <i class="pi pi-history"></i> Historial de Cambios
-      </h3>
-      <div class="history-container">
-        @for (item of selectedTicket?.historial; track $index) {
-        <div class="history-item">
-          <div class="history-marker"></div>
-          <div class="history-content">
-            <div class="history-header">
-              <span class="history-user">{{ item.usuario }}</span>
-              <span class="history-date">{{ item.fecha }}</span>
-            </div>
-            <p class="history-action">{{ item.accion }}</p>
-            @if (item.comentario) {
-            <small class="history-note">"{{ item.comentario }}"</small>
-            }
-          </div>
-        </div>
-        } @empty {
-        <p class="text-center text-muted py-3">No hay cambios registrados aún.</p>
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Detalles</p-tab>
+        
+        @if (selectedTicket?.id) {
+          <p-tab value="1">Estado</p-tab>
+          <p-tab value="2">Asignar</p-tab>
+          <p-tab value="3">Comentarios e Historial</p-tab>
         }
-      </div>
-    </div>
-    }
+      </p-tablist>
+
+      <p-tabpanels>
+        
+        <p-tabpanel value="0" *hasPermission="['ticket_edit']">
+          <form [formGroup]="formTicket" class="form-grid pt-3">
+            <div class="field full-width">
+              <label>Título</label>
+              <input type="text" pInputText formControlName="titulo" />
+            </div>
+            <div class="field full-width">
+              <label>Descripción</label>
+              <textarea pInputTextarea formControlName="descripcion" rows="3"></textarea>
+            </div>
+            <div class="field">
+              <label>Prioridad</label>
+              <select formControlName="prioridad">
+                <option [ngValue]="1">Alta</option>
+                <option [ngValue]="2">Media</option>
+                <option [ngValue]="3">Baja</option>
+                <option [ngValue]="4">Opcional</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Fecha Límite</label>
+              <input type="date" pInputText formControlName="fecha_limite" />
+            </div>
+          </form>
+        </p-tabpanel>
+
+        @if (selectedTicket?.id) {
+          <p-tabpanel value="1">
+            <div class="field pt-3">
+              <label>Nuevo Estado</label>
+              <select [(ngModel)]="nuevoEstado">
+                <option [ngValue]="1">Pendiente</option>
+                <option [ngValue]="2">En Progreso</option>
+                <option [ngValue]="3">En Revisión</option>
+                <option [ngValue]="4">Hecho</option>
+                <option [ngValue]="5">Bloqueado</option>
+              </select>
+            </div>
+            <p-button label="Cambiar Estado" icon="pi pi-refresh"
+              
+              (click)="guardarEstado()" />
+          </p-tabpanel>
+
+          <p-tabpanel value="2" *hasPermission="['ticket_assign']">
+            <div class="field pt-3 flex flex-column gap-2">
+              <label for="asignado_id" class="font-bold">Asignar a:</label>
+              
+              <select 
+                id="asignado_id"
+                [(ngModel)]="idUsuarioSeleccionado"
+                class="w-full p-2 border-round border-1 surface-border"
+                style="height: 40px; font-family: inherit;">
+                
+                <option [ngValue]="null" disabled selected>Selecciona un miembro</option>
+                
+                <option *ngFor="let miembro of miembros" [ngValue]="miembro.id">
+                  {{ miembro.nombre_com }}
+                </option>
+              </select>
+            </div>
+
+            <p-button 
+              label="Asignar" 
+              icon="pi pi-user-plus"
+              class="mt-3"
+              
+              (click)="guardarAsignacion()" 
+              [disabled]="!idUsuarioSeleccionado" />
+          </p-tabpanel>
+
+          <p-tabpanel value="3">
+            <div class="field pt-3">
+              <label>Nuevo Comentario</label>
+              <textarea pInputTextarea [(ngModel)]="nuevoComentario" rows="3"
+                placeholder="Escribe un comentario..."></textarea>
+            </div>
+            <p-button label="Agregar Comentario" icon="pi pi-comment"
+              *hasPermission="['ticket_comment']"
+              (click)="guardarComentario()" />
+
+            <div class="comments-list mt-4">
+              <h3>Comentarios</h3>
+              @for (c of comentarios; track c.id) {
+                <div class="comment-bubble p-3 mb-2" style="background: #f8f9fa; border-radius: 8px;">
+                  <div class="flex justify-content-between">
+                    <strong>{{ c.autor }} - </strong>
+                    <small>{{ c.creado_fecha | date:'short' }}</small>
+                  </div>
+                  <p class="m-0">{{ c.comentario }}</p>
+                </div>
+              } @empty {
+                <p>No hay comentarios en este ticket.</p>
+              }
+            </div>
+
+            <div class="history-section mt-4">
+              <h3><i class="pi pi-history"></i> Historial</h3>
+              @for (item of historial; track $index) {
+                <div class="history-item">
+                  <span class="history-user"><strong>{{ item.usuario }}</strong></span>
+                  <span class="history-date" style="color: gray; font-size: 0.8em;"> - {{ item.creado_fecha | date:'short' }}</span>
+                  <p class="m-1">{{ item.accion }}</p>
+                  @if (item.comentario) {
+                    <small class="text-italic">"{{ item.comentario }}"</small>
+                  }
+                </div>
+                <hr *ngIf="!$last">
+              } @empty {
+                <p class="text-muted">Sin historial aún.</p>
+              }
+            </div>
+          </p-tabpanel>
+        }
+      </p-tabpanels>
+    </p-tabs>
 
     <ng-template pTemplate="footer">
       <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="closeEditDialog()" />
+      <!-- Solo el tab de Detalles necesita Guardar -->
       <p-button label="Guardar" icon="pi pi-check" (click)="saveTicket()" />
     </ng-template>
   </p-dialog>
