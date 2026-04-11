@@ -14,7 +14,12 @@ import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from 
 import { TagModule } from 'primeng/tag';
 import { DatePipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { GroupsService } from '../../core/services/groups.service';
+import { TicketsService } from '../../core/services/tickets.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { ToastModule } from 'primeng/toast';
+import { TabsModule } from 'primeng/tabs';
 
 export interface TicketLog {
   fecha: string;
@@ -25,50 +30,25 @@ export interface TicketLog {
 
 export interface Ticket {
   id: number;
-  title: string;
-  description: string;
-  estado: string;
-  assignedTo: string;
-  createdFrom: string;
-  priority: string;
-  createdAt: Date;
-  deadline?: Date;
+  titulo: string;
+  descripcion: string;
+  estado_actual: string;
+  asignado_a_nombre: string;
+  creador_nombre: string;
+  nivel_prioridad: string;
+  creado_fecha: Date;
+  fecha_cierre?: Date;
   historial: TicketLog[];
+  comentarios: [];
 }
-
-export interface TicketRow {
-  id: number;
-  title: string;
-  description: string;
-  estado: string;
-  assignedTo: string;
-  createdFrom: string;
-  priority: string;
-  createdAt: Date;
-  deadline?: Date;
-  historial: TicketLog[];
-}
-
 
 @Component({
   selector: 'app-tickets',
   standalone: true,
-  imports: [
-    CardModule,
-    BadgeModule,
-    OverlayBadgeModule,
-    DialogModule,
-    ButtonModule,
-    InputGroupAddonModule,
-    InputGroupModule,
-    HasPermissionDirective,
-    FormsModule,
-    ReactiveFormsModule,
-    DragDropModule,
-    TagModule,
-    TableModule,
-    DatePipe,
-    CommonModule, RouterLink
+  imports: [CardModule, BadgeModule, OverlayBadgeModule, DialogModule, ButtonModule,
+    InputGroupAddonModule, InputGroupModule, HasPermissionDirective, FormsModule,
+    ReactiveFormsModule, DragDropModule, TagModule, TableModule, DatePipe,
+    CommonModule, RouterLink, ToastModule, TabsModule
   ],
   providers: [MessageService],
   templateUrl: './tickets.html',
@@ -78,197 +58,97 @@ export class Tickets implements OnInit {
   displayEditDialog = false;
   displayDeleteDialog = false;
   selectedTicket: Ticket | null = null;
-  private route = inject(ActivatedRoute);
+  //private route = inject(ActivatedRoute);
 
   asDate(d: any) { return new Date(d); }
 
-  group: any;
+  group: any = {};
+  tickets: any[] = [];
+  miembros: any[] = [];
+
+  nuevoEstado: number = 1;
+  emailAsignar: string = '';
+  nuevoComentario: string = '';
+  historial: any[] = [];
+  comentarios: any[] = [];
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private groupsService: GroupsService,
+    private ticketsService: TicketsService,
+    private cdr: ChangeDetectorRef
+  ){}
 
   groups = [
-    { id: 1, name: 'Equipo de Desarrollo Alfa', memberCount: 3, members: [{ email: 'admin@empresa.com', role: 'admin' }, { email: 'juan.perez@empresa.com', role: 'member' }, { email: 'ana.garcia@empresa.com', role: 'member' }], description: 'Espacio de trabajo para el frontend core.' },
-    { id: 2, name: 'Marketing Digital', memberCount: 5, members: [{ email: 'mkt.lead@empresa.com', role: 'admin' }, { email: 'creative@empresa.com', role: 'member' }], description: 'Gestión de campañas.' },
+    { id: 1, name: 'Equipo de Desarrollo Alfa', memberCount: 3, members: [{ email: 'admin@empresa.com', role: 'admin' }, { email: 'juan.perez@empresa.com', role: 'member' }, { email: 'ana.garcia@empresa.com', role: 'member' }], descripcion: 'Espacio de trabajo para el frontend core.' },
+    { id: 2, name: 'Marketing Digital', memberCount: 5, members: [{ email: 'mkt.lead@empresa.com', role: 'admin' }, { email: 'creative@empresa.com', role: 'member' }], descripcion: 'Gestión de campañas.' },
     { id: 3, name: 'Recursos Humanos', memberCount: 2, members: [{ email: 'rrhh@empresa.com', role: 'admin' }] }
   ];
 
   ngOnInit() {
-    const id = Number(this.route.snapshot.paramMap.get('idGroup'));
-    this.group = this.groups.find(g => g.id === id);
-    // Filtra o carga los tickets de este grupo
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    this.loadGroup(groupId);
+    this.loadTickets(groupId);
+  }
+
+  loadGroup(groupId: any){
+    this.groupsService.findById(groupId).subscribe({
+      next: (res: any) => {
+        console.log('Respuesta raw grupo:', res);
+        this.group = res.data[0] ?? res;
+        console.log('Nombre:', this.group.nombre);
+        console.log('Email:', this.group.email_creador);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar grupo', err),
+      //console.log(data)
+    });
+  }
+
+  loadTickets(groupId: any) {
+    this.ticketsService.getEvery(groupId, true).subscribe({
+      next: (res: any) => {
+        console.log('Respuesta raw tickets:', res);
+        this.tickets = res.data ?? res;
+        this.distribuirTickets();
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar tickets', err)
+    });
   }
 
   formTicket = new FormGroup({
     titulo:         new FormControl(''),
     descripcion:    new FormControl(''),
-    estado:         new FormControl('Pendiente'),
-    asignado:       new FormControl('Sin asignar'),
+    estado_actual:         new FormControl('Pendiente'),
     prioridad:      new FormControl('Media'),
-    fecha_creacion: new FormControl(''),
     fecha_limite:   new FormControl(''),
-    comentarios:    new FormControl(''),
   });
 
-  todo: Ticket[] = [
-    {
-      id: 101,
-      title: 'Diseñar UI',
-      description: 'Crear prototipos en Figma para el módulo de reportes.',
-      estado: 'Pendiente',
-      assignedTo: 'Eden',
-      createdFrom: 'Eden',
-      priority: 'Alta',
-      createdAt: new Date('2026-03-01'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '01/03/2026 09:00', usuario: 'Eden', accion: 'Ticket creado', comentario: 'Se abrió el ticket' },
-      ],
-    },
-    {
-      id: 102,
-      title: 'Configurar DB',
-      description: 'Escribir el script de migración SQL para la nueva tabla de usuarios.',
-      estado: 'Pendiente',
-      assignedTo: 'Juan',
-      createdFrom: 'Admin',
-      priority: 'Media',
-      createdAt: new Date('2026-03-02'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '02/03/2026 10:00', usuario: 'Admin', accion: 'Asignado a Juan', comentario: 'Revisión de base de datos' },
-      ],
-    },
-  ];
+  todo: any[] = [];
 
-  inProgress: Ticket[] = [
-    {
-      id: 103,
-      title: 'Añadir nuevos componentes',
-      description: 'Integrar componentes Angular reutilizables en el módulo de ventas.',
-      estado: 'En Progreso',
-      assignedTo: 'Ana',
-      createdFrom: 'Admin',
-      priority: 'Baja',
-      createdAt: new Date('2026-03-03'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '03/03/2026 11:00', usuario: 'Ana', accion: 'Cambió estado a En Progreso', comentario: 'Iniciando desarrollo' },
-      ],
-    },
-  ];
+  inProgress: any[] = [];
 
-  review: Ticket[] = [
-    {
-      id: 104,
-      title: 'Revisar UX',
-      description: 'Revisar estilos, accesibilidad y consistencia visual del sistema.',
-      estado: 'En Revisión',
-      assignedTo: 'Karol',
-      createdFrom: 'Karol',
-      priority: 'Media',
-      createdAt: new Date('2026-03-04'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '04/03/2026 14:00', usuario: 'Karol', accion: 'Enviado a revisión', comentario: 'Pendiente de aprobación' },
-      ],
-    },
-  ];
+  review: any[] = [];
 
-  blocked: Ticket[] = [];
+  blocked: any[] = [];
 
-  done: Ticket[] = [
-    {
-      id: 105,
-      title: 'Comprar computadora',
-      description: 'Adquisición de equipo de desarrollo para el nuevo integrante.',
-      estado: 'Hecho',
-      assignedTo: 'Sergio',
-      createdFrom: 'Admin',
-      priority: 'Alta',
-      createdAt: new Date('2026-02-20'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '25/02/2026 16:00', usuario: 'Sergio', accion: 'Ticket completado', comentario: 'Equipo recibido y configurado' },
-      ],
-    },
-  ];
+  done: any[] = [];
+
+  distribuirTickets(): void {
+    this.todo = this.tickets.filter(t => t.estado_actual === 'Pendiente');
+    this.inProgress = this.tickets.filter(t => t.estado_actual === 'En progreso');
+    this.review = this.tickets.filter(t => t.estado_actual === 'En revision');
+    this.blocked = this.tickets.filter(t => t.estado_actual === 'Bloqueado');
+    this.done = this.tickets.filter(t => t.estado_actual === 'Hecho');
+  }
 
   usuarioLogueado = 'Eden';
   filtroTexto    = '';
   filtroEstado   = '';
   filtroPrioridad = '';
   filtroRapido   = '';
-
-  tickets: TicketRow[] = [
-    {
-      id: 101,
-      title: 'Diseñar UI',
-      description: 'Crear prototipos en Figma para el módulo de reportes.',
-      estado: 'Pendiente',
-      assignedTo: 'Eden',
-      createdFrom: 'Eden',
-      priority: 'Alta',
-      createdAt: new Date('2026-03-01'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '01/03/2026 09:00', usuario: 'Eden', accion: 'Ticket creado', comentario: 'Se abrió el ticket' },
-      ],
-    },
-    {
-      id: 102,
-      title: 'Configurar DB',
-      description: 'Escribir el script de migración SQL para la nueva tabla de usuarios.',
-      estado: 'Pendiente',
-      assignedTo: 'Juan',
-      createdFrom: 'Admin',
-      priority: 'Media',
-      createdAt: new Date('2026-03-02'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '02/03/2026 10:00', usuario: 'Admin', accion: 'Asignado a Juan', comentario: 'Revisión de base de datos' },
-      ],
-    },
-    {
-      id: 103,
-      title: 'Añadir nuevos componentes',
-      description: 'Integrar componentes Angular reutilizables en el módulo de ventas.',
-      estado: 'En Progreso',
-      assignedTo: 'Ana',
-      createdFrom: 'Admin',
-      priority: 'Baja',
-      createdAt: new Date('2026-03-03'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '03/03/2026 11:00', usuario: 'Ana', accion: 'Cambió estado a En Progreso', comentario: 'Iniciando desarrollo' },
-      ],
-    },
-    {
-      id: 104,
-      title: 'Revisar UX',
-      description: 'Revisar estilos, accesibilidad y consistencia visual del sistema.',
-      estado: 'En Revisión',
-      assignedTo: 'Karol',
-      createdFrom: 'Karol',
-      priority: 'Media',
-      createdAt: new Date('2026-03-04'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '04/03/2026 14:00', usuario: 'Karol', accion: 'Enviado a revisión', comentario: 'Pendiente de aprobación' },
-      ],
-    },
-    {
-      id: 105,
-      title: 'Comprar computadora',
-      description: 'Adquisición de equipo de desarrollo para el nuevo integrante.',
-      estado: 'Hecho',
-      assignedTo: 'Sergio',
-      createdFrom: 'Admin',
-      priority: 'Alta',
-      createdAt: new Date('2026-02-20'),
-      deadline: new Date('2026-04-30'),
-      historial: [
-        { fecha: '25/02/2026 16:00', usuario: 'Sergio', accion: 'Ticket completado', comentario: 'Equipo recibido y configurado' },
-      ],
-    },
-  ];
 
   drop(event: CdkDragDrop<Ticket[]>) {
     if (event.previousContainer === event.container) {
@@ -283,30 +163,50 @@ export class Tickets implements OnInit {
     }
   }
 
-  viewTicket(ticket: Ticket) {
-    this.selectedTicket = { ...ticket };
-    this.formTicket.patchValue({
-      titulo:         ticket.title,
-      descripcion:    ticket.description,
-      estado:         ticket.estado,
-      asignado:       ticket.assignedTo,
-      prioridad:      ticket.priority,
-      fecha_creacion: ticket.createdAt.toISOString().split('T')[0],
-      fecha_limite:   ticket.deadline ? ticket.deadline.toISOString().split('T')[0] : '',
-      comentarios:    '',
+  viewTicket(ticket: any) {
+    const id = ticket.id;
+    this.ticketsService.getById(id).subscribe({
+      next: (res: any) => {
+        const ticket = res.data[0] ?? res;
+        console.log('ticket: ', ticket);
+        this.selectedTicket = ticket;
+        this.historial = ticket.historial || [];
+        this.comentarios = ticket.comentarios || [];
+
+        const estadoMap: any = { 'Pendiente': 1, 'En Progreso': 2, 'En Revisión': 3, 'Hecho': 4 };
+        const prioridadMap: any = { 'Alta': 1, 'Media': 2, 'Baja': 3, 'Opcional': 4 };
+
+        this.formTicket.patchValue({
+          titulo:         ticket.titulo,
+          descripcion:    ticket.descripcion || '',
+          estado_actual:  estadoMap[ticket.estado_actual] || 0,
+          prioridad:      prioridadMap[ticket.nivel_prioridad] || 0,
+          fecha_limite:   ticket.fecha_cierre ? new Date(ticket.fecha_cierre).toISOString().split('T')[0] : '',
+        });
+        this.nuevoEstado = estadoMap[ticket.estado_actual] || 1;
+        this.emailAsignar = ticket.asignado_email ?? '';
+        this.displayEditDialog = true;
+      },
+      error: (err) => console.error('Error al cargar grupo', err)
     });
-    this.displayEditDialog = true;
+
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    this.groupsService.getMiembros(groupId).subscribe({
+      next: (res: any) => {
+        let rawData = Array.isArray(res) ? res : (res.data || []);
+        this.miembros = rawData;
+      }
+    });
   }
 
-  openEditDialog(ticket: Ticket) {
+  openEditDialog(ticket: any) {
     this.viewTicket(ticket);
   }
 
   openCreateTicket() {
     this.selectedTicket = null;
     this.formTicket.reset({
-      estado:    'Pendiente',
-      asignado:  'Sin asignar',
+      estado_actual:    'Pendiente',
       prioridad: 'Media',
     });
     this.displayEditDialog = true;
@@ -319,9 +219,118 @@ export class Tickets implements OnInit {
   }
 
   saveTicket() {
-    const values = this.formTicket.value;
-    console.log('Guardando ticket:', values);
-    this.closeEditDialog();
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    if(this.formTicket.invalid) return;
+    const payload = {
+      ...this.formTicket.value,
+      grupo_id: groupId,
+      estado_id: Number(this.formTicket.value.estado_actual),
+      prioridad_id: Number(this.formTicket.value.prioridad),
+      fecha_cierre: this.formTicket.value.fecha_limite,
+    };
+
+    const request$ = this.selectedTicket?.id
+    ? this.ticketsService.update(this.selectedTicket.id, payload)
+    : this.ticketsService.create(payload);
+
+    request$.subscribe({
+      next: (res: any) => {
+        this.closeEditDialog();
+        this.loadTickets(groupId);
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.selectedTicket?.id ? 'Ticket Actualizado!' : 'Ticket Creado!',
+            detail: this.selectedTicket?.id ? 'Cambios guardados exitosamente' : 'Añadiste un ticket exitosamente',
+            life: 3000
+          });
+        });
+      }, 
+      error: (err) => {
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.data?.[0]?.message || 'Error inesperado',
+          });
+        });
+      }
+    })
+  }
+
+  guardarEstado(): void {
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    if (!this.selectedTicket) return;
+    const id = this.selectedTicket.id;
+    this.ticketsService.cambiarEstado(id, { estado_id: this.nuevoEstado }).subscribe({
+      next: () => {
+        this.tickets = this.tickets.map(t =>
+          t.id === id ? { ...t, estado_actual: this.nuevoEstado } : t
+        );
+        this.loadTickets(groupId);
+        this.displayEditDialog = false;
+        this.cdr.detectChanges();
+        this.messageService.add({ severity: 'success', summary: 'Estado actualizado', life: 2000 });
+      },
+      error: (err) => {
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.data?.[0]?.message || 'Error inesperado',
+          });
+        });
+      }
+    });
+  }
+
+  idUsuarioSeleccionado: number = 0;
+  guardarAsignacion(): void {
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    console.log("ID a enviar:", this.idUsuarioSeleccionado);
+    if (!this.selectedTicket || !this.idUsuarioSeleccionado) return;
+
+    const id = this.selectedTicket.id;
+    this.ticketsService.asignar(id, { asignado_id: this.idUsuarioSeleccionado })
+      .subscribe({
+        next: () => {
+          this.loadTickets(groupId);
+          this.displayEditDialog = false;
+          this.cdr.detectChanges();
+          this.messageService.add({ severity: 'success', summary: 'Ticket asignado', life: 2000 });
+        },
+        error: (err) => {
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.data?.[0]?.message || 'Error inesperado',
+          });
+        });
+      }
+      });
+  }
+
+  guardarComentario(): void {
+    if (!this.selectedTicket) return;
+    const id = this.selectedTicket.id;
+    if (!this.nuevoComentario.trim()) return;
+    this.ticketsService.agregarComentario(id, { comentario: this.nuevoComentario })
+      .subscribe({
+        next: () => {
+          this.nuevoComentario = '';
+          this.messageService.add({ severity: 'success', summary: 'Comentario agregado', life: 2000 });
+        },
+        error: (err) => {
+          setTimeout(() => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: err.error?.data?.[0]?.message || 'Error inesperado',
+            });
+          });
+        }
+      });
   }
 
   openDeleteDialog(ticket: Ticket) {
@@ -330,31 +339,48 @@ export class Tickets implements OnInit {
   }
 
   confirmDelete() {
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
     if (!this.selectedTicket) return;
     const id = this.selectedTicket.id;
-    const remove = (list: Ticket[]) => list.filter(t => t.id !== id);
 
-    this.todo       = remove(this.todo);
-    this.inProgress = remove(this.inProgress);
-    this.review     = remove(this.review);
-    this.done       = remove(this.done);
-
-    this.displayDeleteDialog = false;
-    this.selectedTicket = null;
-    this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Ticket borrado correctamente' });
+    this.ticketsService.remove(id).subscribe({
+      next: (res: any) => {
+        this.displayDeleteDialog = false;
+        this.selectedTicket = null;
+        this.loadTickets(groupId);
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Ticket Bloqueado',
+            detail: 'Bloqueaste el ticket exitosamente',
+            life: 3000
+          });
+        });
+      },
+      error: (err) => {
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error al bloquear',
+            detail: err.error?.data?.[0]?.message || 'Error inesperado',
+          });
+        });
+      }
+    });
   }
 
   ticketsFiltrados() {
+    if (!Array.isArray(this.tickets)) return [];
     return this.tickets.filter(ticket => {
       const matchTexto = ticket.id.toString().includes(this.filtroTexto.toLowerCase()) ||
-                         ticket.assignedTo.toLowerCase().includes(this.filtroTexto.toLowerCase());
-      const matchEstado    = this.filtroEstado    ? ticket.estado    === this.filtroEstado    : true;
-      const matchPrioridad = this.filtroPrioridad ? ticket.priority === this.filtroPrioridad : true;
+        ticket.asignado_a_nombre.toLowerCase().includes(this.filtroTexto.toLowerCase());
+      const matchEstado    = this.filtroEstado    ? ticket.estado_actual    === this.filtroEstado    : true;
+      const matchPrioridad = this.filtroPrioridad ? ticket.nivel_prioridad === this.filtroPrioridad : true;
 
       let matchRapido = true;
-      if      (this.filtroRapido === 'mis-tickets')    matchRapido = ticket.assignedTo === this.usuarioLogueado;
-      else if (this.filtroRapido === 'sin-asignar')    matchRapido = ticket.assignedTo === 'Sin asignar' || !ticket.assignedTo;
-      else if (this.filtroRapido === 'alta-prioridad') matchRapido = ticket.priority === 'Alta';
+      if      (this.filtroRapido === 'mis-tickets')    matchRapido = ticket.asignado_a_nombre === this.usuarioLogueado;
+      else if (this.filtroRapido === 'sin-asignar')    matchRapido = ticket.asignado_a_nombre === 'Sin asignar' || !ticket.asignado_a_nombre;
+      else if (this.filtroRapido === 'alta-prioridad') matchRapido = ticket.nivel_prioridad === 'Alta';
 
       return matchTexto && matchEstado && matchPrioridad && matchRapido;
     });
@@ -362,25 +388,39 @@ export class Tickets implements OnInit {
 
   aplicarFiltroRapido(tipo: string) {
     this.filtroRapido = this.filtroRapido === tipo ? '' : tipo;
-
-    if      (this.filtroRapido === 'alta-prioridad') this.filtroPrioridad = 'Alta';
+    
+    if (this.filtroRapido === 'alta-prioridad') this.filtroPrioridad = 'Alta';
     else if (tipo === 'alta-prioridad' && !this.filtroRapido) this.filtroPrioridad = '';
+
+    this.cargarTickets();
   }
 
   limpiarTodosLosFiltros() {
-    this.filtroTexto     = '';
-    this.filtroEstado    = '';
+    this.filtroTexto = '';
+    this.filtroEstado = '';
     this.filtroPrioridad = '';
-    this.filtroRapido    = '';
+    this.filtroRapido = '';
+    this.cargarTickets(); // Recargar la lista completa
   }
 
-  getPrioritySeverity(priority: string): string {
-    switch (priority) {
-      case 'Alta':   return 'danger';
-      case 'Media':   return 'warning';
-      case 'Baja':   return 'info';
-      case 'Opcional': return 'secondary';
-      default:     return 'secondary';
+  cargarTickets() {
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+
+    if (!this.filtroRapido) {
+      this.ticketsService.getAll().subscribe(res => this.tickets = res.data);
+      return;
+    }
+
+    switch (this.filtroRapido) {
+      case 'alta-prioridad':
+        this.ticketsService.getAltaPrioridad(groupId).subscribe(res => this.tickets = res.data);
+        break;
+      case 'sin-asignar':
+        this.ticketsService.getSinAsignar(groupId).subscribe(res => this.tickets = res.data);
+        break;
+      case 'creados':
+        this.ticketsService.getCreados(groupId).subscribe(res => this.tickets = res.data);
+        break;
     }
   }
 

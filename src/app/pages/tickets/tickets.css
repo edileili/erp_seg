@@ -3,6 +3,15 @@
     margin: 1rem;
 }
 
+.grupo-nom {
+    font-size: 20px;
+    text-align: center;
+}
+
+.grupo-nom p {
+    font-weight: bold;
+}
+
 .p-card {
     padding: 1rem;
 }
