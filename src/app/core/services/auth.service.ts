@@ -60,7 +60,7 @@ export class AuthService {
 
   async register(userData: any) {
     return firstValueFrom(
-      this.http.post(`${this.API}/usuarios/registro`, userData)
+      this.http.post(`${this.API}/auth/registro`, userData)
     );
   }
 
@@ -109,6 +109,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.PERMISOS_KEY);
+    localStorage.removeItem('erp_permisos_grupo');
     this.permissionService.clearPermissions();
   }
 }

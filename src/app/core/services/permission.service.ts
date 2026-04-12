@@ -14,8 +14,7 @@ export type Permission =
   //ticket
   | 'ticket_view' | 'ticket_edit' | 'ticket_edit_state' | 'ticket_edit_comment' | 'ticket_add' | 'ticket_delete' |  'tickets_view' | 'ticket_manage' | 'ticket_comment' | 'ticket_assign' | 'ticket_view_created' | 'ticket_view_owner'
   //user
-  | 'user_view' | 'users_view' | 'user_edit' | 'user_edit_profile' | 'user_edit_permissions' | 'user_add' | 'user_remove' | 'user_manage';
-  //|  'user_desactivated' | 'user_activated';
+  | 'user_view' | 'users_view' | 'user_edit' | 'user_edit_profile' | 'user_edit_permissions' | 'user_add' | 'user_remove' | 'user_manage' |  'user_desactivated' | 'user_activated';
 
 @Injectable({
   providedIn: 'root',

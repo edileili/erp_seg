@@ -151,17 +151,34 @@ export class Tickets implements OnInit {
   filtroRapido   = '';
 
   drop(event: CdkDragDrop<Ticket[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
+      if (event.previousContainer === event.container) {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      } else {
+        const ticket = event.previousContainer.data[event.previousIndex];
+        const nuevoEstadoId = Number(event.container.id);
+  
+        transferArrayItem(
+          event.previousContainer.data,
+          event.container.data,
+          event.previousIndex,
+          event.currentIndex,
+        );
+  
+        this.ticketsService.cambiarEstado(ticket.id, { estado_id: nuevoEstadoId }).subscribe({
+          next: () => {
+            // Opcional: Mostrar mensaje de éxito
+            this.messageService.add({ severity: 'success', summary: 'Estado actualizado' });
+            this.loadTickets(Number(this.route.snapshot.paramMap.get('id-group')));
+            this.distribuirTickets();
+          },
+          error: (err) => {
+            // Si falla, regresamos el ticket a su lugar original o recargamos
+            this.loadTickets(Number(this.route.snapshot.paramMap.get('id-group')));
+            this.messageService.add({ severity: 'error', summary: 'Error al mover', detail: 'No se pudo cambiar el estado' });
+          }
+        });
+      }
     }
-  }
 
   viewTicket(ticket: any) {
     const id = ticket.id;

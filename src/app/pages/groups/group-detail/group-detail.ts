@@ -15,6 +15,7 @@ import { GroupsService } from '../../../core/services/groups.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { PermissionService } from '../../../core/services/permission.service';
 import { TicketsService } from '../../../core/services/tickets.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { delay } from 'rxjs/operators';
 import { MessageService } from 'primeng/api';
 import { TabsModule } from 'primeng/tabs';
@@ -74,8 +75,11 @@ export class GroupDetail implements OnInit {
   ];
     //const permisoCreated = this.permissionService.hasPermission('ticket_view_created');
     //const permisoOwner = this.permissionService.hasPermission('ticket_view_owner');
-  ngOnInit() {
+  async ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id-group'));
+    const usuario = this.authService.getTokenPayload();
+
+    await this.groupsService.cargarPermisosGrupo(id, usuario!.id);
     setTimeout(() => {
       this.loadGroup(id);
       this.loadMisTickets(id);
@@ -84,10 +88,11 @@ export class GroupDetail implements OnInit {
   }
 
   constructor(
-    private groupsService: GroupsService,
+    public groupsService: GroupsService,
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService,
-    private ticketsService: TicketsService
+    private ticketsService: TicketsService,
+    private authService: AuthService
   ){}
 
   loadGroup(groupId: any) {

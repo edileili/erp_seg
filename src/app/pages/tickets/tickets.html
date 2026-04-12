@@ -118,11 +118,11 @@
 
     <div class="kanban-wrapper" cdkDropListGroup>
       @let columns = [
-        { label: 'Pendiente',   data: todo,       },
-        { label: 'En Progreso', data: inProgress,  },
-        { label: 'Revisión',    data: review,     },
-        { label: 'Bloqueado',   data: blocked},
-        { label: 'Hecho',       data: done,        }
+        { label: 'Pendiente', data: todo, estadoId: 1 },
+        { label: 'En Progreso', data: inProgress, estadoId: 2 },
+        { label: 'En revisión', data: review, estadoId: 3 },
+        { label: 'Bloqueado', data: blocked, estadoId: 4 },
+        { label: 'Hecho', data: done, estadoId: 5 }
       ];
 
       @for (col of columns; track col.label) {
@@ -132,7 +132,8 @@
           <span class="font-bold">{{ col.label }}</span>
           <p-badge [value]="col.data.length" severity="secondary"></p-badge>
         </div>
-        <div cdkDropList [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
+        <div cdkDropList 
+          [id]="col.estadoId.toString()" [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
           @for (ticket of col.data; track ticket.id) {
           <div class="ticket-card" cdkDrag (click)="viewTicket(ticket)" >
             <div class="ticket-header">

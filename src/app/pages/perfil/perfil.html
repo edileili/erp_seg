@@ -1,101 +1,23 @@
 <div class="content-wrapper">
+    <p-toast />
     <!--Vista 6. Perfil de Usuario (tickets de user)-->
     <p-card class="glass-card">
         <h1 class="tittle">Datos del Usuario</h1>
         <div class="info-user">
-            <div class="label-user">Nombre de Usuario: <span>User</span></div>
-            <div class="label-user">Email: <span>eden@gmail.com</span></div>
+            <div class="label-user">Nombre de Usuario: <span>{{user.usuario}}</span></div>
+            <div class="label-user">Email: <span>{{user.email}}</span></div>
             <div class="label-user">Contraseña: <span>******</span></div>
-            <div class="label-user">Nombre Completo: <span>Edén Leilani Romero Serrano</span></div>
-            <div class="label-user">Dirección: <span>Av Del Ferrocarril 45</span> </div>
-            <div class="label-user">Fecha de Nacimiento: <span>06/09/05</span> </div>
-            <div class="label-user">Numero de Teléfono: <span>44444444444444</span></div>
+            <div class="label-user">Nombre Completo: <span>{{user.nombre_com}}</span></div>
+            <div class="label-user">Dirección: <span>{{user.direccion}}</span> </div>
+            @let fechaNacimiento = asDate(user.fecha_nacimiento);
+            <div class="label-user">Fecha de Nacimiento: <span>{{ fechaNacimiento | date:'dd/MM/yyyy'}}</span> </div>
+            <div class="label-user">Numero de Teléfono: <span>{{user.telefono}}</span></div>
         </div>
         <div class="card flex card-crud">
             <p-button [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
-                (click)="showDialog()" label="Editar mis datos" *hasPermission="['user_edit']" />
+                (click)="showDialog()" label="Editar mis datos" *hasPermission="['user_edit_profile']" />
         </div>
     </p-card>
-    <p-card class="glass-card">
-        <h1>Mis Tickets</h1>
-        <div class="table-responsive shadow-sm rounded">
-            <table class="table table-hover bg-white">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Estado</th>
-                        <th>Prioridad</th>
-                        <th>Fecha de Creación</th>
-                        <th>Fecha Límite</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (ticket of tickets; track ticket.id) {
-                    <tr>
-                        <td><strong>#{{ ticket.id }}</strong></td>
-                        <td>
-                            @if (ticket.estado === 'Completado') {
-                            <span class="badge bg-success text-white">Completado</span>
-                            } @else if (ticket.estado === 'En Proceso') {
-                            <span class="badge bg-warning text-dark">En Proceso</span>
-                            } @else {
-                            <span class="badge bg-secondary text-white">{{ ticket.estado }}</span>
-                            }
-                        </td>
-                        <td>
-                            <span [class.text-danger]="ticket.prioridad === 'Alta'"
-                                [class.font-weight-bold]="ticket.prioridad === 'Alta'">
-                                {{ ticket.prioridad }}
-                            </span>
-                        </td>
-                        @let fechaCreacion = asDate(ticket.fechaCreacion);
-                        <td>{{ fechaCreacion | date:'dd/MM/yyyy' }}</td>
-                        @let fechaLimite = asDate(ticket.fechaLimite);
-                        <td>{{ fechaLimite | date:'dd/MM/yyyy' }}</td>
-                        <td>
-                            <p-button icon="pi pi-pencil" label="Editar Estado"
-                                [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                                *hasPermission="['ticket_edit_state']" (click)="editState()" />
-                        </td>
-                    </tr>
-                    } @empty {
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">
-                            No se encontraron tickets con esos filtros.
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td></td>
-                        <td>Pendientes: 1</td>
-                        <td>En progreso: 1</td>
-                        <td>Hechos: 0</td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </p-card>
-
-    <p-dialog [(visible)]="displayEditState" [header]="'Editar Estado del Ticket'" [modal]="true"
-        class="p-fluid custom-modal">
-        <form [formGroup]="ticketForm" class="form-grid">
-            <div class="field">
-                <label for="estado">Estado Actual:</label>
-                <p-select formControlName="estado" [options]="estadosOptions" optionLabel="label" optionValue="value"
-                    placeholder="Selecciona un estado" appendTo="body">
-                </p-select>
-            </div>
-        </form>
-
-        <ng-template pTemplate="footer">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="displayEditState = false" />
-            <p-button label="Guardar" icon="pi pi-check" (click)="guardarTicket()" />
-        </ng-template>
-    </p-dialog>
 
     <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
         <ng-template #header>
@@ -137,7 +59,7 @@
                     </p-inputgroup>
                 </div>
                 <div class="form-group">
-                    <label for="contrasenia">Nombre Completo</label>
+                    <label for="nomCompleto">Nombre Completo</label>
                     <p-inputgroup>
                         <p-inputgroup-addon>
                             <i class="pi pi-star"></i>
@@ -146,7 +68,7 @@
                     </p-inputgroup>
                 </div>
                 <div class="form-group">
-                    <label for="contrasenia">Dirección</label>
+                    <label for="direccion">Dirección</label>
                     <p-inputgroup>
                         <p-inputgroup-addon>
                             <i class="pi pi-map-marker"></i>
@@ -155,7 +77,7 @@
                     </p-inputgroup>
                 </div>
                 <div class="form-group">
-                    <label for="contrasenia">Fecha de Nacimiento</label>
+                    <label for="fechaNacimiento">Fecha de Nacimiento</label>
                     <p-inputgroup>
                         <p-inputgroup-addon>
                             <i class="pi pi-calendar"></i>
@@ -186,7 +108,7 @@
         </form>
         <ng-template #footer>
             <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
-            <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" />
+            <p-button label="Guardar" [outlined]="true" severity="secondary" (click)="visible = false" (click)="savePerfil()" />
         </ng-template>
     </p-dialog>
 </div>

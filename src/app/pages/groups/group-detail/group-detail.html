@@ -61,7 +61,7 @@
             <h2 class="m-0">{{group.nombre}}</h2>
             <p class="text-secondary">Total de tickets: <b>{{ totalTickets() }}</b></p>
           </div>
-          <p-button label="Crear Ticket" icon="pi pi-plus" *hasPermission="['ticket_add']" (onClick)="openCreateTicket()"
+          <p-button label="Crear Ticket" icon="pi pi-plus" *ngIf="groupsService.tienePermisoEnGrupo('ticket_add')" (onClick)="openCreateTicket()"
             severity="primary"></p-button>
         </div>
       </div>
@@ -138,7 +138,7 @@
 
       <p-tabpanels>
         
-        <p-tabpanel value="0" *hasPermission="['ticket_edit']">
+        <p-tabpanel value="0" *ngIf="groupsService.tienePermisoEnGrupo('ticket_edit')">
           <form [formGroup]="formTicket" class="form-grid pt-3">
             <div class="field full-width">
               <label>Título</label>
@@ -165,7 +165,7 @@
         </p-tabpanel>
 
         @if (selectedTicket?.id) {
-          <p-tabpanel value="1">
+          <p-tabpanel value="1" *ngIf="groupsService.tienePermisoEnGrupo('ticket_edit_state')">
             <div class="field pt-3">
               <label>Nuevo Estado</label>
               <select [(ngModel)]="nuevoEstado">
@@ -181,7 +181,7 @@
               (click)="guardarEstado()" />
           </p-tabpanel>
 
-          <p-tabpanel value="2" *hasPermission="['ticket_assign']">
+          <p-tabpanel value="2" *ngIf="groupsService.tienePermisoEnGrupo('ticket_assign')">
             <div class="field pt-3 flex flex-column gap-2">
               <label for="asignado_id" class="font-bold">Asignar a:</label>
               
@@ -208,7 +208,7 @@
               [disabled]="!idUsuarioSeleccionado" />
           </p-tabpanel>
 
-          <p-tabpanel value="3">
+          <p-tabpanel value="3" *ngIf="groupsService.tienePermisoEnGrupo('ticket_comment')">
             <div class="field pt-3">
               <label>Nuevo Comentario</label>
               <textarea pInputTextarea [(ngModel)]="nuevoComentario" rows="3"

@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { PasswordModule } from 'primeng/password';
 import { DatePickerModule } from 'primeng/datepicker';
 import { AuthService } from '../../../core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -27,6 +28,7 @@ export class Register {
   private fb = inject(FormBuilder);
   private messageService = inject(MessageService);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   public registroSeg: FormGroup;
   public formSubmitted = false;
@@ -95,11 +97,21 @@ export class Register {
         telefono: values.telefono
       };
 
-      await this.authService.register(dataToSubmit);
+      const response = await this.authService.register(dataToSubmit);
+      if (response) {
+        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
 
-      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
-      this.registroSeg.reset();
-      this.formSubmitted = false;
+        this.registroSeg.reset();
+        this.formSubmitted = false;
+        setTimeout(() => this.router.navigate(['/login']), 2000);
+
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error de registro',
+          detail: 'Datos erroneos',
+        });
+      }
       
     } catch (error: any) {
       // Manejo del error 409 (Conflicto) que envía tu API
