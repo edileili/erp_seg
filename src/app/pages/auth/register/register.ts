@@ -80,12 +80,11 @@ export class Register {
       const values = this.registroSeg.value;
       const fecha = new Date(values.fechaNacimiento);
 
-      // Extraemos año, mes y día localmente
       const year = fecha.getFullYear();
       const month = String(fecha.getMonth() + 1).padStart(2, '0');
       const day = String(fecha.getDate()).padStart(2, '0');
       
-      const fechaLimpia = `${year}-${month}-${day}`; // Resultado: "2005-07-31"
+      const fechaLimpia = `${year}-${month}-${day}`; 
 
       const dataToSubmit = {
         usuario: values.usuario,
@@ -114,7 +113,6 @@ export class Register {
       }
       
     } catch (error: any) {
-      // Manejo del error 409 (Conflicto) que envía tu API
       const errorMsg = error.error?.message || 'Error al registrar usuario';
       this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg, life: 3000 });
     }

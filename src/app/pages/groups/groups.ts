@@ -59,7 +59,6 @@ export class Groups {
           description: p.descripcion
         }));
         this.cdr.detectChanges();
-        console.log('Permisos grupo:', this.listaPermisosDisponibles);
       }
     });
   }
@@ -187,11 +186,9 @@ editGroup(group: any) {
   });
   this.displayEditDialog = true;
 
-  // Si ya están cargados, cargar permisos directamente
   if (this.loadedMembers[group.id]) {
     this.loadMembersPermissions(group.id);
   } else {
-    // Si no, cargar miembros primero y luego permisos
     this.groupsService.getMiembros(group.id).subscribe({
       next: (res: any) => {
         const rawData = Array.isArray(res) ? res : (res.data || []);
@@ -211,7 +208,6 @@ editGroup(group: any) {
       next: (res: any) => {
         const rawPermisos = Array.isArray(res) ? res : (res.data || []);
         miembro.permisos = rawPermisos.map((p: any) => p.nombre);
-        console.log("Permisos de un usuario:", miembro);
         this.cdr.detectChanges();
       }
     });
@@ -220,18 +216,12 @@ editGroup(group: any) {
 }
 
   onPermissionChange(user: any) {
-  // user.permisos tiene nombres (strings), necesitas convertir a IDs
   const permisosIds: number[] = user.permisos.map((nombrePermiso: string) => {
     const encontrado = this.listaPermisosDisponibles.find(
       (p: any) => p.value === nombrePermiso
     );
     return encontrado ? (encontrado as any).id : null;
   }).filter((id: any) => id !== null);
-  console.log('Payload enviado:', {
-    urlId: this.selectedGroup.id,
-    userId: user.id,
-    permisos: permisosIds
-  });
 
   this.groupsService.actualizarPermisosUsuario(
     this.selectedGroup.id,
@@ -322,7 +312,6 @@ editGroup(group: any) {
   removeUser(usuarioId: number) {
     this.groupsService.removeMiembro(this.selectedGroup.id, usuarioId).subscribe({
       next: () => {
-        // Refresca lista local
         delete this.loadedMembers[this.selectedGroup.id];
         this.loadMembers(this.selectedGroup);
         this.messageService.add({

@@ -73,8 +73,7 @@ export class GroupDetail implements OnInit {
     { id: 2, name: 'Marketing Digital', memberCount: 5, members: [{ email: 'mkt.lead@empresa.com', role: 'admin' }, { email: 'creative@empresa.com', role: 'member' }], descripcion: 'Gestión de campañas.' },
     { id: 3, name: 'Recursos Humanos', memberCount: 2, members: [{ email: 'rrhh@empresa.com', role: 'admin' }] }
   ];
-    //const permisoCreated = this.permissionService.hasPermission('ticket_view_created');
-    //const permisoOwner = this.permissionService.hasPermission('ticket_view_owner');
+
   async ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id-group'));
     const usuario = this.authService.getTokenPayload();
@@ -99,8 +98,6 @@ export class GroupDetail implements OnInit {
     this.groupsService.findById(groupId).subscribe({
       next: (res: any) => {
         this.group = res.data[0] ?? res;
-        console.log('Respuesta raw grupo:', res);
-        // ELIMINADO: this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error al cargar grupo', err)
     });
@@ -108,10 +105,9 @@ export class GroupDetail implements OnInit {
 
   loadMisTickets(groupId: any) {
     this.ticketsService.getMisTickets(groupId)
-      .pipe(delay(0)) // Mantiene el delay para separar del ciclo de renderizado
+      .pipe(delay(0)) 
       .subscribe({
         next: (res: any) => {
-          console.log('Respuesta raw tickets:', res);
           this.tickets = res.data ?? res;
           this.distribuirTickets();
         },
@@ -123,7 +119,6 @@ export class GroupDetail implements OnInit {
   loadMembers(groupId: any) {
     this.groupsService.getMiembros(groupId).subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw miembros:', res);
         this.loadedMembers[groupId] = res.data ?? res;
         this.cdr.detectChanges();
       },
@@ -169,7 +164,6 @@ export class GroupDetail implements OnInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } 
 
-    console.log("Permiso:", this.groupsService.tienePermisoEnGrupo('ticket_edit_state', groupId));
 
     if(!this.puedeEditarEstado()) {
       this.messageService.add({ 
@@ -194,7 +188,6 @@ export class GroupDetail implements OnInit {
             grupo_id: groupId
         }).subscribe({
         next: () => {
-          // Opcional: Mostrar mensaje de éxito
           this.messageService.add({ severity: 'success', summary: 'Estado actualizado' });
           this.loadMisTickets(Number(this.route.snapshot.paramMap.get('id-group')));
           this.todo.set([...this.todo()]);
@@ -204,7 +197,6 @@ export class GroupDetail implements OnInit {
           this.done.set([...this.done()]);
         },
         error: (err) => {
-          // Si falla, regresamos el ticket a su lugar original o recargamos
           this.loadMisTickets(Number(this.route.snapshot.paramMap.get('id-group')));
           this.messageService.add({ severity: 'error', summary: 'Error al mover', detail: 'No se pudo cambiar el estado' });
         }
@@ -230,7 +222,6 @@ export class GroupDetail implements OnInit {
     this.ticketsService.getById(id).subscribe({
       next: (res: any) => {
         const ticket = res.data[0] ?? res;
-        console.log('ticket: ', ticket);
         this.selectedTicket = ticket;
         this.historial = ticket.historial || [];
         this.comentarios = ticket.comentarios || [];
@@ -269,7 +260,6 @@ export class GroupDetail implements OnInit {
     openCreateTicket() {
       this.selectedTicket = null;
       const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
-      console.log("Abriendo ticket, Grupo:", groupId);
       this.formTicket.reset({
         estado_actual:    'Pendiente',
         asignado:  'Sin asignar',
@@ -286,7 +276,6 @@ export class GroupDetail implements OnInit {
   
     saveTicket() {
     const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
-    console.log("Guardando ticket, Grupo:", groupId);
     if(this.formTicket.invalid) return;
     const payload = {
       ...this.formTicket.value,
@@ -295,8 +284,6 @@ export class GroupDetail implements OnInit {
       prioridad_id: Number(this.formTicket.value.prioridad),
       fecha_cierre: this.formTicket.value.fecha_limite,
     };
-
-    console.log("Enviando:", payload);
 
     const request$ = this.selectedTicket?.id
     ? this.ticketsService.update(this.selectedTicket.id, payload)
@@ -356,7 +343,6 @@ export class GroupDetail implements OnInit {
   idUsuarioSeleccionado: number = 0;
   guardarAsignacion(): void {
     const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
-    console.log("ID a enviar:", this.idUsuarioSeleccionado);
     if (!this.selectedTicket || !this.idUsuarioSeleccionado) return;
 
     const id = this.selectedTicket.id;

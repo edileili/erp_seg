@@ -37,7 +37,6 @@ export class Home {
   loadMyGroups() {
     this.groupsService.getMyGroups().subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw grupo:', res);
         this.groups = res.data ?? res;
         this.cdr.detectChanges();
       },

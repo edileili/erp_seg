@@ -9,7 +9,6 @@ import { authInterceptor } from './core/services/auth-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    //Para implementar las rutas en el archivo de rutas
     provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(routes),
     providePrimeNG({

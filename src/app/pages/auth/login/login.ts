@@ -30,7 +30,7 @@ export class Login {
   constructor(private permissionService: PermissionService) {
     this.loginSeg = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      contrasenia: ['', [Validators.required]] // ← solo required, bcrypt compara en el backend
+      contrasenia: ['', [Validators.required]] 
     });
   }
 
@@ -40,7 +40,6 @@ export class Login {
 
     const { email, contrasenia } = this.loginSeg.value;
     const response = await this.authService.login(email, contrasenia);
-    //const user = usersConPermisos.find(u => u.email === email);
 
     if (response) {
       this.messageService.add({

@@ -86,7 +86,6 @@ export class User {
   loadUsers() {
     this.usuariosService.getUsuarios().subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw usuarios:', res);
         this.users = res.data ?? res;
         this.cdr.detectChanges();
       },
@@ -119,7 +118,6 @@ export class User {
     this.usuarioSeleccionado = usuario;
     this.usuariosService.getUsuario(usuario.id).subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw grupo:', res);
         const user = res.data[0] ?? res;
         this.editUserForm.patchValue({
           id: user.id,
@@ -133,7 +131,6 @@ export class User {
         
         this.usuariosService.getPermisosUsuario(usuario.id).subscribe({
           next: (res) => {
-            console.log('Respuesta raw permisos usuario:', res);
             const permisosReales = res.data.filter((item: any) => item.nombre);
             this.usuarioSeleccionado.permisos = permisosReales;
             this.cdr.detectChanges();
@@ -143,7 +140,6 @@ export class User {
       },
       error: (err) => console.error('Error al cargar usuario', err)
     });
-    console.log("usuario:", this.usuarioSeleccionado);
   }
 
   onUpdate() {
@@ -168,21 +164,16 @@ export class User {
           ? actualizar.fechaNacimiento.toISOString() 
           : actualizar.fechaNacimiento;
       }
-      console.log('Enviando a API:', actualizar);
 
       const listaPermisoPrueba = this.usuarioSeleccionado.permisos.map((p: any) => p.id || p.permiso_id);
-      console.log('Lista:', listaPermisoPrueba);
       const listaPermisos = this.usuarioSeleccionado.permisos.map((p: any) => {
-        // 1. Buscamos por value (nombre técnico) o directamente por ID si ya lo tiene
         const coincidencia = this.listaPermisosDisponibles.find(opcion => 
           opcion.value === p.nombre || opcion.label === p.nombre
         );
 
-        // 2. Priorizamos el ID de la coincidencia, si no, el ID que ya traiga el objeto
         return coincidencia ? coincidencia.id : p.id; 
       }).filter((id: any) => id !== undefined && id !== null);
 
-      console.log('Array final de IDs:', listaPermisos);
       delete datosActualizados.permisosSeleccionados;
 
       forkJoin({
@@ -190,7 +181,6 @@ export class User {
         permisos: this.usuariosService.actualizarPermisos(usuarioId, { permisos: listaPermisos })
       }).subscribe({
         next: (res) => {
-          console.log('Ambas actualizaciones completadas:', res);
           this.visibleEdit = false;
           this.loadUsers();
           this.messageService.add({ 
@@ -251,7 +241,6 @@ export class User {
 
       this.usuariosService.crearUsuario(dataToSubmit).subscribe({
         next: (res: any) => {
-          console.log('Respuesta raw usuario:', res);
           this.newUser.reset();
           this.formSubmitted = false;
           this.visibleCreate = false;
@@ -263,7 +252,6 @@ export class User {
       });
 
     } catch (error: any) {
-      // Manejo del error 409 (Conflicto) que envía tu API
       const errorMsg = error.error?.message || 'Error al registrar usuario';
       this.messageService.add({ severity: 'error', summary: 'Error', detail: errorMsg, life: 3000 });
     }
@@ -282,7 +270,6 @@ export class User {
   cargarPermisosGenerales(){
     this.usuariosService.getPermisosUsuarios().subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw permisos generales:', res);
         this.listaPermisosDisponibles = res.data.map((p: any) => ({
           id: p.id,
           label: p.descripcion,
@@ -297,8 +284,6 @@ export class User {
 
   agregarPermisos() {
     const seleccionadosEnForm = this.editUserForm.get('permisosSeleccionados')?.value || [];
-    console.log("Click detectado");
-    console.log("Permisos seleccionados: ", seleccionadosEnForm);
 
     if (seleccionadosEnForm.length > 0) {
       const nuevos = this.listaPermisosDisponibles
@@ -308,7 +293,6 @@ export class User {
           nombre: p.value,
           descripcion: p.description
         }));
-      console.log("Permisos nuevos:", nuevos);
 
       const actuales = this.usuarioSeleccionado.permisos || [];
       const filtrados = nuevos.filter(n => !actuales.some((a: { nombre: string; }) => a.nombre === n.nombre));
@@ -337,8 +321,6 @@ export class User {
       this.usuarioSeleccionado = usuario.id;
       this.usuarioNombre = usuario.nombre_com;
       this.displayDeleteDialog = true;
-      console.log("Seleccionado:", this.usuarioSeleccionado);
-      console.log("Nombre:", this.usuarioNombre);
     }
 
   confirmDelete() {

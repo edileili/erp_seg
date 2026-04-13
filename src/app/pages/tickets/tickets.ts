@@ -58,7 +58,6 @@ export class Tickets implements OnInit {
   displayEditDialog = false;
   displayDeleteDialog = false;
   selectedTicket: Ticket | null = null;
-  //private route = inject(ActivatedRoute);
 
   asDate(d: any) { return new Date(d); }
 
@@ -90,27 +89,21 @@ export class Tickets implements OnInit {
     const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
     this.loadGroup(groupId);
     this.loadTickets(groupId);
-    console.log("Permiso:", this.groupsService.tienePermisoEnGrupo('ticket_edit_state'));
   }
 
   loadGroup(groupId: any){
     this.groupsService.findById(groupId).subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw grupo:', res);
         this.group = res.data[0] ?? res;
-        console.log('Nombre:', this.group.nombre);
-        console.log('Email:', this.group.email_creador);
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar grupo', err),
-      //console.log(data)
     });
   }
 
   loadTickets(groupId: any) {
     this.ticketsService.getEvery(groupId, true).subscribe({
       next: (res: any) => {
-        console.log('Respuesta raw tickets:', res);
         this.tickets = res.data ?? res;
         this.distribuirTickets();
         this.cdr.detectChanges();
@@ -162,7 +155,6 @@ export class Tickets implements OnInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } 
 
-    console.log("Permiso:", this.groupsService.tienePermisoEnGrupo('ticket_edit_state', groupId));
 
     if(!this.puedeEditarEstado()) {
       this.messageService.add({ 
@@ -201,7 +193,6 @@ export class Tickets implements OnInit {
     this.ticketsService.getById(id).subscribe({
       next: (res: any) => {
         const ticket = res.data[0] ?? res;
-        console.log('ticket: ', ticket);
         this.selectedTicket = ticket;
         this.historial = ticket.historial || [];
         this.comentarios = ticket.comentarios || [];
@@ -320,7 +311,6 @@ export class Tickets implements OnInit {
   idUsuarioSeleccionado: number = 0;
   guardarAsignacion(): void {
     const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
-    console.log("ID a enviar:", this.idUsuarioSeleccionado);
     if (!this.selectedTicket || !this.idUsuarioSeleccionado) return;
 
     const id = this.selectedTicket.id;
@@ -433,7 +423,7 @@ export class Tickets implements OnInit {
     this.filtroEstado = '';
     this.filtroPrioridad = '';
     this.filtroRapido = '';
-    this.cargarTickets(); // Recargar la lista completa
+    this.cargarTickets();
   }
 
   cargarTickets() {

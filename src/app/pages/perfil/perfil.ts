@@ -55,8 +55,6 @@ export class Perfil {
         const userData = res.data ? res.data[0] : res;
         this.user = userData;
 
-        console.log('Datos recibidos de la API:', userData);
-
         this.perfilForm.patchValue({
           usuario: userData.usuario,
           email: userData.email,
@@ -67,7 +65,6 @@ export class Perfil {
           fechaNacimiento: userData.fecha_nacimiento ? new Date(userData.fecha_nacimiento) : null 
         });
 
-        console.log('Valor del form después del patch:', this.perfilForm.value);
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar perfil', err),
@@ -91,7 +88,7 @@ export class Perfil {
     const payload = {
       usuario: formValues.usuario,
       email: formValues.email,
-      nombre_com: formValues.nomCompleto,      // Mapeo inverso
+      nombre_com: formValues.nomCompleto,     
       direccion: formValues.direccion,
       telefono: Number(formValues.telefono),
       fecha_nacimiento: formValues.fechaNacimiento instanceof Date 
@@ -102,12 +99,10 @@ export class Perfil {
     if (formValues.contrasenia && formValues.contrasenia.trim() !== '') {
       (payload as any).contrasenia = formValues.contrasenia;
     }
-    console.log('Enviando payload al servidor:', payload);
 
     this.usuariosService.actualizar(payload).subscribe({
       next: (res: any) => {
         this.visible = false;
-        console.log('Respuesta del servidor:', res);
         this.loadPerfil();
         setTimeout(() => {
           this.messageService.add({

@@ -6,6 +6,8 @@ import { Toast } from "primeng/toast";
 import { ButtonModule } from 'primeng/button';
 import { HasPermissionDirective } from "../../core/directives/has-permission.directive";
 import { PermissionService } from '../../core/services/permission.service';
+import { AuthService } from '../../core/services/auth.service';
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -17,14 +19,18 @@ import { PermissionService } from '../../core/services/permission.service';
 export class Sidebar {
   private router = inject(Router);
   private messageService = inject(MessageService);
-  constructor(public permissionService: PermissionService){}
+  constructor(
+    public permissionService: PermissionService,
+    private authService: AuthService
+  ){}
 
   isExpanded = true;
   toggle() {
     this.isExpanded = !this.isExpanded;
   }
 
-  signOut() {
+  logOut() {
+    this.authService.logout();
     this.messageService.add({
       severity: 'success',
       summary: 'Saliendo de ERP...',
