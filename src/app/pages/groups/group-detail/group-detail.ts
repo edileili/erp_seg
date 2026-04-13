@@ -158,10 +158,27 @@ export class GroupDetail implements OnInit {
   historial: any[] = [];
   comentarios: any[] = [];
 
+  puedeEditarEstado(): boolean {
+    const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
+    return this.groupsService.tienePermisoEnGrupo('ticket_edit_state', groupId);
+  }
+
   drop(event: CdkDragDrop<Ticket[]>) {
+    const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
+    } 
+
+    console.log("Permiso:", this.groupsService.tienePermisoEnGrupo('ticket_edit_state', groupId));
+
+    if(!this.puedeEditarEstado()) {
+      this.messageService.add({ 
+        severity: 'warn', 
+        summary: 'Acceso denegado', 
+        detail: 'No tienes permisos para cambiar el estado del ticket.' 
+      });
+      return;
+    }
       const ticket = event.previousContainer.data[event.previousIndex];
       const nuevoEstadoId = Number(event.container.id);
 
@@ -172,7 +189,10 @@ export class GroupDetail implements OnInit {
         event.currentIndex,
       );
 
-      this.ticketsService.cambiarEstado(ticket.id, { estado_id: nuevoEstadoId }).subscribe({
+      this.ticketsService.cambiarEstado(ticket.id, { 
+            estado_id: nuevoEstadoId,
+            grupo_id: groupId
+        }).subscribe({
         next: () => {
           // Opcional: Mostrar mensaje de éxito
           this.messageService.add({ severity: 'success', summary: 'Estado actualizado' });
@@ -189,11 +209,12 @@ export class GroupDetail implements OnInit {
           this.messageService.add({ severity: 'error', summary: 'Error al mover', detail: 'No se pudo cambiar el estado' });
         }
       });
-    }
+    
   }
 
   selectedTicket: Ticket | null = null;
   displayEditDialog = false;
+  displayDeleteDialog = false;
   formTicket = new FormGroup({
     titulo:         new FormControl(''),
     descripcion:    new FormControl(''),
@@ -204,7 +225,7 @@ export class GroupDetail implements OnInit {
     fecha_limite:   new FormControl(''),
     comentarios:    new FormControl(''),
   });
-    viewTicket(ticket: any) {
+  viewTicket(ticket: any) {
     const id = ticket.id;
     this.ticketsService.getById(id).subscribe({
       next: (res: any) => {
@@ -381,4 +402,40 @@ export class GroupDetail implements OnInit {
         }
       });
   }
+
+    openDeleteDialog(ticket: Ticket) {
+      this.selectedTicket = ticket;
+      this.displayDeleteDialog = true;
+    }
+  
+    confirmDelete() {
+      const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
+      if (!this.selectedTicket) return;
+      const id = this.selectedTicket.id;
+  
+      this.ticketsService.remove(id).subscribe({
+        next: (res: any) => {
+          this.displayDeleteDialog = false;
+          this.selectedTicket = null;
+          this.loadMisTickets(groupId);
+          setTimeout(() => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Ticket Bloqueado',
+              detail: 'Bloqueaste el ticket exitosamente',
+              life: 3000
+            });
+          });
+        },
+        error: (err) => {
+          setTimeout(() => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error al bloquear',
+              detail: err.error?.data?.[0]?.message || 'Error inesperado',
+            });
+          });
+        }
+      });
+    }
 }

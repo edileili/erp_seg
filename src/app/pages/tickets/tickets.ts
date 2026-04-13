@@ -75,7 +75,7 @@ export class Tickets implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private groupsService: GroupsService,
+    public groupsService: GroupsService,
     private ticketsService: TicketsService,
     private cdr: ChangeDetectorRef
   ){}
@@ -90,6 +90,7 @@ export class Tickets implements OnInit {
     const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
     this.loadGroup(groupId);
     this.loadTickets(groupId);
+    console.log("Permiso:", this.groupsService.tienePermisoEnGrupo('ticket_edit_state'));
   }
 
   loadGroup(groupId: any){
@@ -150,35 +151,50 @@ export class Tickets implements OnInit {
   filtroPrioridad = '';
   filtroRapido   = '';
 
+  puedeEditarEstado(): boolean {
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    return this.groupsService.tienePermisoEnGrupo('ticket_edit_state', groupId);
+  }
+
   drop(event: CdkDragDrop<Ticket[]>) {
-      if (event.previousContainer === event.container) {
-        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      } else {
-        const ticket = event.previousContainer.data[event.previousIndex];
-        const nuevoEstadoId = Number(event.container.id);
-  
-        transferArrayItem(
-          event.previousContainer.data,
-          event.container.data,
-          event.previousIndex,
-          event.currentIndex,
-        );
-  
-        this.ticketsService.cambiarEstado(ticket.id, { estado_id: nuevoEstadoId }).subscribe({
-          next: () => {
-            // Opcional: Mostrar mensaje de éxito
-            this.messageService.add({ severity: 'success', summary: 'Estado actualizado' });
-            this.loadTickets(Number(this.route.snapshot.paramMap.get('id-group')));
-            this.distribuirTickets();
-          },
-          error: (err) => {
-            // Si falla, regresamos el ticket a su lugar original o recargamos
-            this.loadTickets(Number(this.route.snapshot.paramMap.get('id-group')));
-            this.messageService.add({ severity: 'error', summary: 'Error al mover', detail: 'No se pudo cambiar el estado' });
-          }
-        });
-      }
+    const groupId = Number(this.route.snapshot.paramMap.get('idGroup'));
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } 
+
+    console.log("Permiso:", this.groupsService.tienePermisoEnGrupo('ticket_edit_state', groupId));
+
+    if(!this.puedeEditarEstado()) {
+      this.messageService.add({ 
+        severity: 'warn', 
+        summary: 'Acceso denegado', 
+        detail: 'No tienes permisos para cambiar el estado del ticket.' 
+      });
+      return;
     }
+      const ticket = event.previousContainer.data[event.previousIndex];
+      const nuevoEstadoId = Number(event.container.id);
+
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex,
+      );
+
+      this.ticketsService.cambiarEstado(ticket.id, { estado_id: nuevoEstadoId }).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Estado actualizado' });
+          this.loadTickets(Number(this.route.snapshot.paramMap.get('id-group')));
+          this.distribuirTickets();
+        },
+        error: (err) => {
+          this.loadTickets(Number(this.route.snapshot.paramMap.get('id-group')));
+          this.messageService.add({ severity: 'error', summary: 'Error al mover', detail: 'No se pudo cambiar el estado' });
+        }
+      });
+    
+  }
 
   viewTicket(ticket: any) {
     const id = ticket.id;

@@ -135,7 +135,7 @@
         <div cdkDropList 
           [id]="col.estadoId.toString()" [cdkDropListData]="col.data" class="kanban-list" (cdkDropListDropped)="drop($event)">
           @for (ticket of col.data; track ticket.id) {
-          <div class="ticket-card" cdkDrag (click)="viewTicket(ticket)" >
+          <div class="ticket-card" cdkDrag (click)="viewTicket(ticket)" [cdkDragDisabled]="!puedeEditarEstado()" >
             <div class="ticket-header">
               <p-tag [value]="ticket.nivel_prioridad"></p-tag>
               <small class="ticket-id">#{{ ticket.id }}</small>

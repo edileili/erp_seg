@@ -86,7 +86,7 @@
           [id]="col.estadoId.toString()" [cdkDropListData]="col.data()" class="kanban-list" (cdkDropListDropped)="drop($event)">
 
             @for (ticket of col.data(); track ticket.id) {
-            <div class="ticket-card" cdkDrag (click)="openEditDialog(ticket)">
+            <div class="ticket-card" cdkDrag>
               <div class="ticket-header">
                 <p-tag [value]="ticket.nivel_prioridad"></p-tag>
                 <small class="ticket-id">#{{ ticket.id }}</small>
@@ -108,6 +108,16 @@
                 <i class="pi pi-calendar"></i>
                 @let fechaLimite = asDate(ticket.fecha_cierre);
                 <span>Fecha Límite: {{ (ticket.fecha_cierre && fechaLimite.getTime()) ? (fechaLimite | date:'dd/MM/yyyy') : 'Sin fecha' }}</span>
+              </div>
+
+              <div class="card-buttons">
+                <p-button icon="pi pi-pencil" label="Editar"
+                  [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
+                  *ngIf="groupsService.tienePermisoEnGrupo('ticket_edit')"
+                  (click)="openEditDialog(ticket); $event.stopPropagation()" />
+                <p-button icon="pi pi-trash" label="Eliminar" severity="danger"
+                  *ngIf="groupsService.tienePermisoEnGrupo('ticket_remove')"
+                  (click)="openDeleteDialog(ticket); $event.stopPropagation()" />
               </div>
             </div>
             }
@@ -138,7 +148,7 @@
 
       <p-tabpanels>
         
-        <p-tabpanel value="0" *ngIf="groupsService.tienePermisoEnGrupo('ticket_edit')">
+        <p-tabpanel value="0">
           <form [formGroup]="formTicket" class="form-grid pt-3">
             <div class="field full-width">
               <label>Título</label>
