@@ -54,12 +54,12 @@
                     <div class="card-buttons">
                         <p-button icon="pi pi-eye" label="Tickets"
                             [style]="{ 'background': 'var(--color-blue-btn)', 'border-color': 'var(--color-blue-btn)' }"
-                            *hasPermission="['tickets_view']" (click)="viewTickets(group)" />
+                            *hasPermission="['ticket_manage']" (click)="viewTickets(group)" />
                         <p-button icon="pi pi-pencil" label="Editar"
                             [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                            *hasPermission="['group_edit']" (click)="editGroup(group)" />
+                            *hasPermission="['group_manage']" (click)="editGroup(group)" />
 
-                        <p-button icon="pi pi-trash" label="Borrar" severity="danger" *hasPermission="['group_remove']"
+                        <p-button icon="pi pi-trash" label="Borrar" severity="danger" *hasPermission="['group_manage']"
                             (click)="deleteGroup(group)" />
                     </div>
                 </ng-template>
@@ -113,46 +113,68 @@
         </p-dialog>
 
         <p-dialog [(visible)]="displayEditDialog" [header]="selectedGroup?.id ? 'Editar Grupo' : 'Nuevo Grupo'"
-            [modal]="true" [style]="{ width: '450px' }" class="p-fluid">
+            [modal]="true" [style]="{ width: '550px' }" class="p-fluid">
 
-            <form [formGroup]="groupEditForm">
-                <div class="field mb-4">
-                    <label class="block mb-2">Nombre del Grupo</label>
-                    <input type="text" pInputText formControlName="nombre" required autofocus />
-                </div>
+            <p-tabs value="0">
+                <p-tablist>
+                    <p-tab value="0">Información</p-tab>
+                    <p-tab value="1" [disabled]="!selectedGroup?.id">Miembros y Permisos</p-tab>
+                </p-tablist>
 
-                <div class="field mb-4">
-                    <label class="block mb-2">Descripción</label>
-                    <input type="text" pInputText formControlName="descripcion" />
-                </div>
-            </form>
+                <p-tabpanels>
 
-            <div class="field mb-4">
-                <label class="block mb-2">Añadir Integrante (Email)</label>
-                <div class="p-inputgroup">
-                    <input type="email" pInputText placeholder="usuario@correo.com" 
-                        [(ngModel)]="newUserEmail" />
-                    <p-button type="button" icon="pi pi-plus" (click)="addUser()"
-                        *hasPermission="['group_add_member']" />
-                </div>
-            </div>
+                    <p-tabpanel value="0">
+                        <form [formGroup]="groupEditForm" class="mt-3">
+                            <div class="field mb-4">
+                                <label class="block mb-2 font-bold">Nombre del Grupo</label>
+                                <input type="text" pInputText formControlName="nombre" autofocus />
+                            </div>
+                            <div class="field mb-4">
+                                <label class="block mb-2 font-bold">Descripción</label>
+                                <textarea pInputTextarea formControlName="descripcion" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </p-tabpanel>
 
-            <div class="field">
-                <label class="block mb-2">Lista de Miembros</label>
-                <div class="member-list">
-                    @for (user of loadedMembers[selectedGroup.id]; track user.email) {
-                    <div class="flex justify-between items-center p-2 border-b">
-                        <span>{{ user.nombre_com }} — {{ user.email }}</span>
-                        <p-button icon="pi pi-user-minus" [rounded]="true" [text]="true" severity="danger"
-                            *hasPermission="['group_remove_member']" (click)="removeUser(user.email)" />
-                    </div>
-                    }
-                </div>
-            </div>
+                    <p-tabpanel value="1">
+                        <div class="mt-3">
+                            <div class="field mb-4">
+                                <label class="block mb-2 font-bold">Añadir Integrante</label>
+                                <div class="p-inputgroup">
+                                    <input type="email" pInputText placeholder="usuario@correo.com"
+                                        [(ngModel)]="newUserEmail" />
+                                    <p-button icon="pi pi-plus" (click)="addUser()"></p-button>
+                                </div>
+                            </div>
+
+                            <div class="member-list" style="max-height: 300px; overflow-y: auto;">
+                                @for (user of loadedMembers[selectedGroup?.id || 0]; track user.id) {
+                                <div class="flex flex-column p-3 border-bottom-1 surface-border">
+                                    <div class="flex justify-content-between align-items-center mb-2">
+                                        <span class="font-medium">{{ user.nombre_com }}</span>
+                                        <p-button icon="pi pi-user-minus" [text]="true" severity="danger"
+                                            (click)="removeUser(user.id)" />
+                                    </div>
+                                    <p-multiSelect [options]="listaPermisosDisponibles" 
+                                    [(ngModel)]="user.permisos"
+                                        optionLabel="label" optionValue="value" placeholder="Asignar permisos"
+                                        (onChange)="onPermissionChange(user)" appendTo="body">
+                                    </p-multiSelect>
+                                </div>
+                                } @empty {
+                                <p class="text-center text-gray-500">No hay miembros en este grupo.</p>
+                                }
+                            </div>
+                        </div>
+                    </p-tabpanel>
+
+                </p-tabpanels>
+            </p-tabs>
 
             <ng-template pTemplate="footer">
                 <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="displayEditDialog = false" />
-                <p-button label="Guardar" icon="pi pi-check" [disabled]="groupEditForm.invalid" (click)="updateGroup()" />
+                <p-button [label]="selectedGroup?.id ? 'Guardar Cambios' : 'Crear Grupo'" icon="pi pi-check"
+                    [disabled]="groupEditForm.invalid" (click)="saveGroup()" />
             </ng-template>
         </p-dialog>
 

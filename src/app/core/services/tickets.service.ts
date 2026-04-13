@@ -29,6 +29,7 @@ export class TicketsService {
     return this.http.get(`${this.API}/`, { params });
   }
 
+  //Todos lo tickets de un grupo
   getByGrupo(grupo_id: Number): Observable<any> {
     return this.http.get(`${this.API}/grupo/${grupo_id}`)
   }

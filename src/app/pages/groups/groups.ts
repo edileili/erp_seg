@@ -16,11 +16,13 @@ import { Router } from '@angular/router';
 import { PermissionService } from '../../core/services/permission.service';
 import { GroupsService } from '../../core/services/groups.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { TabsModule } from 'primeng/tabs';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-groups',
   standalone: true,
-  imports: [CardModule, BadgeModule, OverlayBadgeModule, DialogModule, ButtonModule, InputGroupAddonModule, InputGroupModule, HasPermissionDirective, ReactiveFormsModule, FormsModule, TagModule, MessageModule, ToastModule],
+  imports: [CardModule, BadgeModule, OverlayBadgeModule, DialogModule, ButtonModule, InputGroupAddonModule, InputGroupModule, HasPermissionDirective, ReactiveFormsModule, FormsModule, TagModule, MessageModule, ToastModule, TabsModule, MultiSelectModule],
   providers: [MessageService],
   templateUrl: './groups.html',
   styleUrl: './groups.css',
@@ -32,7 +34,7 @@ export class Groups {
   constructor(
     private groupsService: GroupsService,
     private permissionService: PermissionService,
-  ){}
+  ) { }
 
   private cdr = inject(ChangeDetectorRef)
 
@@ -41,16 +43,32 @@ export class Groups {
 
     if (tienePermiso) {
       this.loadGroups();
+      this.permisosDeGrupo();
     } else {
       this.errorMessage = 'No tienes permisos para grupos';
     }
+  }
+
+  permisosDeGrupo() {
+    this.groupsService.getPermisosParaGrupos().subscribe({
+      next: (res: any) => {
+        this.listaPermisosDisponibles = res.data.map((p: any) => ({
+          id: p.id,
+          label: p.descripcion,
+          value: p.nombre,
+          description: p.descripcion
+        }));
+        this.cdr.detectChanges();
+        console.log('Permisos grupo:', this.listaPermisosDisponibles);
+      }
+    });
   }
 
   loadGroups() {
     this.groupsService.findAll().subscribe({
       next: (res: any) => {
         this.groups = res.data;
-        
+
         if (this.groups && this.groups.length > 0) {
           this.groups.forEach(group => {
             this.loadMembers(group);
@@ -74,7 +92,7 @@ export class Groups {
     this.groupsService.getMiembros(group.id).subscribe({
       next: (res: any) => {
         let rawData = Array.isArray(res) ? res : (res.data || []);
-        
+
         const filteredMembers = rawData.filter((item: any) => item && item.id);
 
         this.loadedMembers = {
@@ -83,13 +101,13 @@ export class Groups {
         };
 
         this.loadingMembers[group.id] = false;
-        
-        this.cdr.markForCheck(); 
+
+        this.cdr.markForCheck();
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.loadingMembers[group.id] = false;
-        this.loadedMembers[group.id] = []; 
+        this.loadedMembers[group.id] = [];
         this.cdr.detectChanges();
       }
     });
@@ -117,14 +135,17 @@ export class Groups {
   newUserEmail: string = '';
   visible: boolean = false;
   newMemberEmail: string = '';
+  listaPermisosDisponibles = [];
+  permisosSeleccionados: string[] = [];
 
   addGroup() {
     this.groupForm.reset();
     this.visible = true;
   }
 
+
   saveNewGroup() {
-    if(this.groupForm.invalid) return;
+    if (this.groupForm.invalid) return;
 
     const payload = this.groupForm.value;
 
@@ -158,15 +179,82 @@ export class Groups {
     descripcion: new FormControl('')
   });
 
-  editGroup(group: any) {
-    this.selectedGroup = { ...group, members: [] };
-    this.groupEditForm.patchValue({
-      nombre: group.nombre,
-      descripcion: group.descripcion
+editGroup(group: any) {
+  this.selectedGroup = { ...group };
+  this.groupEditForm.patchValue({
+    nombre: group.nombre,
+    descripcion: group.descripcion
+  });
+  this.displayEditDialog = true;
+
+  // Si ya están cargados, cargar permisos directamente
+  if (this.loadedMembers[group.id]) {
+    this.loadMembersPermissions(group.id);
+  } else {
+    // Si no, cargar miembros primero y luego permisos
+    this.groupsService.getMiembros(group.id).subscribe({
+      next: (res: any) => {
+        const rawData = Array.isArray(res) ? res : (res.data || []);
+        const filteredMembers = rawData.filter((item: any) => item && item.id);
+        this.loadedMembers = { ...this.loadedMembers, [group.id]: filteredMembers };
+        this.loadMembersPermissions(group.id);
+        this.cdr.detectChanges();
+      }
     });
-    this.displayEditDialog = true;
-    this.loadMembers(group); // carga los miembros
   }
+}
+
+  loadMembersPermissions(grupoId: number) {
+  const miembros = this.loadedMembers[grupoId] || [];
+  miembros.forEach(miembro => {
+    this.groupsService.getPermisosUsuarioEnGrupo(grupoId, miembro.id).subscribe({
+      next: (res: any) => {
+        const rawPermisos = Array.isArray(res) ? res : (res.data || []);
+        miembro.permisos = rawPermisos.map((p: any) => p.nombre);
+        console.log("Permisos de un usuario:", miembro);
+        this.cdr.detectChanges();
+      }
+    });
+  });
+  
+}
+
+  onPermissionChange(user: any) {
+  // user.permisos tiene nombres (strings), necesitas convertir a IDs
+  const permisosIds: number[] = user.permisos.map((nombrePermiso: string) => {
+    const encontrado = this.listaPermisosDisponibles.find(
+      (p: any) => p.value === nombrePermiso
+    );
+    return encontrado ? (encontrado as any).id : null;
+  }).filter((id: any) => id !== null);
+  console.log('Payload enviado:', {
+    urlId: this.selectedGroup.id,
+    userId: user.id,
+    permisos: permisosIds
+  });
+
+  this.groupsService.actualizarPermisosUsuario(
+    this.selectedGroup.id,
+    user.id,
+    permisosIds
+  ).subscribe({
+    next: () => {
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Permisos actualizados',
+        detail: `Permisos de ${user.nombre_com} guardados`,
+        life: 3000
+      });
+    },
+    error: (err) => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error al actualizar permisos',
+        detail: err.error?.data?.[0]?.message || 'Error inesperado',
+      });
+    }
+  });
+}
 
   updateGroup() {
     if (this.groupEditForm.invalid) return;
@@ -201,16 +289,11 @@ export class Groups {
   addUser() {
     if (!this.newUserEmail) return;
 
-    /*const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
-    if (!this.newUserEmail || !emailPattern.test(this.newUserEmail)) {
-        this.messageService.add({ severity: 'warn', summary: 'Email inválido' });
-        return;
-    }*/
     this.groupsService.addMiembro(this.selectedGroup.id, this.newUserEmail).subscribe({
       next: (res: any) => {
-        delete this.loadedMembers[this.selectedGroup.id]; 
-      this.loadMembers(this.selectedGroup);
-      this.newUserEmail = '';
+        delete this.loadedMembers[this.selectedGroup.id];
+        this.loadMembers(this.selectedGroup);
+        this.newUserEmail = '';
         setTimeout(() => {
           this.messageService.add({
             severity: 'success',
@@ -236,20 +319,51 @@ export class Groups {
     this.displayDeleteDialog = true;
   }
 
-  removeUser(email: string) {
-    this.selectedGroup.members = this.selectedGroup.members.filter((u: any) => u.email !== email);
+  removeUser(usuarioId: number) {
+    this.groupsService.removeMiembro(this.selectedGroup.id, usuarioId).subscribe({
+      next: () => {
+        // Refresca lista local
+        delete this.loadedMembers[this.selectedGroup.id];
+        this.loadMembers(this.selectedGroup);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Miembro eliminado',
+          life: 3000
+        });
+      },
+      error: (err: any) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error al eliminar miembro',
+          detail: err.error?.data?.[0]?.message || 'Error inesperado',
+        });
+      }
+    });
   }
 
   saveGroup() {
-    const index = this.groups.findIndex(g => g.id === this.selectedGroup.id);
-    if (index !== -1) {
-      this.groups[index] = { ...this.selectedGroup, memberCount: this.selectedGroup.members.length };
-    }
-    this.displayEditDialog = false;
+    this.updateGroup();
   }
 
   confirmDelete() {
-    this.groups = this.groups.filter(g => g.id !== this.selectedGroup.id);
-    this.displayDeleteDialog = false;
+    this.groupsService.delete(this.selectedGroup.id).subscribe({
+      next: () => {
+        this.groups = this.groups.filter(g => g.id !== this.selectedGroup.id);
+        delete this.loadedMembers[this.selectedGroup.id];
+        this.displayDeleteDialog = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Grupo eliminado',
+          life: 3000
+        });
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error al eliminar grupo',
+          detail: err.error?.data?.[0]?.message || 'Error inesperado',
+        });
+      }
+    });
   }
 }

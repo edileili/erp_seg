@@ -43,6 +43,14 @@ export class UsuariosService {
     return this.http.get(`${this.APIADMIN}/permisos`);
   }
 
+  getPermisosUsuarios(): Observable<any> {
+    return this.http.get(`${this.APIADMIN}/permisos-user`);
+  }
+
+  getPermisosGrupos(): Observable<any> {
+    return this.http.get(`${this.APIADMIN}/permisos-group`);
+  }
+
   getPermisosUsuario(usuario_id: any): Observable<any> {
     return this.http.get(`${this.APIADMIN}/${usuario_id}/permisos`)
   }

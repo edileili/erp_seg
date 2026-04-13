@@ -280,7 +280,7 @@ export class User {
   usuarioNombre: any;
 
   cargarPermisosGenerales(){
-    this.usuariosService.getPermisos().subscribe({
+    this.usuariosService.getPermisosUsuarios().subscribe({
       next: (res: any) => {
         console.log('Respuesta raw permisos generales:', res);
         this.listaPermisosDisponibles = res.data.map((p: any) => ({

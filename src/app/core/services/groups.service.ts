@@ -33,6 +33,14 @@ export class GroupsService {
     return this.http.post(`${this.API}/${grupoId}/miembro`, {email});
   }
 
+  removeMiembro(grupoId: number, usuarioId: number): Observable<any> {
+    return this.http.delete(`${this.API}/${grupoId}/miembro/${usuarioId}`);
+  }
+
+  delete(grupoId: number): Observable<any> {
+    return this.http.delete(`${this.API}/${grupoId}`);
+  }
+
   create(grupo: any): Observable<any> {
     return this.http.post(`${this.API}/`, grupo);
   }
@@ -71,6 +79,10 @@ export class GroupsService {
 
   limpiarPermisosGrupo(): void {
     localStorage.removeItem(this.PERMISOS_GRUPO_KEY);
+  }
+
+  getPermisosParaGrupos(): Observable<any> {
+    return this.http.get(`${this.API}/permisos-group`);
   }
 
   getPermisosUsuarioEnGrupo(grupoId: number, usuarioId: number): Observable<any> {
