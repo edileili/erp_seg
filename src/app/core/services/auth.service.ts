@@ -64,12 +64,6 @@ export class AuthService {
     );
   }
 
-  async newUser(userData: any) {
-    return firstValueFrom(
-      this.http.post(`${this.API}/admin/usuarios`, userData)
-    );
-  }
-
   getTokenPayload(): TokenPayload | null {
     const token = localStorage.getItem(this.TOKEN_KEY);
     if (!token) return null;

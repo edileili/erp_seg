@@ -17,6 +17,23 @@ span {
     padding: 1rem;
 }
 
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.bg-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.bg-secondary {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
 .card-buttons {
     border-top-width: 1px;
     border-top-style: solid;
@@ -90,6 +107,20 @@ span {
 .table-hover tbody tr:hover {
     background-color: #f8fafc !important;
     cursor: pointer;
+}
+
+.user-table-container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+td {
+    white-space: normal !important;
+    word-wrap: break-word;
+}
+
+::ng-deep .p-multiselect {
+    max-width: 100%;
 }
 
 /* Badges personalizados */

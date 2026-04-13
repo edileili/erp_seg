@@ -16,10 +16,11 @@ import { UsuariosService } from '../../core/services/usuarios.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { FieldsetModule } from 'primeng/fieldset';
 
 @Component({
   selector: 'app-perfil',
-  imports: [CardModule, ButtonModule, HasPermissionDirective, DialogModule, InputGroup, InputGroupAddon, InputNumber, Password, DatePicker, ReactiveFormsModule, SelectModule, TableModule, DatePipe, ToastModule],
+  imports: [CardModule, ButtonModule, HasPermissionDirective, DialogModule, InputGroup, InputGroupAddon, InputNumber, Password, DatePicker, ReactiveFormsModule, SelectModule, TableModule, DatePipe, ToastModule, FieldsetModule],
   standalone: true,
   providers: [MessageService],
   templateUrl: './perfil.html',
@@ -92,7 +93,7 @@ export class Perfil {
       email: formValues.email,
       nombre_com: formValues.nomCompleto,      // Mapeo inverso
       direccion: formValues.direccion,
-      telefono: formValues.telefono,
+      telefono: Number(formValues.telefono),
       fecha_nacimiento: formValues.fechaNacimiento instanceof Date 
           ? formValues.fechaNacimiento.toISOString() 
           : formValues.fechaNacimiento

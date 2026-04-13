@@ -1,33 +1,48 @@
 <div class="content-wrapper">
+    <p-toast />
     <!--Vista 6. Perfil de Usuario (tickets der user)-->
     <p-card *hasPermission="['users_view']" class="glass-card">
         <h1>Usuarios</h1>
-        <p-button
-            [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
-            (click)="showDialog()" label="Agregar Usuario" *hasPermission="['user_add']" />
+        <p-button [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
+            (click)="createUser()" label="Agregar Usuario" *hasPermission="['user_add']" />
         <div class="table-responsive shadow-sm rounded">
             <p-table [value]="users" class="custom-table">
                 <ng-template pTemplate="header">
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Apellido</th>
-                        <th>Permisos</th>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Estado</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-user>
                     <tr>
                         <td><strong>{{user.id}}</strong></td>
-                        <td>{{user.nombre}}
+                        <td>{{user.nombre_com}}
                         </td>
-                        <td>{{user.apellido}}
+                        <td>{{user.usuario}}
                         </td>
-                        <td>{{user.permisos}}</td>
+                        <td>{{user.email}}</td>
+                        <td>
+                            @let activo = user.activo;
+                            @if(activo) {
+                            <span class="badge bg-success">
+                                Activo
+                            </span>
+                            } @else {
+                            <span class="badge bg-secondary">
+                                Inactivo
+                            </span>
+                            }
+                        </td>
                         <td>
                             <p-button icon="pi pi-pencil" label="Editar"
                                 [style]="{ 'background': 'var(--color-orange-btn)', 'border-color': 'var(--color-orange-btn)' }"
-                                *hasPermission="['user_edit']" (click)="showDialog()" />
+                                *hasPermission="['user_edit']" (click)="editUser(user)" />
+                            <p-button icon="pi pi-pencil" label="Eliminar" severity="danger"
+                                *hasPermission="['user_edit']" (click)="openDeleteDialog(user)" />
                         </td>
                     </tr>
                 </ng-template>
@@ -35,7 +50,7 @@
         </div>
     </p-card>
     <!--Vista 10. Gestión de usuarios-->
-    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '35rem' }">
+    <p-dialog [(visible)]="visibleCreate" [modal]="true" class="user-table-container">
         <ng-template #header>
             <div class="inline-flex items-center justify-center gap-2">
                 <span class="font-bold whitespace-nowrap">Crear usuario</span>
@@ -86,14 +101,6 @@
                     @if(isInvalid('contrasenia')){
                     <small class="p-error" style="color: red">Ingresa una contraseña válida.</small><br>
                     }
-                    <div class="info-password">
-                        <small id="username-help">Ingresa una contraseña con:</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>Mínimo 10 caracteres</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>1 letra mayúscula</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>1 letra minúscula</small><br>
-                        <small id="username-help"><i class="pi pi-check"></i>1 carácter especial ( $ @ $ ! % *
-                            ?&)</small>
-                    </div>
                 </div>
                 <div class="form-group">
                     <p-inputgroup>
@@ -166,11 +173,129 @@
                     @if(isInvalid('telefono')){
                     <small class="p-error" style="color: red">El teléfono es requerido.</small><br>
                     }
-                    <small id="username-help"><i class="pi pi-check"></i>Ingrese unicamente números en este
-                        apartado.</small>
+                </div>
+            </div>
+
+        </form>
+        <ng-template #footer>
+            <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visibleCreate = false" />
+            <p-button label="Guardar Usuario" [outlined]="true" severity="success" (click)="onSubmit()" />
+        </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="visibleEdit" [modal]="true" class="user-table-container">
+        <ng-template #header>
+            <div class="inline-flex items-center justify-center gap-2">
+                <span class="font-bold whitespace-nowrap">Editar Usuario: {{usuarioSeleccionado?.usuario}}</span>
+            </div>
+        </ng-template>
+
+        <span class="text-surface-500 dark:text-surface-400 block mb-8">
+            Actualiza la información del perfil y los permisos del sistema.
+        </span>
+
+        <form [formGroup]="editUserForm" (ngSubmit)="onUpdate()">
+            <div class="form-register">
+                <div class="form-group">
+                    <label for="usuario">Nombre de Usuario</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon><i class="pi pi-user"></i></p-inputgroup-addon>
+                        <input pInputText formControlName="usuario" placeholder="Usuario" />
+                    </p-inputgroup>
                 </div>
 
-                <div class="permissions-section" *hasPermission="['user_add']">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon><i class="pi pi-envelope"></i></p-inputgroup-addon>
+                        <input pInputText formControlName="email" placeholder="Email" />
+                    </p-inputgroup>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon><i class="pi pi-star"></i></p-inputgroup-addon>
+                        <input pInputText formControlName="nomCompleto" />
+                    </p-inputgroup>
+                </div>
+
+                <div class="form-group col-span-2">
+                    <p-fieldset legend="Seguridad" [toggleable]="true" [collapsed]="true">
+                        <ng-template pTemplate="header">
+                            <div class="flex align-items-center gap-2 px-2">
+                                <i class="pi pi-key"></i>
+                                <span class="font-bold">Cambiar Contraseña</span>
+                            </div>
+                        </ng-template>
+                        
+                        <p>Si deseas cambiar la contraseña, ingresa la nueva debajo. De lo contrario, deja este campo vacío.</p>
+                        
+                        <div class="flex flex-column gap-2 mt-3">
+                            <label for="nuevaContrasenia">Nueva Contraseña</label>
+                            <p-inputgroup>
+                                <p-inputgroup-addon><i class="pi pi-lock"></i></p-inputgroup-addon>
+                                <p-password 
+                                    id="nuevaContrasenia"
+                                    formControlName="contrasenia" 
+                                    [toggleMask]="true" 
+                                    placeholder="Escribe la nueva contraseña"
+                                    [feedback]="true"
+                                    promptLabel="Elige una clave segura"
+                                    weakLabel="Débil" 
+                                    mediumLabel="Media" 
+                                    strongLabel="Fuerte">
+                                </p-password>
+                            </p-inputgroup>
+                            <small class="text-secondary">La contraseña se actualizará solo si escribes algo aquí.</small>
+                        </div>
+                    </p-fieldset>
+                </div>
+
+                <div class="form-group">
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-map-marker"></i>
+                        </p-inputgroup-addon>
+                        <input pInputText formControlName="direccion" placeholder="Dirección"
+                            [class.ng-invalid]="isInvalid('direccion')" [class.ng-dirty]="isInvalid('direccion')" />
+                    </p-inputgroup>
+                    @if(isInvalid('direccion')){
+                    <small class="p-error" style="color: red">La dirección es requerida.</small>
+                    }
+                </div>
+                <div class="form-group">
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-calendar"></i>
+                        </p-inputgroup-addon>
+
+                        <p-datepicker formControlName="fechaNacimiento" dateFormat="yy-mm-dd" [fluid]="true"
+                            [showIcon]="true" [class.ng-invalid]="isInvalid('fechaNacimiento')"
+                            [class.ng-dirty]="isInvalid('fechaNacimiento')">
+                        </p-datepicker>
+                    </p-inputgroup>
+
+                    @if(newUser.get('fechaNacimiento')?.errors?.['menorDeEdad'] &&
+                    newUser.get('fechaNacimiento')?.touched){
+                    <small class="p-error" style="color: red; display: block; margin-top: 0.25rem;">
+                        Debes ser mayor de 18 años.
+                    </small>
+                    }
+                </div>
+                <div class="form-group">
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class="pi pi-phone"></i>
+                        </p-inputgroup-addon>
+                        <p-inputnumber formControlName="telefono" placeholder="Número de teléfono" [useGrouping]="false"
+                            [class.ng-invalid]="isInvalid('telefono')" [class.ng-dirty]="isInvalid('telefono')" />
+                    </p-inputgroup>
+                    @if(isInvalid('telefono')){
+                    <small class="p-error" style="color: red">El teléfono es requerido.</small><br>
+                    }
+                </div>
+                <div class="permissions-section" *hasPermission="['user_edit_permissions']">
                     <h3 class="section-title"><i class="pi pi-lock"></i> Gestión de Permisos</h3>
 
                     <div class="permissions-selector">
@@ -178,15 +303,18 @@
                         <div class="flex gap-2">
                             <p-multiSelect 
                                 [options]="listaPermisosDisponibles" 
+                                formControlName="permisosSeleccionados"
                                 optionLabel="label" 
                                 optionValue="value"
-                                placeholder="Selecciona permisos"
+                                placeholder="Selecciona permisos" 
                                 display="chip" 
                                 class="flex-1">
                             </p-multiSelect>
-                            <p-button label="Asignar" icon="pi pi-plus" (click)="agregarPermisos()"
-                                [disabled]="!permisosSeleccionados.length">
-                            </p-button>
+                            <p-button 
+                            label="Asignar" 
+                            icon="pi pi-plus" 
+                            (click)="agregarPermisos()"
+                            [disabled]="!editUserForm.get('permisosSeleccionados')?.value?.length"> </p-button>
                         </div>
                     </div>
 
@@ -201,7 +329,13 @@
                             <ng-template pTemplate="body" let-permiso>
                                 <tr>
                                     <td>
-                                        <p-tag [value]="permiso" [severity]="getSeverity(permiso)"></p-tag>
+                                        <p-tag [value]="permiso.nombre" [severity]="getSeverity(permiso.nombre)"></p-tag>
+                                        
+                                        @if(permiso.descripcion){
+                                            <div class="text-xs text-secondary mt-1">
+                                                {{ permiso.descripcion }}
+                                            </div>
+                                        }
                                     </td>
                                     <td class="text-center">
                                         <p-button icon="pi pi-trash" severity="danger" [text]="true"
@@ -221,30 +355,24 @@
                     </div>
                 </div>
             </div>
+        </form>
 
-        </form>
         <ng-template #footer>
-            <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
-            <p-button label="Guardar Usuario" [outlined]="true" severity="success" (click)="onSubmit()" />
+            <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visibleEdit = false" />
+            <p-button label="Actualizar Cambios" [outlined]="true" severity="info" (click)="onUpdate()"
+                [disabled]="editUserForm.invalid" />
         </ng-template>
     </p-dialog>
-    
-    <p-dialog [(visible)]="displayEditState" [header]="'Editar Estado del Ticket'" [modal]="true"
-        class="p-fluid custom-modal">
-        <form class="form-grid">
-            <div class="field">
-                <label for="estado">Estado Actual: </label>
-                <select name="" id="">
-                    <option>Pendiente</option>
-                    <option>En progreso</option>
-                    <option>En revisión</option>
-                    <option>Hecho</option>
-                </select>
-            </div>
-        </form>
-        <ng-template pTemplate="footer">
-            <p-button label="Cancelar" icon="pi pi-times" [text]="true" (click)="displayEditState = false" />
-            <p-button label="Guardar" icon="pi pi-check" />
-        </ng-template>
-    </p-dialog>
+
+    <p-dialog [(visible)]="displayDeleteDialog" header="Confirmar Eliminación" [modal]="true" class="delete-modal">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle warning-icon"></i>
+      <span>¿Estás seguro de eliminar al usuario <b>{{ this.usuarioNombre }}</b>?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <p-button label="No" icon="pi pi-times" [text]="true" (click)="displayDeleteDialog = false" />
+      <p-button label="Sí, eliminar" icon="pi pi-trash" severity="danger" (click)="confirmDelete()" />
+    </ng-template>
+  </p-dialog>
+
 </div>

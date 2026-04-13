@@ -14,10 +14,22 @@ import { TableModule } from 'primeng/table';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MessageService } from 'primeng/api';
 import { AuthService } from '../../core/services/auth.service';
+import { UsuariosService } from '../../core/services/usuarios.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { ToastModule } from 'primeng/toast';
+import { FieldsetModule } from 'primeng/fieldset';
+import { forkJoin } from 'rxjs';
+
+interface PermisoOpcion {
+    id: number,
+    label: string;
+    value: string;
+    description: string;
+}
 
 @Component({
   selector: 'app-user',
-  imports: [CardModule, ButtonModule, DialogModule, InputGroupModule, InputGroupAddonModule, Password, DatePicker, InputNumber, HasPermissionDirective, TagModule, TableModule, MultiSelectModule, ReactiveFormsModule],
+  imports: [CardModule, ButtonModule, DialogModule, InputGroupModule, InputGroupAddonModule, Password, DatePicker, InputNumber, HasPermissionDirective, TagModule, TableModule, MultiSelectModule, ReactiveFormsModule, ToastModule, FieldsetModule],
   standalone: true,
   providers: [MessageService],
   templateUrl: './user.html',
@@ -28,11 +40,17 @@ export class User {
   private messageService = inject(MessageService);
   private authService = inject(AuthService);
 
-  visible: boolean = false;
-  public newUser: FormGroup;
+  visibleCreate: boolean = false;
+  visibleEdit: boolean = false;
+  newUser: FormGroup;
   public formSubmitted = false;
+  public editUserForm: FormGroup;
+  displayDeleteDialog = false;
 
-  constructor() {
+  constructor( 
+    private usuariosService: UsuariosService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.newUser = this.fb.group({
       usuario: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -42,6 +60,37 @@ export class User {
       direccion: ['', Validators.required],
       fechaNacimiento: [null, [Validators.required, this.validarMayoriaEdad.bind(this)]],
       telefono: [null, [Validators.required, Validators.pattern("^[0-9]{10,}$")]]
+    });
+    
+    this.editUserForm = this.fb.group({
+      id: Number,
+      usuario: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      nomCompleto: ['', Validators.required],
+      direccion: ['', Validators.required],
+      contrasenia: '',
+      fechaNacimiento: [null, [Validators.required, this.validarMayoriaEdad.bind(this)]],
+      telefono: Number(['', Validators.required]),
+      permisosSeleccionados: [[]]
+    });
+  }
+
+  users: any[] = [];
+  user: any = {};
+
+  ngOnInit() {
+    this.loadUsers();
+    this.cargarPermisosGenerales();
+  }
+
+  loadUsers() {
+    this.usuariosService.getUsuarios().subscribe({
+      next: (res: any) => {
+        console.log('Respuesta raw usuarios:', res);
+        this.users = res.data ?? res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar usuarios', err)
     });
   }
 
@@ -61,8 +110,108 @@ export class User {
     return edad >= 18 ? null : { menorDeEdad: true };
   }
 
-  showDialog() {
-    this.visible = true;
+  createUser() {
+    this.visibleCreate = true;
+  }
+
+  editUser(usuario: any) {
+    this.visibleEdit = true;
+    this.usuarioSeleccionado = usuario;
+    this.usuariosService.getUsuario(usuario.id).subscribe({
+      next: (res: any) => {
+        console.log('Respuesta raw grupo:', res);
+        const user = res.data[0] ?? res;
+        this.editUserForm.patchValue({
+          id: user.id,
+          usuario: user.usuario,
+          email: user.email,
+          nomCompleto: user.nombre_com,
+          direccion: user.direccion,
+          fechaNacimiento: new Date(user.fecha_nacimiento),
+          telefono: user.telefono
+        });
+        
+        this.usuariosService.getPermisosUsuario(usuario.id).subscribe({
+          next: (res) => {
+            console.log('Respuesta raw permisos usuario:', res);
+            const permisosReales = res.data.filter((item: any) => item.nombre);
+            this.usuarioSeleccionado.permisos = permisosReales;
+            this.cdr.detectChanges();
+          }
+        });
+        
+      },
+      error: (err) => console.error('Error al cargar usuario', err)
+    });
+    console.log("usuario:", this.usuarioSeleccionado);
+  }
+
+  onUpdate() {
+    if (this.editUserForm.valid) {
+      const datosActualizados = this.editUserForm.value;
+      const usuarioId = datosActualizados.id;
+
+      const actualizar: any = {
+        usuario: datosActualizados.usuario,
+        email: datosActualizados.email,
+        nombre_com: datosActualizados.nomCompleto, 
+        direccion: datosActualizados.direccion,
+        telefono: Number(datosActualizados.telefono),
+      };
+      
+      if(!datosActualizados.contrasenia || datosActualizados.contrasenia.trim() === '') {
+        delete actualizar.contrasenia;
+      }
+
+      if(datosActualizados.fechaNacimiento) {
+        actualizar.fechaNacimiento = actualizar.fechaNacimiento instanceof Date 
+          ? actualizar.fechaNacimiento.toISOString() 
+          : actualizar.fechaNacimiento;
+      }
+      console.log('Enviando a API:', actualizar);
+
+      const listaPermisoPrueba = this.usuarioSeleccionado.permisos.map((p: any) => p.id || p.permiso_id);
+      console.log('Lista:', listaPermisoPrueba);
+      const listaPermisos = this.usuarioSeleccionado.permisos.map((p: any) => {
+        // 1. Buscamos por value (nombre técnico) o directamente por ID si ya lo tiene
+        const coincidencia = this.listaPermisosDisponibles.find(opcion => 
+          opcion.value === p.nombre || opcion.label === p.nombre
+        );
+
+        // 2. Priorizamos el ID de la coincidencia, si no, el ID que ya traiga el objeto
+        return coincidencia ? coincidencia.id : p.id; 
+      }).filter((id: any) => id !== undefined && id !== null);
+
+      console.log('Array final de IDs:', listaPermisos);
+      delete datosActualizados.permisosSeleccionados;
+
+      forkJoin({
+        perfil: this.usuariosService.editarUsuario(actualizar, usuarioId),
+        permisos: this.usuariosService.actualizarPermisos(usuarioId, { permisos: listaPermisos })
+      }).subscribe({
+        next: (res) => {
+          console.log('Ambas actualizaciones completadas:', res);
+          this.visibleEdit = false;
+          this.loadUsers();
+          this.messageService.add({ 
+            severity: 'success', 
+            summary: 'Éxito', 
+            detail: 'Perfil y permisos actualizados correctamente', 
+            life: 3000 
+          });
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error en la actualización combinada:', err);
+          this.messageService.add({ 
+            severity: 'error', 
+            summary: 'Error', 
+            detail: 'No se pudieron guardar todos los cambios', 
+            life: 3000 
+          });
+        }
+      });
+    }
   }
 
   async onSubmit() {
@@ -84,12 +233,11 @@ export class User {
       const values = this.newUser.value;
       const fecha = new Date(values.fechaNacimiento);
 
-      // Extraemos año, mes y día localmente
       const year = fecha.getFullYear();
       const month = String(fecha.getMonth() + 1).padStart(2, '0');
       const day = String(fecha.getDate()).padStart(2, '0');
       
-      const fechaLimpia = `${year}-${month}-${day}`; // Resultado: "2005-07-31"
+      const fechaLimpia = `${year}-${month}-${day}`;
 
       const dataToSubmit = {
         usuario: values.usuario,
@@ -101,13 +249,19 @@ export class User {
         telefono: values.telefono
       };
 
-      await this.authService.newUser(dataToSubmit);
+      this.usuariosService.crearUsuario(dataToSubmit).subscribe({
+        next: (res: any) => {
+          console.log('Respuesta raw usuario:', res);
+          this.newUser.reset();
+          this.formSubmitted = false;
+          this.visibleCreate = false;
+          this.loadUsers();
+          this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error al cargar usuarios', err)
+      });
 
-      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado correctamente', life: 3000 });
-      this.newUser.reset();
-      this.formSubmitted = false;
-      this.visible = false;
-      
     } catch (error: any) {
       // Manejo del error 409 (Conflicto) que envía tu API
       const errorMsg = error.error?.message || 'Error al registrar usuario';
@@ -120,70 +274,99 @@ export class User {
     return control?.invalid && (control.touched || this.formSubmitted);
   }
 
-  users = [
-    {id: 201, nombre: 'Eden', apellido: 'Romero', permisos: 'ticket_view'},
-    {id: 202, nombre: 'Admin', apellido: 'Admin', permisos: 'admin'}
-  ];
-
-  tickets = [
-    { id: 101, estado: 'Pendiente', prioridad: 'Alta', fecha: new Date() },
-    { id: 103, estado: 'En Progreso', prioridad: 'Media', fecha: new Date() },
-  ];
-
-listaPermisosDisponibles = [
-  { label: 'Ver Grupo', value: 'group_view' },
-  { label: 'Editar Grupo', value: 'group_edit' },
-  { label: 'Agregar Grupo', value: 'group_add' },
-  { label: 'Eliminar Grupo', value: 'group_remove' },
-  { label: 'Agregar Miembro al Grupo', value: 'group_add_member' },
-  { label: 'Eliminar Miembro del Grupo', value: 'group_remove_member' },
-  { label: 'Gestionar Grupos', value: 'group_manage' },
-
-  { label: 'Ver Ticket', value: 'ticket_view' },
-  { label: 'Ver Todos los Tickets', value: 'tickets_view' },
-  { label: 'Editar Ticket', value: 'ticket_edit' },
-  { label: 'Editar Estado de Ticket', value: 'ticket_edit_state' },
-  { label: 'Editar Comentario de Ticket', value: 'ticket_edit_comment' },
-  { label: 'Agregar Ticket', value: 'ticket_add' },
-  { label: 'Eliminar Ticket', value: 'ticket_delete' },
-  { label: 'Gestionar Tickets', value: 'ticket_manage' },
-
-  { label: 'Ver Usuario', value: 'user_view' },
-  { label: 'Ver Lista de Usuarios', value: 'users_view' },
-  { label: 'Editar Usuario', value: 'user_edit' },
-  { label: 'Editar Perfil de Usuario', value: 'user_edit_profile' },
-  { label: 'Editar Permisos de Usuario', value: 'user_edit_permissions' },
-  { label: 'Agregar Usuario', value: 'user_add' },
-  { label: 'Eliminar Usuario', value: 'user_remove' },
-  { label: 'Gestionar Usuarios', value: 'user_manage' }
-];
-
+  listaPermisosDisponibles: PermisoOpcion[] = [];
   permisosSeleccionados: string[] = [];
   usuarioSeleccionado: any;
+  usuarioNombre: any;
+
+  cargarPermisosGenerales(){
+    this.usuariosService.getPermisos().subscribe({
+      next: (res: any) => {
+        console.log('Respuesta raw permisos generales:', res);
+        this.listaPermisosDisponibles = res.data.map((p: any) => ({
+          id: p.id,
+          label: p.descripcion,
+          value: p.nombre,
+          description: p.descripcion
+        }));
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error cargando catálogo de permisos', err)
+    });
+  };
 
   agregarPermisos() {
-    if (!this.usuarioSeleccionado.permisos) {
-      this.usuarioSeleccionado.permisos = [];
+    const seleccionadosEnForm = this.editUserForm.get('permisosSeleccionados')?.value || [];
+    console.log("Click detectado");
+    console.log("Permisos seleccionados: ", seleccionadosEnForm);
+
+    if (seleccionadosEnForm.length > 0) {
+      const nuevos = this.listaPermisosDisponibles
+        .filter(p => seleccionadosEnForm.includes(p.value))
+        .map(p => ({
+          id: p.id,
+          nombre: p.value,
+          descripcion: p.description
+        }));
+      console.log("Permisos nuevos:", nuevos);
+
+      const actuales = this.usuarioSeleccionado.permisos || [];
+      const filtrados = nuevos.filter(n => !actuales.some((a: { nombre: string; }) => a.nombre === n.nombre));
+
+      this.usuarioSeleccionado.permisos = [...actuales, ...filtrados];
+
+      this.editUserForm.get('permisosSeleccionados')?.setValue([]);
+      this.cdr.detectChanges();
     }
-
-    const nuevos = this.permisosSeleccionados.filter(p => !this.usuarioSeleccionado.permisos.includes(p));
-    this.usuarioSeleccionado.permisos.push(...nuevos);
-
-    this.permisosSeleccionados = [];
   }
 
-  removerPermiso(permiso: string) {
-    this.usuarioSeleccionado.permisos = this.usuarioSeleccionado.permisos.filter((p: string) => p !== permiso);
+  removerPermiso(permiso: any) {
+    this.usuarioSeleccionado.permisos = this.usuarioSeleccionado.permisos.filter(
+        (p: any) => p.nombre !== permiso.nombre
+    );
   }
-
+  
   getSeverity(permiso: string) {
-    if (permiso === 'admin') return 'danger';
+    if (permiso.startsWith('group')) return 'warn';
     if (permiso.startsWith('ticket')) return 'info';
     if (permiso.startsWith('user')) return 'success';
     return 'secondary';
   }
-  displayEditState: boolean = false;
-  openEditState() {
-    this.displayEditState = true;
+
+  openDeleteDialog(usuario: any) {
+      this.usuarioSeleccionado = usuario.id;
+      this.usuarioNombre = usuario.nombre_com;
+      this.displayDeleteDialog = true;
+      console.log("Seleccionado:", this.usuarioSeleccionado);
+      console.log("Nombre:", this.usuarioNombre);
+    }
+
+  confirmDelete() {
+    const id = this.usuarioSeleccionado;
+
+    this.usuariosService.eliminar(id).subscribe({
+      next: (res: any) => {
+        this.displayDeleteDialog = false;
+        this.usuarioSeleccionado = null;
+        this.loadUsers();
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Usuario Desactivado',
+            detail: 'Desactivaste al usuario exitosamente',
+            life: 3000
+          });
+        });
+      },
+      error: (err) => {
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error al bloquear',
+            detail: err.error?.data?.[0]?.message || 'Error inesperado',
+          });
+        });
+      }
+    });
   }
 }

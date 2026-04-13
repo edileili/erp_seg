@@ -49,14 +49,36 @@
                     </p-inputgroup>
 
                 </div>
-                <div class="form-group">
-                    <label for="contrasenia">Contraseña</label>
-                    <p-inputgroup>
-                        <p-inputgroup-addon>
-                            <i class="pi pi-lock"></i>
-                        </p-inputgroup-addon>
-                        <p-password [toggleMask]="true" formControlName="contrasenia" placeholder="Contraseña" />
-                    </p-inputgroup>
+                <div class="form-group col-span-2">
+                <p-fieldset legend="Seguridad" [toggleable]="true" [collapsed]="true">
+                        <ng-template pTemplate="header">
+                            <div class="flex align-items-center gap-2 px-2">
+                                <i class="pi pi-key"></i>
+                                <span class="font-bold">Cambiar Contraseña</span>
+                            </div>
+                        </ng-template>
+                        
+                        <p>Si deseas cambiar la contraseña, ingresa la nueva debajo. De lo contrario, deja este campo vacío.</p>
+                        
+                        <div class="flex flex-column gap-2 mt-3">
+                            <label for="nuevaContrasenia">Nueva Contraseña</label>
+                            <p-inputgroup>
+                                <p-inputgroup-addon><i class="pi pi-lock"></i></p-inputgroup-addon>
+                                <p-password 
+                                    id="nuevaContrasenia"
+                                    formControlName="contrasenia" 
+                                    [toggleMask]="true" 
+                                    placeholder="Escribe la nueva contraseña"
+                                    [feedback]="true"
+                                    promptLabel="Elige una clave segura"
+                                    weakLabel="Débil" 
+                                    mediumLabel="Media" 
+                                    strongLabel="Fuerte">
+                                </p-password>
+                            </p-inputgroup>
+                            <small class="text-secondary">La contraseña se actualizará solo si escribes algo aquí.</small>
+                        </div>
+                    </p-fieldset>
                 </div>
                 <div class="form-group">
                     <label for="nomCompleto">Nombre Completo</label>
