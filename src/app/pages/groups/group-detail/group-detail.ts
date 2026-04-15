@@ -80,8 +80,15 @@ export class GroupDetail implements OnInit {
 
     await this.groupsService.cargarPermisosGrupo(id, usuario!.id);
     setTimeout(() => {
+    
+      console.log("Ver:", this.verTodo());
+
       this.loadGroup(id);
-      this.loadMisTickets(id);
+      if(!this.verTodo()) {
+        this.loadMisTickets(id);
+      } else {
+        this.loadAllTickets(id);
+      }
       this.loadMembers(id);
     }, 0);
   }
@@ -103,11 +110,30 @@ export class GroupDetail implements OnInit {
     });
   }
 
+  verTodo(): boolean {
+    const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
+    return this.groupsService.tienePermisoEnGrupo('ticket_view_all', groupId);
+  }
+
+  loadAllTickets(groupId: any) {
+    this.ticketsService.getByGrupo(groupId)
+      .pipe(delay(0)) 
+      .subscribe({
+        next: (res: any) => {
+          console.log("tickets:", res.data);
+          this.tickets = res.data ?? res;
+          this.distribuirTickets();
+        },
+        error: (err) => console.error('Error al cargar tickets', err)
+      });
+  }
+
   loadMisTickets(groupId: any) {
     this.ticketsService.getMisTickets(groupId)
       .pipe(delay(0)) 
       .subscribe({
         next: (res: any) => {
+          console.log("tickets:", res.data);
           this.tickets = res.data ?? res;
           this.distribuirTickets();
         },
@@ -274,7 +300,12 @@ export class GroupDetail implements OnInit {
       this.displayEditDialog = false;
     }
   
-    saveTicket() {
+  isSaving = false;
+
+  saveTicket() {
+    if(this.formTicket.invalid || this.isSaving) return;
+
+    this.isSaving = true;
     const groupId = Number(this.route.snapshot.paramMap.get('id-group'));
     if(this.formTicket.invalid) return;
     const payload = {
@@ -294,6 +325,7 @@ export class GroupDetail implements OnInit {
         this.closeEditDialog();
         this.loadMisTickets(groupId);
         setTimeout(() => {
+          this.isSaving = false;
           this.messageService.add({
             severity: 'success',
             summary: this.selectedTicket?.id ? 'Ticket Actualizado!' : 'Ticket Creado!',
@@ -304,6 +336,7 @@ export class GroupDetail implements OnInit {
       }, 
       error: (err) => {
         setTimeout(() => {
+          this.isSaving = false;
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -347,7 +380,7 @@ export class GroupDetail implements OnInit {
 
     const id = this.selectedTicket.id;
 
-    this.ticketsService.asignar(id, { asignado_id: this.idUsuarioSeleccionado })
+    this.ticketsService.asignar(id, { asignado_id: this.idUsuarioSeleccionado, grupo_id: groupId })
       .subscribe({
         next: () => {
           this.loadMisTickets(groupId);

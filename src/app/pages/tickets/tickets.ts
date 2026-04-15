@@ -34,7 +34,7 @@ export interface Ticket {
   descripcion: string;
   estado_actual: string;
   asignado_a_nombre: string;
-  creador_nombre: string;
+  creado_por_nombre: string;
   nivel_prioridad: string;
   creado_fecha: Date;
   fecha_cierre?: Date;

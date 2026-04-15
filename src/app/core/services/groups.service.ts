@@ -73,7 +73,6 @@ export class GroupsService {
     if(!payload) return false;
 
     if(grupoId !== undefined && payload.grupo_id !== grupoId) return false;
-
     return payload.permisos.includes(nombre);
   }
 

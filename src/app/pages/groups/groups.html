@@ -69,7 +69,7 @@
             <div class="card flex justify-center card-crud">
                 <p-button
                     [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
-                    *hasPermission="['group_add']" (click)="addGroup()" label="Agregar Grupo" />
+                    *hasPermission="['group_add', 'group_manage']" (click)="addGroup()" label="Agregar Grupo" />
             </div>
 
         </div>

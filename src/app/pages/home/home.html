@@ -1,9 +1,15 @@
 <div class="content-wrapper">
+  <p-toast />
   <!--Vista 1. Grupos-->
   <div class="inicio-home">
     <p-card class="glass-card">
       <h1 class="title">Bienvenido, <span class="user-name">User</span></h1>
       <p class="subtitle">Aquí encontrarás todo lo que necesites</p>
+      <!--<div class="card flex justify-center card-crud">
+          <p-button
+              [style]="{ 'background': 'var(--color-purple-dark)', 'border-color': 'var(--color-purple-dark)' }"
+            *hasPermission="['group_add']" (click)="addGroup()" label="Agregar Grupo" />
+      </div>-->
 
       @if(!permissionService.hasPermission('group_manage')) {
         <div class="group-user">

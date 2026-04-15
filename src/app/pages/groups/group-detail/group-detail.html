@@ -61,7 +61,7 @@
             <h2 class="m-0">{{group.nombre}}</h2>
             <p class="text-secondary">Total de tickets: <b>{{ totalTickets() }}</b></p>
           </div>
-          <p-button label="Crear Ticket" icon="pi pi-plus" *ngIf="groupsService.tienePermisoEnGrupo('ticket_add')" (onClick)="openCreateTicket()"
+          <p-button label="Crear Ticket" icon="pi pi-plus" [loading]="isSaving" [disabled]="isSaving" *ngIf="groupsService.tienePermisoEnGrupo('ticket_add')" (onClick)="openCreateTicket()"
             severity="primary"></p-button>
         </div>
       </div>
